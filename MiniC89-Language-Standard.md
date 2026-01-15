@@ -174,6 +174,15 @@ MiniC89의 토큰은 다음으로 구성된다.
 ---
 
 ### 3.2 Keywords
+
+**Normative Rule**  
+MiniC89 구현체는 ISO C89에서 정의된 모든 키워드를 keyword로 토큰화 MUST 한다.  
+MiniC89가 “키워드로 지원”하는 것은 문법(EBNF)에 포함된 구문으로 제한된다.  
+문법에 포함되지 않은 키워드가 등장한 프로그램은 컴파일 타임 오류로 거부 MUST 한다.
+
+**Note:** (비규범)  
+“키워드로 토큰화”는 “해당 구문을 허용”한다는 뜻이 아니라,
+단지 해당 토큰이 식별자가 아님을 의미한다.
 다음 키워드는 예약어이다.
 
 int  
@@ -373,7 +382,42 @@ while
 - 프로그램은 **정확히 하나의 엔트리 함수 `int main()`을 MUST 포함**해야 한다.
   - `main`은 매개변수를 가질 수 없다.
 - 본 절에서 사용되는 `<function-definition>` 및 매개변수 관련 논터미널의 규범 정의는 **Chapter 9 (Functions)** 에 있다.
-- 
+- 파일 스코프에서 `external-declaration`은 오직 `<function-definition>`만 허용 MUST 한다.  
+- 구현체는 파일 스코프에서 다음 패턴을 발견하면 **파싱 성공 여부와 무관하게** 지정된 오류 코드로 진단 MUST 한다.
+
+- Function definition (허용)
+  - 형태(개념적으로):
+  - `int <identifier> ( [parameter-list] ) { ... }`
+  - 결과:
+  - 정상적으로 `<function-definition>`으로 처리
+
+- Function prototype (금지, E404)
+  - 형태(개념적으로):
+  - `int <identifier> ( [parameter-list] ) ;`
+  - 결과:
+  - **MC89-E404** MUST diagnose  
+  - (파서가 전체 C 문법을 쓰더라도 MiniC89에서는 반드시 거부)
+
+- Global declaration / global variable (금지, E405)
+  - 형태(개념적으로):
+  - `int <identifier> ;`
+  - `int <identifier> = <expr> ;`
+  - `int <identifier> , <identifier> , ... ;`  (만약 파서가 C 문법으로 읽어버리는 경우 포함)
+  - 결과:
+  - **MC89-E405** MUST diagnose- 
+
+- 프로토타입 vs 함수 정의 판별 권장 알고리즘
+
+  - `int` 다음에 `<identifier>`가 오지 않으면, 식별자 위치 위반 **MC89-E102**
+  - `<identifer>` 다음 토큰이 `(` 이면:
+    - `)`까지 (parameter-list를 MiniC89 규칙으로) 파싱 시도
+    - 그 다음 토큰을 확인:
+      - 다음이 `{`면 **함수 정의** (허용)
+      - 다음이 `;`면 **프로토타입** (금지, MC89-E404)
+      - 그 외 MiniC89 문법 위반 (MC89-E205)
+  - `<identifier>` 다음 토큰이 `(`가 **아니면**:
+    - 파일 스코프 전역 변수 선언으로 간주 (MC89-E405) 
+
 #### Allowed Examples
 ```c
 int main() {
@@ -402,6 +446,7 @@ int main() { return 0; }
 - MiniC89는 **ISO C89의 "translation unit" 개념을 단순화**한 모델을 사용한다.
 - 헤더 파일, 전처리, 분할 컴파일 개념은 존재하지 않는다.
 - 이로 인해 모든 이름 해석은 **단일 파일, 단일 번역 단위**에서 이루어진다.
+- 프로토타입, 전역 변수는 MiniC89 EBNF에 "존재하지 않으므로" 원칙적으로 문법 오류지만, 채점/교육 목적의 결정적 진단을 위해 구현체는 **구체 코드(E404/E405)**를 우선으로 한다 (MUST). 
 
 ### 4.3 Disallowed Constructs and Prohibitions
 
@@ -703,6 +748,46 @@ int main() {
   단, 구현체는 UB를 검출 가능하다면 추가 진단을 보고 MAY 한다.
 
 ---
+
+#### 5.2.x Integer Division and Remainder Semantics (Normative)
+
+**Normative Rules**
+- `a / b` 및 `a % b`에서 `a`와 `b`는 `int` 값이다.
+- `b == 0`이면 Undefined Behavior(UB) MUST 이다.  
+  (CTCE에서 `b`가 0으로 판별되면 MC89-E206 MUST)
+- `a == INT_MIN`이고 `b == -1`이면 결과가 `INT_MAX + 1`이 되므로 UB MUST 이다.  
+  (CTCE에서 판별되면 MC89-E207 MUST)
+
+**정의 (MUST)**
+- `a / b`는 **0을 향한 절단(truncation toward zero)** 정수 몫을 의미 MUST 한다.
+  - 즉, 실수 몫 `a / b`를 계산했을 때, 소수 부분을 버리고 0에 가까운 정수로 만든 값이 몫이다.
+- `a % b`는 다음을 만족하는 **유일한 정수 r**로 정의 MUST 한다.
+  - `a == (a / b) * b + r`
+  - `|r| < |b|`
+  - `r == 0` 또는 `r`의 부호(sign)는 `a`와 동일 MUST 하다. (dividend sign rule)
+
+**결과 범위**
+- `a / b` 및 `a % b`의 결과는 `int` 범위(INT_MIN..INT_MAX)에 있어야 하며,
+  범위를 벗어나면 UB MUST 이다.
+  - (현재 int 범위가 -128..127로 고정된 정책에서는 사실상 `INT_MIN / -1`만 문제가 됨)
+
+---
+
+### 예시 (Non-Normative)
+
+> 아래 예시는 “0을 향한 절단” 규칙을 보여준다.
+
+- `-7 / 3 == -2`  
+- `-7 % 3 == -1`  (왜냐하면 `-7 == (-2)*3 + (-1)`)
+
+- `7 / -3 == -2`  
+- `7 % -3 == 1`   (왜냐하면 `7 == (-2)*(-3) + 1`)
+
+- `-7 / -3 == 2`  
+- `-7 % -3 == -1`
+
+---
+
 ### 5.3 Truth Values and Conditional Context (Normative)
 
 #### Normative Rules
@@ -716,17 +801,56 @@ int main() {
   (b) `if (E) S1 else S2`
   (c) `for (init; E; step) S` 의 조건 항 `E`
   (d) 논리 연산자 `E1 && E2`, `E1 || E2`의 각 피연산자
+- 다음 연산자들의 결과 값은 반드시 `0` 또는 `1` MUST 이다.
+  - 관계(비교) 연산자: `<`, `<=`, `>`, `>=`
+  - 동등(비교) 연산자: `==`, `!=`
+  - 논리 연산자: `&&`, `||`
+  - 논리 부정: `!` (이미 규정되어 있으나, 본 규칙에 포함되어도 됨)
+
+- 관계/동등 연산자에 대해:
+  - 비교 결과가 참(true)이면 결과는 `1` MUST 이다.
+  - 비교 결과가 거짓(false)이면 결과는 `0` MUST 이다.
+
+- 논리 연산자에 대해:
+  - `E1 && E2`의 결과는
+    - 두 피연산자가 conditional context 해석에서 모두 true이면 `1`,
+    - 그 외에는 `0` MUST 이다.
+  - `E1 || E2`의 결과는
+    - 두 피연산자 중 하나라도 true이면 `1`,
+    - 둘 다 false이면 `0` MUST 이다.
+  - `&&`/`||`는 Chapter 7의 단락 평가 규칙을 MUST 따른다.
+
+> 즉, `&&`/`||`의 결과는 “C처럼 0/비0 전달”이 아니라 **항상 0/1로 정규화(normalize)** 된다.
 
 #### Allowed Examples
-    int main() {
-        int x;
-        x = 0;
-        if (x) return 1;   /* false */
-        x = -3;
-        if (x) return 2;   /* true  */
-        return 0;
-    }
-
+```c
+int main() {
+    int x;
+    x = 0;
+    if (x) return 1;   /* false */
+    x = -3;
+    if (x) return 2;   /* true  */
+    return 0;
+}
+```
+```c
+int main() {
+  int a;
+  int b;
+  a = (3 < 5);     /* a = 1 */
+  b = (3 == 5);    /* b = 0 */
+  return a + b;    /* 1 */
+}
+```
+```c
+int main() {
+  int x;
+  x = (5 && -3);   /* x = 1 (둘 다 true) */
+  x = (0 || 7);    /* x = 1 */
+  x = (0 || 0);    /* x = 0 */
+  return x;
+}
+```
 #### Forbidden Examples
 (템플릿 최소 요건 충족용: 조건식에서 미초기화 읽기는 정적 오류)
     int main() {
@@ -840,7 +964,100 @@ int main() {
 }
 ```
 ---
+## 6.x Scope and Name Binding (Normative)  *(권장: Chapter 6 또는 Chapter 9에 신설)*
 
+### 6.x.1 Scopes (Normative)
+
+#### Normative Rules
+- MiniC89에서 변수/매개변수의 유효 범위(scope)는 **블록(block) 기반 정적 스코프** MUST 이다.
+- 각 `{ ... }`(compound-statement)는 새로운 **block scope**를 생성 MUST 한다.
+- 함수의 매개변수(parameter)는 함수 진입 시 선언된 것으로 간주하며,
+  함수 본문 전체에서 유효 MUST 하다.
+  - 구현 단순성을 위해 매개변수는 “함수 최외곽 블록의 선행 선언”으로 취급 MAY 한다.
+- 스코프는 중첩될 수 있으며, `{`에서 생성되고 해당 `}`에서 종료 MUST 한다.
+
+> Note (Non-Normative):  
+> 본 규칙은 C89의 블록 스코프 모델을 단순화한 것으로, MiniC89 프로그램은 항상 단일 파일 내에서 해석된다.
+
+#### Allowed Examples
+**(1) 서로 다른 이름 사용**
+```c
+int main() {
+  int x;
+  int y;
+  x = 1;
+  y = 2;
+  return x + y;
+}
+```
+**(2) sibling block에서의 재사용(이전 스코프가 종료된 뒤이므로 허용)**
+```c
+int main() {
+  { int x; x = 1; }
+  { int x; x = 2; }  /* OK: 첫 번째 x의 스코프는 이미 종료됨 */
+  return 0;
+}
+```
+
+#### Disallowed Examples
+**(1) 같은 스코프 중복 선언**
+```c
+int main() {
+  int x;
+  int x;        /* ERROR: MC89-E209 */
+  return 0;
+}
+```
+**(2) 같은 선언 리스트 내부 중복**
+```c
+int main() {
+  int x, x;     /* ERROR: MC89-E209 */
+  return 0;
+}
+```
+**(3) shadowing (inner block)**
+```c
+int main() {
+  int x;
+  { int x; }    /* ERROR: MC89-E209 (shadowing not allowed) */
+  return 0;
+}
+```
+**(4) 매개변수/지역변수 이름 충돌**
+```c
+int f(int x) {
+  int x;        /* ERROR: MC89-E209 */
+  return 0;
+}
+```
+**(5) 매개변수 이름 중복**
+```c
+int f(int a, int a) {  /* ERROR: MC89-E209 */
+  return 0;
+}
+```
+---
+
+### 6.x.2 Declaration Conflicts (Normative)
+
+#### 정책 결정 (Normative): **Shadowing 금지**
+MiniC89는 교육/채점 목적상 **shadowing(가려쓰기)을 허용하지 않는다.**
+
+#### Normative Rules
+- 어떤 스코프에서든, 선언이 새로운 이름 `<name>`을 도입할 때:
+  - 현재 스코프에 동일 이름이 이미 존재하면 **중복 선언**이며 MUST NOT 허용한다.
+  - 현재 스코프의 어떤 **enclosing(바깥) 스코프**에 동일 이름이 존재하면 **shadowing**이며 MUST NOT 허용한다.
+- 위 규칙은 다음 모든 선언에 적용 MUST 한다.
+  - 매개변수 선언
+  - 지역 변수 선언(`int ...;`, `int ... = E;`)
+- 또한 다음 형태의 “리스트 내부 중복”도 MUST NOT 허용한다.
+  - `int x, x;`
+  - `int f(int a, int a) { ... }`
+
+#### 결과
+- 위 규칙을 위반하는 프로그램은 **컴파일 타임 오류(MUST)** 로 거부 MUST 한다.
+
+---
 ## 7. Expressions
 
 ### 7.1 Expression Grammar (Normative)
@@ -940,6 +1157,17 @@ int main() {
   - `A && B`: `A`가 0이면 `B`는 평가되지 않는다.
   - `A || B`: `A`가 0이 아니면 `B`는 평가되지 않는다.
 - 평가 순서에 의존하는 MiniC89 프로그램은 **비이식적(non-portable)** 이며, 구현체는 이를 **컴파일 타임 진단(오류 또는 경고)** 할 수 있다.
+
+#### Callable Callee
+- 어떤 호출 표현식 `C( args )`에서, `C`(callee)는 **함수 이름을 나타내는 식**이어야 MUST 한다.  
+- MiniC89에서 함수 이름을 나타내는 식은 다음으로 한정한다.
+
+  - `C`가 (괄호를 제거한 뒤) 단일 식별자 `id`이며,
+  - `id`가 **함수 정의를 가리키는 이름**일 것
+
+- 위 조건을 만족하지 않는 호출은 컴파일 타임 오류(MUST)이며 **MC89-E409**로 진단 MUST 한다.
+- `C`가 `(<expression>)` 형태인 경우, 바깥 괄호를 제거하고 다시 판정한다.
+  - 즉 `(f)(1)`은 허용될 수 있으나, `(f())(1)`은 불가(첫 호출 결과는 int)
 
 #### Allowed Examples
 ```c
@@ -1326,6 +1554,12 @@ int main() {
   - 예: `int f(a) int a; { ... }` 는 MiniC89에서 문법 오류/매개변수 오류로 거부되어야 한다.
 - 함수 정의가 중복되면 컴파일 타임 오류로 진단한다 (MUST)
   오류 코드는 MC89-E403을 쓴다.
+- 반환 타입이 `int`인 함수에서, 제어 흐름(control flow)이 함수 본문의 닫는 중괄호 `}`에 도달하는 것은
+  **허용되지 않는다(MUST NOT)**.
+- 즉, 함수는 어떤 실행 경로에서든 **`return <expression>;`을 실행하거나**,
+  또는 **정상 완료(normal completion) 없이 끝나지 않아야 한다**.
+- 구현체는 “함수 끝 도달 가능”을 컴파일 타임에 검출 MUST 하며,
+  해당 함수는 프로그램을 거부(reject) MUST 한다.
 ---
 
 #### Allowed Examples
@@ -1812,6 +2046,27 @@ Condition (MUST detect)
 - `int x = E;`는 E의 평가가 성공적으로 끝난 후 x가 초기화된 것으로 간주한다.
 - `x = E;`는 E의 평가가 성공적으로 끝난 후 x가 초기화된 것으로 간주한다.
 
+용어 정의 (Normative)
+
+- **Initialized set (DI)**  
+  어떤 프로그램 지점에서 “반드시 초기화(definitely initialized)된 변수들의 집합”을 DI라 한다.
+
+- **Read of variable v**  
+  표현식에서 식별자 `v`가 **값으로 사용**되는 모든 경우를 말한다.  
+  단, 대입식 `v = RHS`에서 좌변 `v`의 출현은 read로 간주 MUST NOT 한다.  
+  (읽기는 RHS 내부의 `v` 출현만 해당)
+
+- **Write of variable v**  
+  대입식 `v = RHS`가 평가되어 저장이 수행되는 것을 write로 간주한다.
+
+- **Reachable path (E202 목적의 “경로”)**  
+  E202는 “표현식 값의 상호관계(예: `a==0`과 `a!=0`의 상보성)” 같은 정교한 추론을 요구하지 않는다.  
+  따라서 아래 규칙에 따라 구성되는 CFG(control-flow graph)에서,  
+  **CTCE로 명백히 배제되지 않는 모든 분기/반복 경로를 ‘가능한 경로’로 간주 MUST 한다.**
+
+> 요약: E202는 “실행 가능 경로(feasible path) 정밀 판정”이 아니라,  
+> “CTCE 상수만 반영한 보수적 CFG 경로” 기준으로 definite init을 정의한다.
+
 Required Message
 - 다음 형식을 포함 MUST 한다.
   - error MC89-E202: read of uninitialized variable '<name>'
@@ -1833,18 +2088,20 @@ Condition (MUST detect)
   - 조건 연산자: ? :
   - 콤마 연산자 (함수 인자 구분자 ','는 제외)
   - 배열/포인터/구조체 관련 연산: [], ->, .
+- MiniC89 문법에 존재하지 않는 금지 키워드 기반 구문(예: while/switch/struct/sizeof 등)도 포함한다.
 
 Required Message
 - 다음 형식을 포함 MUST 한다.
   - error MC89-E203: invalid operator or disallowed operator
 
 Example
-    int main() {
-        int x;
-        x++;         /* MC89-E203 */
-        return x;
-    }
-
+```c
+int main() {
+    int x;
+    x++;         /* MC89-E203 */
+    return x;
+}
+````
 
 ##### MC89-E204 — Invalid Assignment Target
 Condition (MUST detect)
@@ -1913,6 +2170,18 @@ Example (int 범위가 -128..127인 정책의 예)
 
 
 ##### MC89-E208 — Evaluation Order Dependency (Static)
+**Definition (Normative) — Full-expression**
+MiniC89에서 “full-expression”은 다음 위치에 나타나는 `<expression>`을 의미 MUST 한다.
+
+1. **Expression statement**: `E;` 에서의 `E`
+2. **Return**: `return E;` 에서의 `E`
+3. **Initializer**: `int x = E;` 에서의 `E`
+   - `int a = E1, b = E2;` 인 경우 `E1`과 `E2`는 각각 별도의 full-expression로 간주 MUST 한다.
+4. **if / if-else**: `if (E) ...` 에서의 `E`
+5. **for**: `for (init; cond; step)` 에서 `init`, `cond`, `step` 각각(비어 있지 않은 경우)
+위 목록에 포함되지 않는 하위식(subexpression)은 full-expression이 아니다.
+(예: 함수 호출 인자 `f(a1, a2)`의 각 `ai`는 full-expression이 아님)
+
 Condition (MUST detect)
 - 하나의 full-expression(예: `E;`, `return E;`, `for(...;E;...)`, `int x = E;`) 안에서,
   어떤 변수 v에 대해 다음 중 하나가 성립하면 MC89-E208이다.
@@ -1928,32 +2197,102 @@ Required Message
 - 다음 형식을 포함 MUST 한다.
   - error MC89-E208: expression depends on unspecified evaluation order (variable '<name>')
 
-Examples
+**Normative Rule — Sequencing Boundaries for E208**
+
+MiniC89에서 MC89-E208 판정을 위해, 다음은 “sequencing 경계(= sequence point 역할)”로 간주 MUST 한다.
+
+A) **full-expression의 끝** (예: `;` 또는 `return E;`의 종료)  
+B) 논리 연산자 `&&`, `||`는 **좌측 피연산자의 평가가 완료된 뒤** 우측 피연산자를 평가하며,
+   이 시점은 E208 판정에서 sequencing 경계로 간주 MUST 한다.
+
+MiniC89에서 `?:` 및 콤마 연산자(`,` operator)는 금지이므로,
+위 A/B가 E208 판정에 필요한 sequencing 경계의 전부이다.
+
+핵심 효과:  
+- 대부분의 이항 연산자(`+`, `*`, `<` 등)는 피연산자 평가 순서가 미지정 → **같은 경계 내부**  
+- `&&`/`||`는 좌→우 순서가 정의됨 → 좌/우가 **서로 다른 경계(세그먼트)** 로 분리됨
+
+**Normative Rule — E208 is checked “between sequencing boundaries”**
+
+MC89-E208은 “하나의 full-expression 전체”가 아니라,
+**full-expression 안에서 “sequencing 경계 사이(between boundaries)”로 나뉘는 각 구간(세그먼트)** 에 대해 적용 MUST 한다.
+
+- **write(v)**: 형태가 정확히 `v = RHS`인 대입식에서 `v`에 대한 저장(쓰기)
+  - (주의) `v`가 LHS로 등장하는 것은 “read”가 아니다.
+- **read(v)**: 표현식에서 `v`가 값으로 사용되는 모든 경우
+  - 예: `v`, `v + 1`, `f(v)`, `v < 3` 등
+- **RHS 내부**: 대입식 `v = RHS`에서 `RHS`의 모든 하위식(subexpression)
+
+**Normative Rule — Not Potentially Evaluated Subexpressions**
+
+`A && B`에서, `A`가 CTCE이고 그 값이 `0`으로 평가되면, `B`는 **평가되지 않는다**.  
+`A || B`에서, `A`가 CTCE이고 그 값이 `0`이 아니면, `B`는 **평가되지 않는다**.
+
+위 경우 `B`는 “not potentially evaluated”로 간주하며,
+구현체는 **MC89-E208 판정에서 `B` 내부의 read/write를 고려 MUST NOT** 한다.
+
+(선택) 구현체는 CTCE 외의 추가 분석(상수 전파 등)으로 더 많은 “not evaluated” 케이스를
+인식 MAY 하나, 위 CTCE 기반 최소 규칙은 반드시 지원 MUST 한다.
+
+주의:
+- 이 “무시” 정책은 **E208 판정에만** 적용된다.  
+  (예: `B` 안의 MC89-E201/203 같은 다른 정적 오류까지 자동으로 면제한다고 규정하지 말 것)
+
+#### Examples
 (1) 쓰기 2회
-    int main() {
-        int x;
-        x = (x = 1);      /* MC89-E208 */
-        return 0;
-    }
-
+```c
+int main() {
+    int x;
+    x = (x = 1);      /* MC89-E208 */
+    return 0;
+}
+```
 (2) 쓰기 + RHS 밖 읽기
-    int f(int x) { return x; }
+```c
+int f(int x) { return x; }
 
-    int main() {
-        int i;
-        i = 0;
-        return f(i) + (i = 1);   /* MC89-E208 */
-    }
-
+int main() {
+    int i;
+    i = 0;
+    return f(i) + (i = 1);   /* MC89-E208 */
+}
+```
 (3) RHS 내부가 아닌 곳에서 읽기/쓰기 혼합
-    int main() {
-        int u;
-        int v;
-        u = 0;
-        v = (u = 1) + u;         /* MC89-E208 (u가 RHS 밖에서 다시 읽힘) */
-        return v;
-    }
-    
+```c
+int main() {
+    int u;
+    int v;
+    u = 0;
+    v = (u = 1) + u;         /* MC89-E208 (u가 RHS 밖에서 다시 읽힘) */
+    return v;
+}
+```
+(4) `&&`/`||` 경계로 인해 허용되는 케이스
+```c
+int main() {
+  int i;
+  i = 0;
+  (i = 1) && (i = 2);   /* OK: &&는 좌→우 순서 + sequencing 경계 */
+  return i;             /* 2 */
+}
+```
+```c
+int main() {
+  int i;
+  i = 0;
+  (i = 1) && i;         /* OK: 좌측 write 이후 우측 read는 sequenced */
+  return i;             /* 1 */
+}
+```
+(5) CTCE 단락으로 인해 E208 판정에서 제외되는 케이스
+```c
+int main() {
+  int i;
+  i = 0;
+  0 && (i = (i = 1));   /* RHS는 not potentially evaluated → E208 판정에서 제외 */
+  return i;             /* 0 */
+}
+```
 ### 11.x Statement-related Diagnostics (Normative)
 > **적용 범위**
 >
@@ -1962,6 +2301,24 @@ Examples
 > 경고로 대체하는 것은 허용되지 않는다.
 
 ---
+
+#### MC89-E209 — Duplicate or Shadowing Declaration
+**Condition (MUST detect)**
+- 어떤 매개변수/지역 변수 선언이 식별자 `<name>`을 도입할 때,
+  다음 중 하나라도 만족하면 MC89-E209이다.
+  1) 현재 스코프에 `<name>`이 이미 선언되어 있음 (duplicate in same scope)  
+  2) 어떤 enclosing 스코프(아직 종료되지 않은 바깥 스코프)에 `<name>`이 이미 선언되어 있음 (shadowing)  
+  3) 같은 선언 리스트(매개변수 리스트 / init-declarator-list) 안에서 `<name>`이 2회 이상 등장함
+
+**Required Message**
+```text
+error MC89-E209: duplicate declaration of identifier '<name>'
+```
+**Note (Non-Normative):**
+메시지에 “shadowing”이라는 단어를 추가해도 되지만, Required Message 접두는 반드시 포함해야 한다.
+
+---
+
 ### 11.x.1 Error Code Naming Convention
 - Statements 관련 오류 코드는 다음 범위를 사용한다.
 ```cpp
@@ -2130,17 +2487,32 @@ error MC89-E403: duplicate definition of function '<name>'
 ### MC89-E404 -- Function Prototype Not Allowed
 #### Condition (MUST detect)
 - 파일 스코프에서 함수 프로토타입(선언만 있고 본문이 없는 형태)가 등장
+   - `int <identifier> "(" [<parameter-list>] ")" ";"`
 #### Message
 ```
 error MC89-E404: function prototypes are not allowed in MiniC89
+```
+#### Example
+```c
+int f(int a);      /* ERROR: MC89-E404 */
+int main() { return 0; }
 ```
 
 ### MC89-E405 -- Global Declaration Not Allowed
 #### Condition (MUST detect)
 - 파일 스코프에 전역 변수/선언이 등장
+- 최소한 다음 형태는 E405로 진단 (MUST)
+  - `int <identifier> ";"`
+  - `int <identifier> "=" <expression> ";"`
+  - `int <identifier> { "," <identifier> } ";"`
 #### Message
 ```
 error MC89-E405: global declarations are not allowed (only function definitions permitted)
+```
+#### Example
+```c
+int g = 1;         /* ERROR: MC89-E405 */
+int main() { return 0; }
 ```
 
 ### MC89-E406 -- Invalid Parameter Declaration
@@ -2182,8 +2554,32 @@ int add(int a, int b) {
 error MC89-E408: argument count mismatch in call to '<name>'
 ```
 
+### MC89-E409 — Call Target Is Not a Function
+#### Condition (MUST detect)
+- 호출 형태 `C( ... )`가 파싱되었을 때,
+  - `C`가 (괄호 제거 후) 단일 식별자 `id`가 아니거나, 또는
+  - `id`가 현재 스코프에서 **변수/매개변수로 해석되거나**, 또는
+  - `id`가 함수가 아닌 값(예: 정수 리터럴/산술식/함수 호출 결과 등)으로 해석되는 경우
 
+#### 우선순위
+- `id(…)`에서 `id`가 현재 스코프의 **변수/매개변수**로 해석되면 → **E409**
+- `id`가 변수로도 해석되지 않고 “함수 후보”일 때, 정의가 없으면 → **E407**
+- 함수로 해석되지만 인자 개수가 다르면 → **E408**
 
+**Required Message**
+```
+error MC89-E409: call target is not a function
+```
+### MC89-E410 — Control Reaches End of Function
+#### Condition (MUST detect)
+- 반환 타입이 `int`인 어떤 함수 `f`에 대해,
+  그 함수 본문이 **정상 완료(normal completion)** 될 수 있는 실행 경로가 존재하는 경우.
+  - 즉, `return <expression>;` 없이 함수의 `}`에 도달 가능한 경우.
+
+#### Required Message
+```text
+error MC89-E410: control may reach end of function without returning a value
+```
 ### 11.y.1 Mapping from Functions Grammar to Diagnostics (Normative)
 |Rule / Situation|Error Code|
 |`main` 없음 | MC89-E401 |
@@ -2194,6 +2590,7 @@ error MC89-E408: argument count mismatch in call to '<name>'
 |매개변수 선언 오류 | MC89-E406 |
 |미정의 함수 호출 | MC89-E407 |
 |인자 개수 불일치 | MC89-E408 |
+|비함수 호출| MC89-E409 |
 
 
 ---
@@ -2212,28 +2609,68 @@ error MC89-E408: argument count mismatch in call to '<name>'
   구현체는 이를 허용 MUST NOT 한다.
 
 #### Allowed Examples
-(사용자 정의 함수만 사용)
-    int add(int a, int b) { return a + b; }
+```c
+int add(int a, int b) { return a + b; }
 
-    int main() {
-        return add(1, 2);
-    }
+int main() {
+    return add(1, 2);
+}
+```
+
+```c
+int add(int a, int b) { return a + b; }
+
+int main() {
+  return (add)(1, 2);   /* OK: 괄호 제거 후 add는 함수 */
+}
+```
 
 #### Forbidden Examples
 (1) 표준 라이브러리 함수 호출
-    int main() {
-        printf(1);      /* ERROR: call to undefined function 'printf' */
-        return 0;
-    }
+```c
+int main() {
+    printf(1);      /* ERROR: call to undefined function 'printf' */
+    return 0;
+}
+```
 
 (2) 전처리 지시문 사용
-    #include <stdio.h>  /* ERROR: preprocessor directives are not allowed */
-    int main() { return 0; }
+```c
+#include <stdio.h>  /* ERROR: preprocessor directives are not allowed */
+int main() { return 0; }
+```
 
-(3) 교육용 내장 함수 가정 (정책이 “없음”인 경우)
-    int main() {
-        return input(); /* ERROR: call to undefined function 'input' */
-    }
+(3) 교육용 내장 함수 가정
+```c
+int main() {
+    return input(); /* ERROR: call to undefined function 'input' */
+}
+```
+
+(4) 연쇄 호출
+```c
+int f() { return 0; }
+
+int main() {
+  return f()();   /* ERROR: MC89-E409 (두 번째 호출의 대상은 int) */
+}
+```
+
+(5) 비함수 값 호출
+```c
+int main() {
+  return (1)(2);  /* ERROR: MC89-E409 */
+}
+```
+
+(6) 변수 호출
+```c
+int main() {
+  int x;
+  x = 0;
+  return x(1);    /* ERROR: MC89-E409 */
+}
+```
 
 #### Notes (Non-Normative)
 - 본 표준은 I/O를 언어에서 제거하여 “상태 변화/반환값/스택 프레임” 관찰을 중심으로 한다.
@@ -2492,6 +2929,7 @@ MC89-E405   Global Declaration Not Allowed 전역 변수/선언
 MC89-E406   Invalid Parameter Declaration 매개변수 규칙 위반
 MC89-E407   Call to Undefined Function     미정의 함수 호출
 MC89-E408   Argument Count Mismatch        인자 개수 불일치
+MC89-E409   Call to Non-Function           비함수 호출
 
 Example:
     int f(int a);
