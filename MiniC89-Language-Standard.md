@@ -50,6 +50,8 @@ MiniC89 구현체는 다음을 만족해야 한다.
 - 본 표준에 정의되지 않은 문법을 허용하지 않는다.
 - MUST 오류를 컴파일 타임에 검출한다.
 - 오류 코드를 반드시 출력한다.
+- 구현체는 모든 진단을 11.2절의 포맷( severity + code + message + (line:col) )으로 출력 MUST 한다.
+
 ---
 ### 2.3 Normative Keywords and Document Conventions (Normative)
 
@@ -713,6 +715,59 @@ int main() {
 - 이 규칙은 C 계열 언어의 전통적인 “0/비0” 진리값 규칙과 동일하다.
 
 ---
+### 5.4 Undefined Behavior and Diagnostics Policy (Normative)
+
+#### Normative Rules
+- Undefined Behavior(UB)란, 실행 중 특정 상황이 발생했을 때 그 이후 프로그램 동작이
+  본 표준에 의해 정의되지 않는 것을 의미한다.
+- UB가 발생한 프로그램에 대해 구현체가 어떤 동작(특정 값 출력, 종료, 경고 출력 등)을 하더라도,
+  그것이 MiniC89 언어 의미를 “정의”하는 것으로 간주되어서는 안 된다(MUST NOT).
+
+- UB에 대한 진단(Diagnostic)은 원칙적으로 필수가 아니다.
+  단, 본 표준이 특정 상황을 “MUST detect”로 지정한 경우,
+  구현체는 반드시 컴파일 타임 오류로 보고 MUST 한다.
+
+- MiniC89는 교육/채점의 결정성을 위해, 다음 일부 상황을
+  “UB로 분류될 수 있는 위험 행위”이더라도 정적 제약으로 끌어올려
+  컴파일 타임 오류(MUST be Compile-time Error)로 금지한다.
+  (즉, 유효한 MiniC89 프로그램에서는 해당 상황이 발생할 수 없다.)
+
+#### 5.4.1 Classification (Normative)
+본 표준은 위험 상황을 다음 세 부류로 나눈다.
+
+A) Constraint Violations (MUST be Compile-time Error)
+- 문법상 파싱이 가능하더라도, 표준이 금지(MUST NOT)한 정적 의미 위반.
+- 구현체는 반드시 오류로 거부 MUST 한다. (해당 오류 코드 사용 MUST)
+
+B) Compile-time Detectable UB in Constant Expressions (MUST be Compile-time Error)
+- Chapter 11의 CTCE(컴파일 타임 상수식) 정책에 따라 상수식으로 판별 가능한 UB.
+- 구현체는 반드시 오류로 거부 MUST 한다. (해당 오류 코드 사용 MUST)
+
+C) Runtime UB (No required diagnostic; MAY diagnose)
+- 상수식으로 판별되지 않거나 런타임 값에 의존하여 발생하는 UB.
+- 구현체는 이를 실행 전/중에 검출 가능하다면 진단을 출력 MAY 하며,
+  실행을 중단(trap) MAY 한다.
+- 그러나 진단/중단 여부와 무관하게, UB가 발생한 이후의 동작은 정의되지 않는다.
+
+#### 5.4.2 Required Diagnostic Mapping (Normative)
+아래 표는 “UB/위험 패턴”과 Diagnostics 요구사항의 관계를 요약한다.
+
+Case / Pattern                                             Class   Requirement / Code
+------------------------------------------------------------------------------------------------
+미초기화 변수 읽기(read of uninitialized variable)          A       MUST error: MC89-E202
+평가 순서(unspecified order)에 의존하는 부작용 표현식        A       MUST error: MC89-E208
+int 함수에서 return; (표현식 없는 return)                   A       MUST error: MC89-E306
+CTCE에서 0으로 나누기(/ 또는 %)                              B       MUST error: MC89-E206
+CTCE에서 정수 오버플로(범위 밖 결과, -MIN, MIN/-1 포함)      B       MUST error: MC89-E207
+런타임 0으로 나누기(제수가 변수 등 CTCE가 아님)              C       UB, MAY diagnose (권장 코드: MC89-E206)
+런타임 정수 오버플로(CTCE가 아님)                            C       UB, MAY diagnose (권장 코드: MC89-E207)
+
+Notes (Non-Normative)
+- “return; in int function”은 UB가 아니라 언어 제약 위반으로 분류(A)한다.
+- E206/E207은 원칙적으로 CTCE에서 MUST error이며, 런타임에서 이를 감지하는 경우
+  구현체는 동일 코드를 재사용 MAY 한다(필수 아님).
+
+---
 
 ## 6. Declarations
 
@@ -1229,7 +1284,13 @@ int main() {
 - MiniC89는 `implicit function declaration`을 허용하지 않는다.
   - 호출되는 모든 함수는 프로그램 내에 정의가 **존재 MUST** 한다.
 - 함수 호출의 인자 개수(arity)는 정의의 매개변수 개수와 **정확히 일치 MUST** 한다. 
-
+- 함수 호출 `f(a1, ..., an)`이 유효하려면, 호출 위치보다 앞쪽(소스 코드 상에서 earlier in the translation unit)에
+  `f`의 함수 정의가 존재 MUST 한다.
+  (단, 현재 정의 중인 함수 자신의 본문에서의 `f(...)` 호출은 허용된다.)
+- 프로토타입/전방 선언이 금지되어 있으므로, 정의가 뒤에 오는 함수에 대한 호출(forward call)은
+  허용되지 않는다(MUST NOT).
+- 위 규칙을 만족하지 않는 함수 호출은 컴파일 타임 오류로 진단 MUST 하며,
+  오류 코드는 MC89-E407을 사용 MUST 한다.
 ---
 
 #### Allowed Examples
@@ -1285,6 +1346,17 @@ int main() {
     return;   /* ERROR: MC89-E306 */
 }
 ```
+
+### Forward call not allowed: MC89-E407)
+```c
+int main() {
+    return add(1, 2);    /* ERROR: MC89-E407 (add not defined yet) */
+}
+
+int add(int a, int b) {
+    return a + b;
+}
+```
    
 ## Chapter 10. Program Execution Model
 ### Abstract Machine (Normative)
@@ -1320,6 +1392,7 @@ MiniC89 추상 머신은 다음 구성 요소로 이루어진다.
 - MiniC89는 **문장 간 실행 순서만 정의**한다.
 - 식(expression) 내부의 세부 평가 순서는 **정의하지 않는다**.
   - 단, `&&`와 `||`의 단락 평가는 예외로 한다.
+- 본 표준에서 PC는 문장 단위의 개념적 위치이며, 구현체의 내부 실행 단위는 비규범이다(10.7 참조).
 
 ---
 
@@ -1453,18 +1526,129 @@ UB 발생 이후의 프로그램 동작은 **정의되지 않는다**.
 
 ---
 
-## 10.7 Observability and Visualization (Non-Normative)
+### 10.7 Observability and Visualization (Non-Normative)
 
-- 구현체는 교육 목적을 위해 다음 상태를 시각적으로 표시 MAY 한다.
-  - Call Stack
-  - 현재 Stack Frame
-  - 지역 변수 값
-  - 현재 실행 중인 문장
-- 이러한 시각화는 **언어 의미를 규정하지 않는다**.
+본 절은 교육 목적의 시각화/디버깅 기능을 위한 가이드이다.
+본 절의 내용은 언어 의미(semantics)를 정의하지 않으며,
+구현체가 제공하지 않아도 표준 적합성에 영향을 주지 않는다.
+
+#### 10.7.1 Statement-level PC (Conceptual) vs Implementation-level Step (Non-Normative)
+
+- 본 표준에서 Program Counter(PC)는 “현재 실행 중인 문장(statement)”을 가리키는
+  개념적(추상적) 위치로 설명된다. (statement-level)
+- 구현체(컴파일러/VM/인터프리터)는 내부적으로 바이트코드, IR, AST 워크리스트 등
+  임의의 실행 단위를 사용할 수 있다. (implementation-level)
+- 구현체가 내부 실행 단위를 사용하는 경우라도,
+  사용자에게 표시되는 “현재 실행 위치”는 다음 중 하나로 매핑하여 제공할 수 있다.
+  - 소스 코드의 문장(statement) 단위
+  - 소스 코드의 토큰/표현식 하위 단계(선택)
+  단, 이는 시각화 편의를 위한 것이며 언어 의미를 변경하지 않는다.
+
+#### 10.7.2 Observable State Checklist (Non-Normative)
+
+구현체는 다음 상태를 시각적으로 표시하거나 로그로 출력할 수 있다(MAY).
+(아래 항목은 권장 체크리스트이며, 제공하지 않아도 표준 적합성에 영향을 주지 않는다.)
+
+A. Control / Location
+- [ ] 현재 함수 이름
+- [ ] 현재 문장(statement) 위치 (예: line:col 또는 statement id)
+- [ ] 호출 스택(call stack) 깊이
+- [ ] 반환 지점(호출자에서의 return continuation 위치)
+
+B. Call Stack / Frames
+- [ ] 각 스택 프레임의 함수 이름
+- [ ] 각 스택 프레임의 매개변수(parameter) 값
+- [ ] 각 스택 프레임의 지역 변수(local) 값
+- [ ] 현재 프레임(current frame) 강조 표시
+
+C. Variables / Storage
+- [ ] 변수 이름 -> 현재 값
+- [ ] (선택) 변수의 “초기화 상태(initialized / uninitialized)” 표시
+  - 단, 본 표준은 미초기화 읽기를 정적 오류(MC89-E202)로 금지하므로,
+    정상 실행 중 “uninitialized 값을 읽는 상황”은 발생하지 않는다.
+
+D. Execution Events (Optional)
+- [ ] 함수 호출 이벤트(call)
+- [ ] 함수 반환 이벤트(return) 및 반환값
+- [ ] 분기 선택(if true/false)
+- [ ] 루프 반복 횟수(for iteration count)
+- [ ] break/continue 발생 지점
+
+#### 10.7.3 Suggested Presentation Rules (Non-Normative)
+
+- 표현식 내부의 평가 순서는 표준에서 대부분 “지정되지 않음”이므로,
+  구현체가 특정 순서를 화면에 보여주더라도
+  그것이 언어 의미의 일부인 것처럼 오해되지 않도록 SHOULD 표시한다.
+  예:
+  - “Visualization order: left-to-right (implementation choice)”
+- 바이트코드/IR 단계 단위로 스텝 실행을 제공하는 경우,
+  소스 문장(statement)과의 매핑을 함께 제공하면 교육 효과가 높다.
 
 ---
 
 ## 11. Diagnostics
+- Undefined Behavior(UB)와 Diagnostics의 관계(어떤 UB를 MUST error로 금지하는지,
+  어떤 UB는 검출 가능 시 진단 MAY 인지)는 5.4절을 따른다.
+### 11.2 Diagnostic Message Format (Normative)
+
+본 절은 MiniC89 구현체가 출력하는 진단(diagnostic)의 “기계 판독 가능한” 최소 포맷을 정의한다.
+온라인 저지, IDE, LSP, 채점기는 본 포맷을 전제로 진단을 수집/표시할 수 있다.
+
+#### 11.2.1 One-line Format (Normative)
+
+Normative Rules
+- 구현체는 각 진단을 정확히 1줄(one line)로 출력 MUST 한다.
+- 각 진단 줄은 다음 형식을 정확히 따라야 한다.
+
+  <severity> <code>: <message> (<line>:<col>)
+
+- <severity>는 반드시 다음 중 하나이며, 소문자 MUST 한다.
+  - error
+  - warning
+
+- <code>는 반드시 다음 형식 MUST 한다.
+  - MC89-E<ddd>   (ddd는 3자리 10진수)
+
+- <message>는 사람이 읽을 수 있는 설명 문자열이며, 다음을 만족 MUST 한다.
+  - 개행 문자를 포함하지 않는다.
+  - 구현체는 본 표준 각 오류 항목의 “Required Message”에서 제시한 문구를
+    최소한 접두(prefix)로 포함 MUST 한다.
+  - 구현체는 식별자 이름 등 추가 정보를 포함 MAY 한다.
+
+- (<line>:<col>)은 소스 위치(location)이며, 다음을 만족 MUST 한다.
+  - line과 col은 10진 정수
+  - line과 col은 1-base(첫 줄=1, 첫 열=1)
+  - 진단이 특정 토큰/구문에 귀속되는 경우, 그 “첫 문자 위치”를 사용 MUST 한다.
+  - 진단이 소스의 단일 위치에 귀속되기 어려운 경우(예: missing main),
+    (0:0)을 출력 MUST 한다.
+
+- 각 진단 줄의 끝에는 LF('\n')로 줄바꿈 SHOULD 한다.
+  (플랫폼에 따라 CRLF를 사용해도 무방하나, 채점기/IDE 호환을 위해 LF 권장)
+
+#### 11.2.2 Location Counting Rules (Normative)
+
+- line은 파일 시작부터 LF 기준 줄 수를 의미한다. (첫 줄 = 1)
+- col은 해당 줄의 첫 문자부터의 문자 수를 의미한다. (첫 열 = 1)
+- Tab(HT)은 1개의 문자로 col을 1 증가시키는 것으로 계산 MUST 한다.
+  (탭 폭에 따른 “화면상 열” 계산은 금지)
+
+#### 11.2.3 Examples (Non-Normative)
+
+(1) 소스 위치가 있는 오류
+  error MC89-E407: call to undefined function 'foo' (3:12)
+
+(2) 경고 예시
+  warning MC89-E307: unreachable statement (10:5)
+
+(3) 소스 위치가 애매한 전역 오류
+  error MC89-E401: missing required entry function 'int main()' (0:0)
+
+#### 11.2.4 Interaction with “Required Message” Fields (Normative)
+
+- 본 표준 각 오류 정의의 “Required Message”는
+  위 포맷 중 <severity> <code>: <message> 부분의 최소 요구사항을 의미한다.
+- 구현체는 모든 진단 출력에서, 해당 “Required Message”를 포함한 뒤,
+  공백 1개를 두고 위치 정보 (<line>:<col>)를 반드시 덧붙여야 한다(MUST).
 
 ### 11.a Lexical-related Diagnostics (Normative)
 > 적용 범위:
@@ -1938,10 +2122,24 @@ error MC89-E406: invalid parameter declaration (only 'int <identifier>' allowed)
 
 ### MC89-E407 -- Call to Undefined Function
 #### Condition (MUST detect)
-- 호출된 함수에 대해 프로그램 내 정의를 찾을 수 없음
-#### Message
+- 함수 호출 형태 `f(a1, ..., an)`이 등장했을 때,
+  다음 중 어느 것도 만족하지 않으면 MC89-E407이다.
+  (1) 호출 지점보다 앞쪽(소스 코드 상 earlier in the translation unit)에 `f`의 함수 정의가 존재함
+  (2) 현재 정의 중인 함수가 `f`이며, 그 본문 내부에서의 재귀 호출임
+
+즉, 정의가 뒤에 등장하는 forward call도 MC89-E407으로 진단 MUST 한다.#### Message
 ```
 error MC89-E407: call to undefined function '<name>'
+```
+#### Example
+```c
+int main() {
+    return add(1, 2);   /* MC89-E407 (add defined later) */
+}
+
+int add(int a, int b) {
+    return a + b;
+}
 ```
 
 ### MC89-E408 -- Argument Count Mismatch
@@ -1951,6 +2149,8 @@ error MC89-E407: call to undefined function '<name>'
 ```
 error MC89-E408: argument count mismatch in call to '<name>'
 ```
+
+
 
 ### 11.y.1 Mapping from Functions Grammar to Diagnostics (Normative)
 |Rule / Situation|Error Code|
@@ -2159,8 +2359,7 @@ error MC89-E408: argument count mismatch in call to '<name>'
 
 ---
 
-
-## Diagnostics — Error Code Summary
+### Annex D. Diagnostics — Error Code Summary
 ### (Normative)
 
 ---
@@ -2307,219 +2506,4 @@ MiniC89 Language Standard 비적합이다.
 End of Diagnostics Summary
 
 
-
-MiniC89 Language Standard (v0.1) — To-Do List
-(현재 붙여준 초안 기준, “표준으로 배포 가능한 상태”까지 남은 작업)
-
-[우선순위 표기]
-- P0: 배포/채점/구현에 즉시 영향 (반드시)
-- P1: 표준 완성도/모호성 제거 (권장)
-- P2: 교육 품질/편의 (선택)
-
-============================================================
-A. 문서 구조/템플릿 정비
-============================================================
-
-[P0] (필수) Normative 키워드 정의 절 추가
-- MUST / MUST NOT / SHOULD / MAY의 의미를 문서 초반(2장 또는 0장)에서 명시.
-- “Normative / Non-Normative”의 효력(적합성 판단 기준)을 명시.
-
-[P0] (필수) “각 절 강제 템플릿” 적용 여부 점검
-- 현재 1~3장은 규칙/예제/금지가 있으나, 5장(Types)·12장·13장(Annex)은 템플릿이 비어 있음.
-- 최소 요건(규칙≥2, 허용 예제≥1, 금지 예제≥1)을 못 채운 절을 표시하고 채우기.
-
-[P0] (필수) 문서 내 중복 섹션 제거/정리
-- 11장 뒤에 “Diagnostics — Error Code Summary”가 문서에 한 번 더 붙어 있음(중복).
-  -> 둘 중 하나만 남기고, 나머지는 “별도 파일 링크/참조”로 정리.
-
-[P1] 제목/번호 체계 통일
-- “## Chapter 10 …” 같은 표현과 “## 10 …” 혼용 제거.
-- 4.2/4.3 등 번호가 바뀌면 cross-reference(“Chapter 7 참조” 등)도 함께 정리.
-
-============================================================
-B. 문법(EBNF) 보강/정합성
-============================================================
-
-[P0] (필수) 4.2 Program Grammar에 <function-definition> 등 미정의 논터미널 추가
-- 현재 4.2.1은 <program>만 있고 <function-definition>이 정의되지 않음.
-  -> 4.2에 아래를 포함해야 함:
-     - <function-definition>
-     - <parameter-list>, <parameter-decl>
-     - (9장에 중복된 문법은 “참조로 대체”하거나 “4장만 규범”으로 정리)
-
-[P0] (필수) 6장 Declarations의 EBNF를 “규범”으로 확정
-- 현재 6장은 규칙+예제만 있고, 선언 EBNF는 8장에만 등장(참조 형태).
-  -> 선언 문법은 6장 또는 4장(문법 장)에 규범 EBNF로 고정하고, 8장은 참조만 하도록 정리.
-
-[P1] Lexical 레벨(식별자/정수/주석) EBNF 또는 정규 정의 추가
-- 3장에서 서술만 있고 “정식 정의”가 부족함.
-- 최소:
-  - <identifier> 정의
-  - <integer-constant> 정의(10진만)
-  - 주석/공백 처리 규칙(토큰 경계)
-
-[P1] “금지 문법” 목록 확장/정확화
-- 현재 4.3 목록에 문자열 리터럴/전처리/표준 라이브러리 호출 등 추가 여부를 정리.
-- 문법적으로 금지인지(파싱 실패), 의미 규칙으로 금지인지(정적 오류) 구분.
-
-============================================================
-C. 타입/값/UB 정책 확정
-============================================================
-
-[P0] (필수) int의 크기/범위 정책 결정 후 문서에 고정
-- 현재 문서: “int만 존재, 오버플로 UB”까지만 존재.
-- 프로젝트 합의(예: int=8-bit, -128..127)를 채택할지/아닐지 결정 후,
-  - 정수 리터럴 허용 범위
-  - 연산 결과 범위 밖(오버플로) 처리(UB)
-  - -(-128), -128 / -1 같은 예외 UB
-  를 5장에 규범적으로 박기.
-
-[P1] 조건식의 참/거짓 규칙을 10.5.1 외에도 “Expressions/Types”에서 재확인
-- “0=false, nonzero=true”를 표준 문장으로 고정(지금은 실행모델에만 있음).
-
-[P1] “미초기화 변수 읽기 UB”의 진단 정책 결정
-- 컴파일러가 반드시 잡아야 하는지(MUST error),
-  가능하면 경고(SHOULD),
-  또는 “검출 가능 시 진단”으로 둘지 결정.
-
-============================================================
-D. Expressions 정리(용어/오해 제거)
-============================================================
-
-[P0] (필수) 7.3 제목 수정
-- 현재 제목: “Evaluation Order (Normative, for Determinism)”
-- 내용은 “평가 순서 지정하지 않음(unspecified)”이므로 제목에서 “for Determinism” 제거.
-  -> 결정적 시각화는 7.6 Notes(Non-Normative)로만 유지.
-
-[P0] (필수) “콤마 연산자 금지” 문구를 규범으로 명확화
-- argument-list의 ','는 구분자이며 연산자가 아님(7.6 Note에 있음).
-- 이를 7.x 규범 규칙(MUST NOT: comma operator)로도 명시하고,
-  (1,2) 같은 표현식이 왜 금지인지 예제로 고정.
-
-[P1] “대입식 허용 범위” 확정
-- 현재 <lvalue>는 <identifier>만 허용: 좋음.
-- 체인 대입(a=b=c) 허용 여부는 문법상 허용(우결합)임. 교육 정책상 유지/금지 결정.
-
-============================================================
-E. Statements 정리(예제/오류/정적 의미)
-============================================================
-
-[P0] (필수) 8.3 if/else 예제 코드 수정
-- 현재 예제는 함수 닫는 '}'가 빠져 있음.
-  -> 문서 예제는 모두 “컴파일 가능한 완전한 코드”로 유지.
-
-[P0] (필수) 8.4 “continue outside loop” 금지 예제 추가(현재 break만 있음)
-- break 금지 예제는 있는데 continue 금지 예제가 없음.
-  -> E304와 1:1로 맞추기.
-
-[P1] return 규칙 명확화
-- 문법상 return; 허용(8장) + 의미 규칙으로 금지(E306) 형태.
-  -> “int 함수에서 return;는 오류”를 8장 규범 규칙에도 명시.
-
-============================================================
-F. Functions/Program 의미 규칙 정리
-============================================================
-
-[P0] (필수) 4장(문법)과 9장(함수) 중복 정리
-- 권장 구조:
-  - 4장: 문법(EBNF)만 “규범 원본”
-  - 9장: 의미 규칙 + 금지 사례 + Diagnostics만
-- 현재 9.1에 여전히 EBNF가 있음 -> “참조”로 바꾸거나 삭제.
-
-[P1] “정의는 나중에 나와도 호출 가능” 여부를 규범으로 명시
-- 프로토타입 금지 상태에서, forward call을 허용하려면 구현은 2-pass 필요.
-- 표준에서:
-  - “프로그램 내 어딘가에 정의가 존재하면 호출 가능” (대부분 기대하는 형태)
-  또는
-  - “정의가 호출보다 먼저 와야 함”
-  중 하나를 선택해 규범으로 고정.
-
-============================================================
-G. Abstract Machine(실행 의미) 보강
-============================================================
-
-[P1] “관찰 가능한 상태”를 Annex 또는 10.7에 체크리스트로 구체화
-- PC가 “문장 단위”인지, “바이트코드 단위”인지 표현 정리.
-- 표준은 “문장 단위 의미”로 두고, 구현(바이트코드/스텝)은 Non-Normative로 분리.
-
-[P1] UB 목록과 Diagnostics의 관계 명시
-- UB는 “정의되지 않음”이지만, 구현이 “검출 가능 시 진단”할 수 있음.
-- 어떤 UB는 MUST error로 할지(예: return; in int function),
-  어떤 UB는 “검출 가능 시 진단”으로 둘지 구분.
-
-============================================================
-H. Diagnostics(전체 체계) 완성
-============================================================
-
-[P0] (필수) 11장 내부 오류 코드/번호 불일치 수정
-- 현재:
-  - “MC89-E306 -- Unreachable Statement”라고 써놓고,
-    메시지는 “warning MC89-E307”로 되어 있음.
-  - 그리고 Mapping 표에는 E306(표현식 누락)도 있음.
-- 정리해야 할 정답:
-  - MC89-E306 = Missing return expression (int 함수에서 return;)
-  - MC89-E307 = Unreachable statement (SHOULD/warning)
-  로 고정하고, 제목/설명/표 모두 일치시킬 것.
-
-[P0] (필수) E1xx(lexical), E2xx(expression/type) MUST 오류 정의 추가
-- 지금 문서에는 E3xx/E4xx가 상세하지만 E1xx/E2xx는 “요약표”만 있고,
-  “발생 조건/필수 메시지”가 없음.
-- 최소로라도 다음을 규범화:
-  - E101~E104: 조건 + required message
-  - E201~E208: 조건 + required message
-  - “검출 가능 시” 정책(division by zero constant 등)
-
-[P1] 오류 메시지 포맷(온라인 저지/IDE 연동) 고정
-- 예: "error <CODE>: <message> (line:col)"
-- line/col 출력이 MUST인지 SHOULD인지 결정.
-
-============================================================
-I. Standard Library(12장) 정책 결론
-============================================================
-
-[P0] (필수) 12.1 Built-in Functions 처리
-- 현재 12.1은 TODO 주석 상태.
-- 프로젝트 합의가 “I/O 없음”이면:
-  - 12장을 “MiniC89에는 표준 라이브러리가 존재하지 않는다”로 규범화하고
-  - input()/output() 언급을 제거.
-- 반대로 내장함수를 넣을 거면:
-  - 함수 시그니처, 의미, 부작용, UB/EOF 등을 규범 정의.
-
-============================================================
-J. Annex(13장) 채우기
-============================================================
-
-[P1] Annex A: “표준 예제” 5~10개 선정(단순/재귀/루프/중첩 if)
-[P1] Annex B: “금지 예제”를 오류 코드별로 매핑(E3xx/E4xx 중심)
-[P2] Annex C: “제거/축소한 UB/implementation-defined”를 명시(교육 정책)
-
-============================================================
-K. 오타/표기/품질 이슈(즉시 수정 권장)
-============================================================
-
-[P0] (필수) 오타 수정
-- 4.2.4: "inf f(int a);" -> "int f(int a);"
-- 7.2: "Loweset" -> "Lowest"
-- 7.3: "evalutaion" -> "evaluation"
-- 8.5: "Non-NOrmative" -> "Non-Normative"
-- 11.y E406 메시지: "incalid" -> "invalid"
-
-[P0] (필수) 문서 예제들의 “컴파일 가능성” 일괄 점검
-- 괄호/중괄호 누락, 세미콜론, return 누락 등.
-
-============================================================
-결과물 기준(완료 정의)
-============================================================
-
-[P0 완료] 다음이 모두 만족되면 “v0.1 표준(실사용)”로 간주 가능:
-- 4장 Program Grammar 완전 정의(미정의 논터미널 없음)
-- 12장 정책 결정(없음/있음 중 하나로 규범화)
-- 11장 오류 코드/번호 불일치 0개
-- 문서 내 예제 “컴파일 가능/불가능”이 의도대로 검증됨
-- Diagnostics에서 E1xx/E2xx도 “조건+필수 메시지”까지 포함
-
-원하면, 위 TODO를 “이슈 트래커용”으로 바로 쓰게:
-- GitHub Issue 제목/본문 템플릿
-- 체크박스 + 담당(학생/TA/컴파일러/채점기) 라벨
-형태로 재정렬해줄 수도 있음.
 
