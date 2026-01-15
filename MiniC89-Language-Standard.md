@@ -2504,6 +2504,3 @@ MiniC89 Language Standard 비적합이다.
 ---
 
 End of Diagnostics Summary
-
-
-
