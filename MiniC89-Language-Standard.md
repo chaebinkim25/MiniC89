@@ -1599,23 +1599,23 @@ D. Execution Events (Optional)
 Normative Rules
 - 구현체는 각 진단을 정확히 1줄(one line)로 출력 MUST 한다.
 - 각 진단 줄은 다음 형식을 정확히 따라야 한다.
-
+```
   <severity> <code>: <message> (<line>:<col>)
-
-- <severity>는 반드시 다음 중 하나이며, 소문자 MUST 한다.
+```
+- `<severity>`는 반드시 다음 중 하나이며, 소문자 MUST 한다.
   - error
   - warning
 
-- <code>는 반드시 다음 형식 MUST 한다.
-  - MC89-E<ddd>   (ddd는 3자리 10진수)
+- `<code>`는 반드시 다음 형식 MUST 한다.
+  - `MC89-E<ddd>`   (ddd는 3자리 10진수)
 
-- <message>는 사람이 읽을 수 있는 설명 문자열이며, 다음을 만족 MUST 한다.
+- `<message>`는 사람이 읽을 수 있는 설명 문자열이며, 다음을 만족 MUST 한다.
   - 개행 문자를 포함하지 않는다.
   - 구현체는 본 표준 각 오류 항목의 “Required Message”에서 제시한 문구를
     최소한 접두(prefix)로 포함 MUST 한다.
   - 구현체는 식별자 이름 등 추가 정보를 포함 MAY 한다.
 
-- (<line>:<col>)은 소스 위치(location)이며, 다음을 만족 MUST 한다.
+- `(<line>:<col>)`은 소스 위치(location)이며, 다음을 만족 MUST 한다.
   - line과 col은 10진 정수
   - line과 col은 1-base(첫 줄=1, 첫 열=1)
   - 진단이 특정 토큰/구문에 귀속되는 경우, 그 “첫 문자 위치”를 사용 MUST 한다.
@@ -1646,9 +1646,9 @@ Normative Rules
 #### 11.2.4 Interaction with “Required Message” Fields (Normative)
 
 - 본 표준 각 오류 정의의 “Required Message”는
-  위 포맷 중 <severity> <code>: <message> 부분의 최소 요구사항을 의미한다.
+  위 포맷 중 `<severity> <code>: <message>` 부분의 최소 요구사항을 의미한다.
 - 구현체는 모든 진단 출력에서, 해당 “Required Message”를 포함한 뒤,
-  공백 1개를 두고 위치 정보 (<line>:<col>)를 반드시 덧붙여야 한다(MUST).
+  공백 1개를 두고 위치 정보 `(<line>:<col>)`를 반드시 덧붙여야 한다(MUST).
 
 ### 11.a Lexical-related Diagnostics (Normative)
 > 적용 범위:
