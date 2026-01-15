@@ -183,6 +183,34 @@ for
 return  
 break  
 continue  
+
+다음 키워드는 C89에 있기 때문에 MiniC89에서 쓰이지는 않지만 보존된 예약어이다. 
+
+auto
+double
+struct
+long
+switch
+case
+enum
+register
+typedef
+extern
+union
+const
+float
+short
+unsigned
+signed
+void
+default
+goto
+sizeof
+volatile
+do
+static
+while
+
 ---
 
 ### 3.3 Identifiers
@@ -190,6 +218,7 @@ continue
 - 식별자는 알파벳 또는 '_'로 시작 MUST 한다.
 - 이후 알파벳, 숫자, '_'의 조합으로 구성된다.
 - 키워드와 동일한 이름은 사용할 수 없다.
+- ANSI C89 키워드도 식별자로 사용할 수 없다. 
 ---
 
 ### 3.4 Integer Constants
@@ -325,9 +354,6 @@ continue
 
 #### EBNF Definition (Normative)
 ```ebnf
-BEGIN REPLACEMENT (4.2.1 EBNF Definition)
-
-```ebnf
 /* ------------------------------------------------------------
  * Translation Unit (MiniC89)  — aligned with C89 3.7
  * ------------------------------------------------------------ */
@@ -337,9 +363,7 @@ BEGIN REPLACEMENT (4.2.1 EBNF Definition)
 
 <translation-unit>        ::= { <external-declaration> } ;
 
-/* In ANSI C89, external-declaration includes both function-definition and declaration.
- * MiniC89 restricts it to function-definition only.
- */
+/* MiniC89 restricts external-declaration to function-definition only. */
 <external-declaration>    ::= <function-definition> ;
 ```
 
@@ -348,7 +372,7 @@ BEGIN REPLACEMENT (4.2.1 EBNF Definition)
 - 전역 변수, 전역 선언, 함수 프로토타입은 **문법적으로 존재하지 않으며 MUST NOT 허용**한다.
 - 프로그램은 **정확히 하나의 엔트리 함수 `int main()`을 MUST 포함**해야 한다.
   - `main`은 매개변수를 가질 수 없다.
-- 본 절에서 사용되는 `<function-definition>` 및 매개변수 관련 논터미널의 규범 정의는 **9.1절**에 있다.
+- 본 절에서 사용되는 `<function-definition>` 및 매개변수 관련 논터미널의 규범 정의는 **Chapter 9 (Functions)** 에 있다.
 - 
 #### Allowed Examples
 ```c
@@ -1257,8 +1281,11 @@ int main() {
 #### EBNF Definition (Normative)
 ```ebnf
 /* ------------------------------------------------------------
- * Function Definition (MiniC89) — aligned with C89 3.7.1
+ * Function Definition (MiniC89) — aligned with C89 3.7.1 (restricted)
  * ------------------------------------------------------------ */
+<function-definition>   ::= "int" <identifier>
+                            "(" [ <parameter-list> ] ")"
+                            <compound-statement> ;
 
 /* Parameters: only 'int name' */
 <parameter-list>          ::= <parameter-decl> { "," <parameter-decl> } ;
@@ -1268,6 +1295,7 @@ int main() {
 /* No prototypes, no global variables */
 <external-declaration>    ::= <function-definition> ;
 ```
+
 > ✅ 결과적으로 파일 스코프에서 허용되는 건 함수 정의뿐이다.
 > ❌ int x; 같은 전역 변수, int f(int a); 같은 프로토타입은 문법으로 존재하지 않는다.
 
@@ -1276,11 +1304,13 @@ int main() {
 #### Normative Rules
 
 - 프로그램은 0개 이상의 함수 정의로 구성된다.
-- 모든 함수의 반환 타입은 `int`이어야 한다.
-- 모든 매개변수는 `"int" <identifier>` 형태여야 한다.
+- 모든 함수의 반환 타입은 `int`이어야 한다. **MUST**
+- 모든 매개변수는 `"int" <identifier>` 형태여야 한다. **MUST**
+  - 위반 시 진단 코드는 MC89-E406을 사용 MUST 한다.
 - 함수 이름은 프로그램 내에서 **유일 MUST** 하다(중복 정의 금지).
 - 프로그램은 엔트리 포인트로 `int main()` 함수를 **반드시(MUST) 포함**해야 한다.
   - `main`은 매개변수를 가지면 안 된다.
+  - 위반 시 진단 코드는 MC89-E402를 사용 MUST 한다. (Invalid main Signature)
 - MiniC89는 `implicit function declaration`을 허용하지 않는다.
   - 호출되는 모든 함수는 프로그램 내에 정의가 **존재 MUST** 한다.
 - 함수 호출의 인자 개수(arity)는 정의의 매개변수 개수와 **정확히 일치 MUST** 한다. 
@@ -1289,8 +1319,13 @@ int main() {
   (단, 현재 정의 중인 함수 자신의 본문에서의 `f(...)` 호출은 허용된다.)
 - 프로토타입/전방 선언이 금지되어 있으므로, 정의가 뒤에 오는 함수에 대한 호출(forward call)은
   허용되지 않는다(MUST NOT).
+  - 파일 스코프에서 `int f(int a);` 같은 프로토타입이 등장하면 MC89-E404 오류를 발생시킨다 (MUST)
 - 위 규칙을 만족하지 않는 함수 호출은 컴파일 타임 오류로 진단 MUST 하며,
   오류 코드는 MC89-E407을 사용 MUST 한다.
+- ISO C89의 K&R(old-style) 함수 정의는 MiniC89 문법에 존재하지 않으며 MUST NOT 허용한다.
+  - 예: `int f(a) int a; { ... }` 는 MiniC89에서 문법 오류/매개변수 오류로 거부되어야 한다.
+- 함수 정의가 중복되면 컴파일 타임 오류로 진단한다 (MUST)
+  오류 코드는 MC89-E403을 쓴다.
 ---
 
 #### Allowed Examples
@@ -2025,9 +2060,6 @@ int f() {
 ```
 error MC89-E306: return expression required for function returning 'int'
 ```
-> 이 오류는 **SHOULD** 수준이다.
->
-> 구현 단순성을 위해 생략 가능.
 
 ### MC89-E307 -- Unreachable Statement
 #### Condition (SHOULD detect)
