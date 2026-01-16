@@ -1,6 +1,6 @@
 # MiniC89 Language Standard
-**Draft Version:** v0.2  
-**Status:** Writing
+**Draft Version:** v0.31
+**Status:** Revision
 
 본 문서는 사이버보안학과 신입생 교육을 목적으로 하는  
 C89 부분집합 언어 **MiniC89**의 공식 표준을 정의한다.
@@ -9,81 +9,193 @@ C89 부분집합 언어 **MiniC89**의 공식 표준을 정의한다.
 
 ---
 
+### 1 Introduction
+- 1.1 Purpose
+- 1.2 Design Goals
+- 1.3 Relationship to ISO C89
+
+### 2 Conformance
+- 2.1 Language Conformance
+- 2.2 Implementation Conformance
+- 2.3 Normative Keywords and Document Conventions (Normative)
+  - 2.3.1 Normative vs Non-Normative Text
+  - 2.3.2 Requirement Keywords
+  - 2.3.3 Conformance and Diagnostics Terminology
+
+### 3 Lexical Elements
+- 3.1 Tokens
+- 3.2 Keywords
+- 3.3 Identifiers
+- 3.4 Integer Constants
+- 3.5 Comments and Whitespace
+- 3.6 Lexical Grammar (Normative)
+  - 3.6.1 Source Character Set (Normative)
+  - 3.6.2 Regular Definitions (Normative)
+  - 3.6.3 Tokenization Rules (Normative)
+  - 3.6.4 Allowed Examples
+  - 3.6.5 Forbidden Examples
+  - 3.6.6 Notes (Non-Normative)
+
+### 4 Syntax (Grammar)
+- 4.1 Grammar Notation
+- 4.2 Program Grammar (Translation Unit) (Normative)
+  - 4.2.1 EBNF Definition (Normative)
+  - 4.2.2 Normative Rules
+  - 4.2.3 Allowed Examples
+  - 4.2.4 Forbidden Examples
+  - 4.2.5 Notes (Non-Normative)
+- 4.3 Disallowed Constructs and Prohibitions
+  - 4.3.1 Lexically Disallowed Forms
+  - 4.3.2 Syntactically Disallowed Constructs
+  - 4.3.3 Semantically Disallowed but Syntactically Valid Forms
+
+### 5 Types
+- 5.1 Integer Type (Normative)
+- 5.2 Arithmetic Semantics and Undefined Behavior (Normative)
+- 5.3 Truth Values and Conditional Context (Normative)
+- 5.4 Undefined Behavior and Diagnostics Policy (Normative)
+  - 5.4.1 Classification (Normative)
+  - 5.4.2 Required Diagnostic Mapping (Normative)
+
+### 6 Declarations
+- 6.1 EBNF Definition (Normative)
+- 6.2 Normative Rules
+- 6.3 Examples
+
+### 7 Expressions
+- 7.1 Expression Grammar (Normative)
+  - 7.1.1 EBNF Definition (Normative)
+  - 7.1.2 Operator Hierarchy and Associativity (Normative) 
+  - 7.1.3 Evaluation Order (Normative) 
+- 7.2 Assignment Expressions (Normative) 
+- 7.3 Boolean Interpretation (Normative) 
+
+### 8 Statements
+- 8.1 EBNF Definition (Normative)
+- 8.2 Normative Rules
+- 8.3 Allowed Examples
+- 8.4 Forbidden Examples
+- 8.5 Notes (Non-Normative)
+
+### 9 Functions
+- 9.1 Function Definition EBNF (Normative) 
+- 9.2 Normative Rules
+- 9.3 Allowed Examples
+- 9.4 Forbidden Examples
+
+### 10 Program Execution Model
+- 10.1 Purpose
+- 10.2 Abstract Machine Components
+  - 10.2.1 Program
+  - 10.2.2 Program Counter (PC)
+  - 10.2.3 Call Stack
+  - 10.2.4 Stack Frame
+- 10.3 Memory Model
+  - 10.3.1 Objects
+  - 10.3.2 Lifetime
+- 10.4 Execution Semantics
+  - 10.4.1 Program Start
+  - 10.4.2 Statement Execution
+  - 10.4.3 Function Call
+  - 10.4.4 Function Return
+- 10.5 Control Flow Semantics
+  - 10.5.1 Conditional (`if / else`)
+  - 10.5.2 Iteration (`for`)
+  - 10.5.3 `break` / `continue`
+- 10.6 Undefined Behavior
+- 10.7 Observability and Visualization (Non-Normative)
+  - 10.7.1 Statement-level PC vs Implementation-level Step
+  - 10.7.2 Observable State Checklist
+  - 10.7.3 Suggested Presentation Rules
+
+### 11 Diagnostics
+- 11.1 Overview 
+- 11.2 Diagnostic Message Format (Normative)
+  - 11.2.1 One-line Format (Normative)
+  - 11.2.2 Location Counting Rules (Normative)
+  - 11.2.3 Examples (Non-Normative)
+  - 11.2.4 Interaction with “Required Message” Fields (Normative)
+- 11.3 Lexical Diagnostics (Normative) 
+- 11.4 Expression / Type Diagnostics (Normative)
+- 11.5 Statement Diagnostics (Normative)
+- 11.6 Function / Program Diagnostics (Normative) 
+
+### 12 Standard Library
+- 12.1 Standard Library Policy (Normative)
+
+### 13 Annex (기본 Non-Normative, 별도 표기 시 Normative)
+- Annex A Standard Examples
+- Annex B Forbidden / Invalid Programs
+- Annex C Undefined / Removed Behaviors
+- Annex D Diagnostics — Error Code Summary (Normative)
+  - D.1 Purpose
+  - D.2 Conformance Requirement
+  - D.3 Error Code Categories
+  - D.4 MC89-E1xx — Lexical Errors
+  - D.5 MC89-E2xx — Expression / Type Errors
+  - D.6 MC89-E3xx — Statement / Control-flow Errors
+  - D.7 MC89-E4xx — Function / Program Errors
+  - D.8 Diagnostics Severity Rules
+  - D.9 Grammar ↔ Diagnostics Mapping (Summary)
+  - D.10 Implementation Checklist (Normative)
+
+---
+
 ## 1. Introduction
 
 ### 1.1 Purpose
 
-본 문서는 사이버보안학과 신입생 교육을 목적으로 하는
-C89 부분집합 언어 MiniC89의 공식 언어 표준을 정의한다.
-
-이 표준은 학생, TA, 자동 채점기, 컴파일러/VM 구현자가
-공통으로 참조하는 단일 기준(source of truth)이다.
+MiniC89는 C 언어를 가장 낮은 진입 장벽으로 이해할 수 있게 만드는 것을 목적으로 한다.
 
 ### 1.2 Design Goals
 
 - 초심자를 위한 최소 언어
-- ISO C89 의미론 보존
-- 위험한 동작을 숨기지 않음
-- 결정적 시각화와 의미론 분리
-- 단일 번역 단위, 단순 실행 모델
+- ANSI C89 의미론 보존
+- 하드웨어 동작 단순화
 
----
+### 1.3 Relationship to ANSI C89
 
-### 1.3 Relationship to ISO C89
-
-- MiniC89는 ISO C89의 엄격한 부분집합이다.
+- MiniC89는 ANSI C89의 엄격한 부분집합이다.
 - 모든 유효한 MiniC89 프로그램은 유효한 C89 프로그램이다.
 - 그 역은 성립하지 않는다.
+
 ---
 
 ## 2. Conformance
 
 ### 2.1 Language Conformance
-MiniC89 프로그램은 본 표준의 모든 MUST / MUST NOT 규칙을
-만족해야 한다.
-
----
+MiniC89 프로그램은 본 표준의 모든 MUST / MUST NOT 규칙을 만족해야 한다.
 
 ### 2.2 Implementation Conformance
 MiniC89 구현체는 다음을 만족해야 한다.
 
 - 본 표준에 정의되지 않은 문법을 허용하지 않는다.
-- MUST 오류를 컴파일 타임에 검출한다.
-- 오류 코드를 반드시 출력한다.
-- 구현체는 모든 진단을 11.2절의 포맷( severity + code + message + (line:col) )으로 출력 MUST 한다.
+- 오류를 컴파일 타임에 검출하고, 오류 코드를 반드시 출력한다.
 
----
 ### 2.3 Normative Keywords and Document Conventions (Normative)
 
 본 절은 본 표준 문서 전체에서 사용되는 규범 키워드의 의미와,
-“규범(Normative) / 비규범(Non-Normative)” 텍스트의 효력을 정의한다.
-
----
+규범(Normative) / 비규범(Non-Normative) 텍스트의 효력을 정의한다.
 
 #### 2.3.1 Normative vs Non-Normative Text
 
-- 본 표준에서 다음에 해당하는 내용은 “규범적(Normative)”이며,
+- 본 표준에서 다음에 해당하는 내용은 규범적(Normative)이며,
   MiniC89 적합성(conformance) 판단의 기준이 된다.
   - 제목에 (Normative)가 명시된 절/하위절
-  - "Normative Rules" 하위 섹션의 모든 문장
-  - "EBNF Definition (Normative)"에 포함된 문법 정의
-  - "Operator Hierarchy (Normative)" 및 우선순위/결합 규칙 표
-  - "Diagnostics (Normative)"에 포함된 오류 코드/발생 조건/필수 메시지
+  - Normative Rules 하위 섹션의 모든 문장
+  - EBNF Definition에 포함된 문법 정의
+  - Operator Hierarchy 및 우선순위/결합 규칙 표
+  - Diagnostics에 포함된 오류 코드/발생 조건/필수 메시지
 
-- 다음에 해당하는 내용은 “비규범적(Non-Normative)”이며,
+- 다음에 해당하는 내용은 비규범적(Non-Normative)이며,
   구현/채점/학생 이해를 돕기 위한 설명일 뿐 언어 의미를 추가/변경하지 않는다.
-  - "Notes (Non-Normative)"
-  - "Informal Description (Non-Normative)"
-  - "Allowed Examples", "Forbidden Examples" (단, 예제에 “MUST” 등의 규범 문구가 포함된 경우는 예외)
+  - Notes
+  - Allowed Examples
+  - Forbidden Examples
 
 - 규범적 텍스트와 비규범적 텍스트(예제/노트)가 충돌할 경우,
   규범적 텍스트가 우선한다.
-  - 예제는 “설명 목적”이며, 언어를 정의하지 않는다.
-
-- 본 표준의 규범 키워드는 대문자(MUST, SHOULD 등)로 쓰인 경우에만
-  규범적 의미를 갖는다. (소문자 must/should 등의 일반 표현은 규범적 의미가 없다.)
-
----
+  - 예제는 설명 목적이며, 언어를 정의하지 않는다.
 
 #### 2.3.2 Requirement Keywords
 
@@ -111,22 +223,16 @@ MiniC89 구현체는 다음을 만족해야 한다.
   - 선택 사항이다.
   - 구현체/프로그램은 해당 기능을 제공/사용해도 되고 제공/사용하지 않아도 된다.
 
-(필요 시)
-- REQUIRED는 MUST와 동일한 의미로 사용될 수 있다.
-- OPTIONAL은 MAY와 동일한 의미로 사용될 수 있다.
-
----
-
 #### 2.3.3 Conformance and Diagnostics Terminology
 
 - Conforming Program
   - 본 표준의 문법(EBNF)과 모든 정적 제약(MUST/MUST NOT)을 만족하는 프로그램을 말한다.
   - 단, 특정 입력/실행 경로에서 Undefined Behavior(UB)를 유발할 수 있는 프로그램도
-    “문법적으로는 적합”할 수 있으나, UB가 발생한 이후의 동작은 정의되지 않는다.
+    문법적으로는 적합할 수 있으나, UB가 발생한 이후의 동작은 정의되지 않는다.
 
 - Conforming Implementation
   - 본 표준이 요구하는 문법/의미 규칙을 만족하고,
-    본 표준이 “진단을 요구(MUST detect)”하는 모든 상황을 진단하는 구현체를 말한다.
+    본 표준이 진단을 요구(MUST detect)하는 모든 상황을 진단하는 구현체를 말한다.
 
 - Compile-time
   - 파싱, 정적 분석, 의미 분석, 코드 생성 등 실행 이전 단계를 의미한다.
@@ -135,19 +241,19 @@ MiniC89 구현체는 다음을 만족해야 한다.
 
 - Diagnostic
   - 컴파일 타임에 보고되는 오류/경고 메시지를 말한다.
-  - 본 표준이 오류 코드를 규정한 경우, 구현체는 반드시 오류 코드와 메시지를 함께 출력 MUST 한다.
+  - 본 표준이 오류 코드를 규정한 경우, 구현체는 반드시 오류 코드와 메시지를 함께 출력한다.
 
-- “MUST be Compile-time Error”
-  - 구현체는 해당 프로그램을 거부(reject) MUST 하며,
-    최소 1개의 진단을 error 수준으로 보고 MUST 한다.
+- MUST be Compile-time Error
+  - 구현체는 해당 프로그램을 거부(reject)하며,
+    최소 1개의 진단을 error 수준으로 보고한다.
   - 본 표준이 특정 오류 코드(MC89-Exxx)를 지정한 경우,
-    구현체는 그 오류 코드를 포함하여 보고 MUST 한다.
+    구현체는 그 오류 코드를 포함하여 보고한다.
 
 - Undefined Behavior (UB)
   - 본 표준이 UB로 정의한 상황이 실행 중 발생하면,
     그 이후 프로그램의 동작은 정의되지 않는다.
   - UB에 대한 진단은 본 표준이 별도로 요구하지 않는 한 필수는 아니다.
-  - 단, 구현체는 UB를 정적으로 검출 가능하다면 진단을 추가로 보고 MAY 한다.
+  - 단, 구현체는 UB를 정적으로 검출 가능하다면 진단을 추가로 보고한다.
 
 - Unspecified Behavior
   - 표준이 일부 동작을 “지정하지 않음”으로 남겨둔 경우를 말한다.
@@ -157,7 +263,9 @@ MiniC89 구현체는 다음을 만족해야 한다.
 - Implementation-defined Behavior
   - 표준이 구현마다 달라질 수 있음을 허용하되, 구현이 반드시 문서화해야 하는 동작을 말한다.
   - MiniC89는 교육/채점 목적상 implementation-defined 동작을 최소화하는 것을 목표로 하며,
-    본 표준에 등장하는 경우 구현체는 그 내용을 문서화 MUST 한다.
+    본 표준에 등장하는 경우 구현체는 그 내용을 문서화 한다.
+
+---
     
 ## 3. Lexical Elements
 
@@ -171,18 +279,13 @@ MiniC89의 토큰은 다음으로 구성된다.
 - Operators
 - Punctuators
 
----
-
 ### 3.2 Keywords
 
 **Normative Rule**  
-MiniC89 구현체는 ISO C89에서 정의된 모든 키워드를 keyword로 토큰화 MUST 한다.  
-MiniC89가 “키워드로 지원”하는 것은 문법(EBNF)에 포함된 구문으로 제한된다.  
-문법에 포함되지 않은 키워드가 등장한 프로그램은 컴파일 타임 오류로 거부 MUST 한다.
+MiniC89 구현체는 ANSI C89에서 정의된 모든 키워드를 keyword로 토큰화 한다.  
+MiniC89가 키워드로 지원하는 것은 문법(EBNF)에 포함된 구문으로 제한된다.  
+문법에 포함되지 않은 키워드가 등장한 프로그램은 컴파일 타임 오류로 거부한다 (오류 코드: MC89-E203).
 
-**Note:** (비규범)  
-“키워드로 토큰화”는 “해당 구문을 허용”한다는 뜻이 아니라,
-단지 해당 토큰이 식별자가 아님을 의미한다.
 다음 키워드는 예약어이다.
 
 int  
@@ -220,212 +323,292 @@ do
 static
 while
 
----
+**Note:** 
+키워드로 토큰화는 해당 구문을 허용한다는 뜻이 아니라,
+단지 해당 토큰이 식별자가 아님을 의미한다.
 
 ### 3.3 Identifiers
 
-- 식별자는 알파벳 또는 '_'로 시작 MUST 한다.
+- 식별자는 알파벳 또는 '_'로 시작한다.
 - 이후 알파벳, 숫자, '_'의 조합으로 구성된다.
-- 키워드와 동일한 이름은 사용할 수 없다.
-- ANSI C89 키워드도 식별자로 사용할 수 없다. 
----
+- 키워드와 동일한 이름은 사용할 수 없다 (오류 코드: MC89-E102).
 
 ### 3.4 Integer Constants
 
 - 10진 정수 리터럴만 허용된다.
 - 부호는 리터럴의 일부가 아니다.
-- 범위를 벗어난 정수 리터럴은 컴파일 오류이다.
-
----
+- 범위를 벗어난 정수 리터럴은 컴파일 오류이다 (오류 코드: MC89-E103).
 
 ### 3.5 Comments and Whitespace
 
 - /* ... */ 형식의 주석만 허용된다.
-- // 주석은 허용되지 않는다.
-- 공백과 개행은 토큰 구분에만 영향을 준다.
+- // 주석은 허용되지 않는다 (오류 코드: MC89-E105).
+- 공백과 줄바꿈은 토큰 구분에만 영향을 준다.
 
 ---
 
-### 3.6 Lexical Grammar (Normative)
+### 3.6 Lexical Grammar
 
 #### 3.6.1 Source Character Set (Normative)
-- MiniC89 소스는 다음 문자들을 포함 MUST 한다.
-  - 공백류: SP(0x20), HT(0x09), VT(0x0B), FF(0x0C), LF(0x0A), CR(0x0D)
-  - 인쇄 가능 ASCII: 0x21..0x7E
-- 위 범위 밖 문자가 등장하면 구현체는 컴파일 타임 오류로 진단 MUST 한다.
-  - 오류 코드: MC89-E101 (Invalid Character)
+MiniC89 소스는 다음 문자들만을 포함한다.
+
+A. 공백 문자 (whitespaces)
+- SP(0x20), HT(0x09), VT(0x0B), FF(0x0C), LF(0x0A), CR(0x0D)
+
+B. 식별자 문자 (identifiers)
+- 알파벳 대소문자: `A`-`Z`, `a`-`z`
+- 숫자: `0`-`9`
+- 밑줄: `_`  
+
+C. 정수 리터럴을 구성하는 문자 (integer constants)
+- 숫자: `0`-`9`
+
+D. 연산자 문자 (operators)
+- `+` `-` `*` `/` `%`
+- `<` `>` `=` `!`
+- `&` `|`  (논리 연산자 구성용)
+
+E. 구분기호 (punctuators)
+- `(` `)` `{` `}` `;` `,`
+
+F. 주석 구성 문자
+- `/` `*`  (C 스타일 주석 `/* ... */` 구성용)
+
+위 범위에 속하지 않는 문자가 소스 파일에 등장하면, 구현체는 컴파일 타임 오류로 진단한다 (오류 코드: MC89-E101)
 
 #### 3.6.2 Regular Definitions (Normative)
-본 절에서 정규 정의(regular definition)는 ASCII 기준이다.
+본 절에서는 ASCII 기준으로 정규 문법 (Regular Grammar)를 정의한다.
 
 (1) Letter / Digit
-- <letter> := [A-Za-z]
-- <digit>  := [0-9]
-- <nondigit> := <letter> | "_"
+```ebnf
+<letter> := [A-Za-z]
+<digit>  := [0-9]
+<nondigit> := <letter> | "_"
+```
+- `<letter>`는 `A`부터 `Z`까지 또는 `a`부터 `z`까지의 알파벳 대소문자 하나다.
+- `digit`은 `0`부터 `9`까지 숫자 하나다.
+- `<nondigit>`은 `<letter>` 또는 밑줄 기호 `_`를 의미한다. 
 
 (2) Identifier
-- <identifier> := <nondigit> (<nondigit> | <digit>)*
+```ebnf
+<identifier> := <nondigit> (<nondigit> | <digit>)*
+```
 
-(3) Integer Constant (decimal only)
-- <integer-constant> := "0" | [1-9]<digit>*
-- 즉, 선행 0이 있는 형태(예: 00, 077)는 허용되지 않는다.
+- `<identifier>`는 `<nondigit>`으로 시작하고, 0개 이상의 (`<nondigit>` 또는 `<digit>`)이 이어서 나오는 것이다.
+
+(3) Integer Constant
+```ebnf
+<integer-constant> := "0" | [1-9]<digit>*
+```
+
+- `<integer-constant>`는 숫자 `0` 만으로 이뤄진 형태, 또는 `1`부터 `9`까지 숫자로 시작하고, 그 뒤에 0개 이상의 숫자가 있는 형태다. 
+- 즉, 선행 `0` 뒤에 다른 숫자가 나오는 형태(예: `00`, `077`)은 허용되지 않는다.
 
 (4) Whitespace
-- <whitespace> := one or more of (SP | HT | VT | FF | LF | CR)
+```ebnf
+<whitespace> := one or more of (SP | HT | VT | FF | LF | CR)
+```
+
+- `<whitespace>`는 띄어쓰기 (SP), 탭 (HT), 세로탭 (VT), 페이지바꿈 (FF), 줄바꿈 (LF), 커서 왼쪽 끝 이동 기호 (CR) 중 하나를 의미한다.
 
 (5) Block Comment (C-style only)
-- <comment> starts with "/*" and ends with the first subsequent "*/".
-- 주석은 중첩(nesting)되지 않는다.
-- EOF까지 "*/"를 만나지 못하면 오류 코드 MC89-E104로 진단 MUST 한다.
+```ebnf
+<comment> starts with "/*" and ends with the first subsequent "*/"
+```
 
-#### 3.6.3 Tokenization Rules (Normative)
-- 구현체는 소스 파일을 왼쪽에서 오른쪽으로 스캔하며 토큰을 생성 MUST 한다.
-- <whitespace> 및 <comment>는 토큰 경계로 취급되며, 토큰 스트림에 포함되지 않는다.
-- 구현체는 다음 “최장 일치(maximal munch)” 원칙을 적용 MUST 한다.
+- 주석은 `/*`로 시작해서 `*/`로 끝난다.
+- 주석은 중첩(nesting)되지 않는다.
+- 파일의 끝(EOF)까지 `*/`를 만나지 못하면 오류로 진단한다. (오류 코드: MC89-E104).
+
+#### 3.6.3 Tokenization Rules
+- 구현체는 소스 파일을 왼쪽에서 오른쪽으로 스캔하며 토큰을 생성한다.
+- `<whitespace>` 및 `<comment>`는 토큰 경계로 취급되며, 토큰 스트림에 포함되지 않는다.
+- 구현체는 다음 최장 일치(maximal munch) 원칙을 적용한다.
   - 동일 위치에서 둘 이상의 토큰 후보가 가능하면, 더 긴 후보를 선택한다.
   - 특히 연산자/구분기호에서 2글자 토큰은 1글자 토큰보다 우선한다.
-    예: "=="는 "=" "="로 분리되지 않는다.
+    예: `==`는 `=`와 `=`로 분리되지 않는다.
+- 스캔 위치에서 `//`가 등장하면, 이는 MiniC89에서 허용되지 않는 라인 주석 형태이므로  
+  구현체는 컴파일 타임 오류로 진단한다 (오류 코드: MC89-E105).
 
 키워드와 식별자 규칙:
-- 스캔된 문자열이 키워드 집합과 정확히 일치하고, 그 양끝이 식별자 문자(<nondigit>|<digit>)로
-  확장되지 않는 경우, 해당 토큰은 Keyword로 분류 MUST 한다.
-- 그렇지 않으면 <identifier>에 매칭되는 토큰은 Identifier로 분류 MUST 한다.
-  예: "intx"는 Keyword "int" + "x"가 아니라 Identifier "intx"이다.
+- 스캔된 문자열이 키워드 집합과 정확히 일치하고, 그 시작이 `<nondigit>`으로 확장되지 않고,
+  끝이 식별자 문자(`<nondigit>`|`<digit>`)로 확장되지 않는 경우, 해당 토큰은 Keyword로 분류한다.
+- 그렇지 않으면 `<identifier>`에 매칭되는 토큰은 Identifier로 분류한다.
+  예: `intx`는 Keyword `int` + `x`가 아니라 Identifier `intx`이다.
 
-정수 리터럴(10진만) 규칙:
-- <integer-constant>에 부합하지 않는 숫자 시작 토큰은 “잘못된 정수 리터럴”로 진단 MUST 한다.
-  다음은 최소로 오류(MC89-E103)로 진단 MUST 한다.
+정수 리터럴 규칙:
+- `<integer-constant>`에 부합하지 않는 숫자 시작 토큰은 잘못된 정수 리터럴로 진단 한다 (오류 코드: MC89-E103).
   - 0으로 시작하며 길이가 2 이상인 숫자열: 00, 077, 0123
   - 0x 또는 0X로 시작하는 형태: 0x10
   - 숫자열 뒤에 식별자 문자가 붙어 분리되지 않는 형태: 123abc
-- 위 오류의 진단 코드는 MC89-E103 (Invalid Integer Literal)이다.
 
-연산자/구분기호 토큰 집합(최소):
-- 2글자 연산자: "<=", ">=", "==", "!=", "&&", "||"
-- 1글자 연산자: "+", "-", "*", "/", "%", "<", ">", "=", "!"
-- 구분기호: "(", ")", "{", "}", ";", ","
+연산자/구분기호 토큰 집합:
+- 2글자 연산자: `<=`, `>=`, `==`, `!=`, `&&`, `||`
+- 1글자 연산자: `+`, `-`, `*`, `/`, `%`, `<`, `>`, `=`, `!`
+- 구분기호: `(`, `)`, `{`, `}`, `;`, `,`
 
 주석 시작 처리:
-- 스캔 위치에서 "/*"가 보이면 <comment>를 형성 MUST 한다.
-- "//"는 주석이 아니며 특별 취급하지 않는다.
-  (플랫폼 정책으로 "//" 형태를 별도 진단하고 싶으면, MC89-E203으로 진단 MAY)
+- 스캔 위치에서 `/*`가 보이면 `<comment>`를 형성한다.
+- `//`는 주석이 아니며 오류로 진단한다 (오류 코드: MC89-E203)
 
 #### 3.6.4 Allowed Examples
 (1) Identifier
-    int main() {
-        int _x1;
-        _x1 = 0;
-        return _x1;
-    }
+```c
+int main() {
+    int _x1;
+    _x1 = 0;
+    return _x1;
+}
+```
 
-(2) Integer constants (decimal only)
-    int main() {
-        return 0 + 7 + 127;
-    }
+(2) Integer constants
+```c
+int main() {
+    return 0 + 7 + 127;
+}
+```
 
 (3) Block comment treated as whitespace
-    int main() {
-        /* this is a comment */
-        return 0;
-    }
+```
+int main() {
+    /* this is a comment */
+    return 0;
+}
+```
 
 #### 3.6.5 Forbidden Examples (MUST be Compile-time Error)
 (1) Invalid character (MC89-E101)
-    int main() { return 0; } @
+```c
+int main() { return 0; } @
+```
 
 (2) Unterminated comment (MC89-E104)
+```c
     /* unterminated comment
+```
 
 (3) Invalid integer literal (MC89-E103: leading zero / hex / digit+letters)
-    int main() { return 077; }      /* ERROR: MC89-E103 */
-    int main() { return 0x10; }     /* ERROR: MC89-E103 */
-    int main() { return 123abc; }   /* ERROR: MC89-E103 */
+```c
+int main() { return 077; }      /* ERROR: MC89-E103 */
+```
 
-(4) Invalid identifier usage (MC89-E102: keyword used where identifier required)
-    int if;  /* ERROR: MC89-E102 */
+```c
+int main() { return 0x10; }     /* ERROR: MC89-E103 */
+```
+
+```c
+int main() { return 123abc; }   /* ERROR: MC89-E103 */
+```
+
+(4) Invalid identifier usage
+```c
+int if;  /* ERROR: MC89-E102 */
+```
 
 #### 3.6.6 Notes (Non-Normative)
 - 본 절은 3.3/3.4/3.5의 서술을 “정식 정의”로 보강하기 위한 것이다.
-- “정수 리터럴 값 범위(예: 0..127)”의 의미론/범위 규칙은 Chapter 5에 따른다.
-
+- 정수 리터럴 값 범위(예: 0..127)의 의미론/범위 규칙은 5.1 Integer Type에 따른다.
 ---
 
 ## 4. Syntax (Grammar)
 
 ### 4.1 Grammar Notation
-- 문법은 EBNF로 기술된다.
-- EBNF에 없는 문법은 존재하지 않는다.
+본 표준에서 사용되는 문법 표기법은 EBNF (Extended Backus-Naur Form) 이다.
+EBNF는 프로그래밍 언어의 구문 구조(syntax)를 공식적으로 정의하기 위한 표기법이다.
 
-### 4.2 Program Grammar (Translation Unit) -- Normative
-> 이 절은 MiniC89 프로그램의 **최상위 문법 구조**를 정의한다.
->
-> 이 절의 EBNF는 **번역 단위(translation unit)의 유일한 규범적 정의**이다.
+EBNF에서 사용되는 주요 표기 요소의 의미는 다음과 같다.
 
-#### EBNF Definition (Normative)
+#### 비단말 기호 (Nonterminal)
+- `<name>` 형태로 표기된다.
+- 언어의 문법적 구성 요소를 나타낸다.
+- 예: `<expression>`, `<statement>`, `<identifier>`
+
+#### 단말 기호 (Terminal)
+- 실제 소스 코드에 그대로 등장하는 토큰이다.
+- 보통 따옴표로 감싸서 표기한다.
+
 ```ebnf
-/* ------------------------------------------------------------
- * Translation Unit (MiniC89)  — aligned with C89 3.7
- * ------------------------------------------------------------ */
+"if" "(" <expression> ")"
+```
 
-/* For readability, we define <program> as an alias of <translation-unit>. */
-<program>                 ::= <translation-unit> ;
+#### 정의 기호
+- `::=`는 정의된다(is defined as)를 의미한다.
+```ebnf
+<statement> ::= <expression> ";"
+```
 
-<translation-unit>        ::= { <external-declaration> } ;
+Notes: `:=`도 정의된다를 의미하며, 본 표준에서는 토큰/정규 정의에서만 `:=`를 쓴다.
 
-/* MiniC89 restricts external-declaration to function-definition only. */
+#### 선택
+- `|`는 여러 대안 중 하나를 의미한다.
+```ebnf
+<statement> ::= <expression-statement> | <compound-statement>
+```
+
+#### 반복
+- `{ x }`는 `x`를 0회 이상 반복하는 것을 의미한다.
+```ebnf
+<block-item-seq> ::= { <declaration> } { <statement> }
+```
+
+#### 선택적 요소
+- `[ x ]`는 `x`가 있을 수도 있고 없을 수도 있음 (0개 또는 1개)를 의미한다.
+```ebnf
+<return-statement> ::= "return" [ <expression> ] ";"
+```
+
+#### 그룹화
+- 괄호 `( ... )`는 여러 요소를 하나의 단위로 묶는다.
+```ebnf
+<unary-expression> ::= <postfix-expression>
+                     | ( "+" | "-" | "!" ) <unary-expression>
+```
+
+### 4.2 Program Grammar
+본 절에 제시된 EBNF는 MiniC89 프로그램 전체에 대한
+유일한 규범적 문법 정의(normative grammar definition) 이다.
+
+이 규칙에 따라 파싱될 수 없는 소스 코드는
+MiniC89 프로그램으로 간주될 수 없다 (오류 코드: MC89-E205).
+
+#### 4.2.1 EBNF Definition
+```ebnf
+<program>                 ::= { <external-declaration> } ;
 <external-declaration>    ::= <function-definition> ;
 ```
 
-#### Normative Rules
-- 파일 스코프 (file scope)에서는 **오직 함수 정의만 허용 MUST**한다.
-- 전역 변수, 전역 선언, 함수 프로토타입은 **문법적으로 존재하지 않으며 MUST NOT 허용**한다.
-- 프로그램은 **정확히 하나의 엔트리 함수 `int main()`을 MUST 포함**해야 한다.
+#### 4.2.2 Normative Rules
+- 본 절에서 사용되는 `<function-definition>` 및 매개변수 정의는 **9. Functions** 에 있다.
+- 프로그램은 정확히 하나의 엔트리 함수 `int main()`을 포함해야 한다.
   - `main`은 매개변수를 가질 수 없다.
-- 본 절에서 사용되는 `<function-definition>` 및 매개변수 관련 논터미널의 규범 정의는 **Chapter 9 (Functions)** 에 있다.
-- 파일 스코프에서 `external-declaration`은 오직 `<function-definition>`만 허용 MUST 한다.  
-- 구현체는 파일 스코프에서 다음 패턴을 발견하면 **파싱 성공 여부와 무관하게** 지정된 오류 코드로 진단 MUST 한다.
+- 파일 스코프 (file scope)에서는 오직 함수 정의만 허용한다.
+- 구현체는 파일 스코프에서 다음 패턴을 발견하면 지정된 오류 코드로 진단한다.
 
-- Function definition (허용)
-  - 형태(개념적으로):
-  - `int <identifier> ( [parameter-list] ) { ... }`
-  - 결과:
-  - 정상적으로 `<function-definition>`으로 처리
-
-- Function prototype (금지, E404)
-  - 형태(개념적으로):
-  - `int <identifier> ( [parameter-list] ) ;`
-  - 결과:
-  - **MC89-E404** MUST diagnose  
-  - (파서가 전체 C 문법을 쓰더라도 MiniC89에서는 반드시 거부)
-
-- Global declaration / global variable (금지, E405)
-  - 형태(개념적으로):
-  - `int <identifier> ;`
-  - `int <identifier> = <expr> ;`
-  - `int <identifier> , <identifier> , ... ;`  (만약 파서가 C 문법으로 읽어버리는 경우 포함)
-  - 결과:
-  - **MC89-E405** MUST diagnose- 
-
+- Function prototype (금지, MC89-E404): `"int" <identifier> "(" <parameter-list> ")" ";"`
+  `<parameter-list>`는 **9.1 Function Definition - EBNF Definition**에 정의되어 있다.
+  
+- Global declaration (금지, MC89-E405): `<declaration>`
+  `<declaration>`은 **6.1 Declarations - EBNF Definition**에 정의되어 있다.
+  
 - 프로토타입 vs 함수 정의 판별 권장 알고리즘
-
-  - `int` 다음에 `<identifier>`가 오지 않으면, 식별자 위치 위반 **MC89-E102**
+  - `int` 다음에 `<identifier>`가 오지 않으면, 식별자 위치 위반 (MC89-E102)
   - `<identifer>` 다음 토큰이 `(` 이면:
-    - `)`까지 (parameter-list를 MiniC89 규칙으로) 파싱 시도
+    - `)`까지 `<parameter-list>` 파싱 시도
     - 그 다음 토큰을 확인:
-      - 다음이 `{`면 **함수 정의** (허용)
-      - 다음이 `;`면 **프로토타입** (금지, MC89-E404)
-      - 그 외 MiniC89 문법 위반 (MC89-E205)
-  - `<identifier>` 다음 토큰이 `(`가 **아니면**:
+      - 다음이 `{`면 함수 정의 (허용)
+      - 다음이 `;`면 프로토타입 (금지, MC89-E404)
+      - 식 문법 위반 (MC89-E205)
+  - `<identifier>` 다음 토큰이 `(`가 아니면:
     - 파일 스코프 전역 변수 선언으로 간주 (MC89-E405) 
 
-#### Allowed Examples
+#### 4.2.3 Allowed Examples
 ```c
 int main() {
   return 0;
 }
 ```
 
-#### Forbidden Examples (MUST be Compile-time Error)
+#### 4.2.4 Forbidden Examples
 
 ##### (1) No main
 ```c
@@ -442,162 +625,70 @@ int g;             /* ERROR: global variables are not allowed */
 int main() { return 0; }
 ```
 
-#### Notes (Non-Normative)
-- MiniC89는 **ISO C89의 "translation unit" 개념을 단순화**한 모델을 사용한다.
+#### 4.2.5 Notes
+- MiniC89는 ANSI C89의 translation unit 개념을 단순화한 모델을 사용한다.
 - 헤더 파일, 전처리, 분할 컴파일 개념은 존재하지 않는다.
-- 이로 인해 모든 이름 해석은 **단일 파일, 단일 번역 단위**에서 이루어진다.
-- 프로토타입, 전역 변수는 MiniC89 EBNF에 "존재하지 않으므로" 원칙적으로 문법 오류지만, 채점/교육 목적의 결정적 진단을 위해 구현체는 **구체 코드(E404/E405)**를 우선으로 한다 (MUST). 
+- 이로 인해 모든 이름 해석은 단일 파일, 단일 번역 단위에서 이루어진다.
+- 프로토타입, 전역 변수는 MiniC89 EBNF에 존재하지 않으므로 원칙적으로 문법 오류지만, 채점/교육 목적의 결정적 진단을 위해 구현체는 구체 코드(E404/E405)를 우선으로 한다. 
 
 ### 4.3 Disallowed Constructs and Prohibitions
 
-본 절은 ISO C89에 존재하지만 MiniC89에서는 제거되었거나 금지되는 구성요소를 정의한다.
-MiniC89 구현체는 본 절에 해당하는 프로그램을 컴파일 타임에 거부(reject) MUST 한다.
+본 절은 ANSI C89에 존재하지만 MiniC89에서는 제거되었거나 금지되는 구성요소를 정의한다.
+MiniC89 구현체는 본 절에 해당하는 프로그램을 컴파일 타임에 거부한다.
 
-#### Normative Rules
-- 본 절의 금지 사항은 “유효한 MiniC89 프로그램”의 범위를 정의한다.
-- 구현체는 금지 사항을 발견하면 최소 1개의 진단(error)을 보고 MUST 한다.
-- 금지 사항이 “문법(EBNF)에 존재하지 않음”으로 정의된 경우, 구현체는 해당 프로그램을
-  문법적으로 유효한 MiniC89 프로그램으로 취급 MUST NOT 한다.
-- 금지 사항이 “정적 의미 규칙 위반”으로 정의된 경우, 구현체는 파싱 성공 여부와 무관하게
-  해당 프로그램을 거부 MUST 한다. (Diagnostics 코드가 지정된 경우 그 코드를 사용 MUST)
+#### 4.3.1 Normative Rules
+- 본 절의 금지 사항은 유효한 MiniC89 프로그램의 범위를 정의한다.
+- 구현체는 금지 사항을 발견하면 최소 1개의 진단(error)을 보고한다.
+- 금지 사항이 문법(EBNF)에 존재하지 않음으로 정의된 경우, 구현체는 해당 프로그램을
+  문법적으로 유효한 MiniC89 프로그램으로 취급하지 않는다.
+- 금지 사항이 정적 의미 규칙 위반으로 정의된 경우, 구현체는 파싱 성공 여부와 무관하게
+  해당 프로그램을 거부한다. 
 
----
+#### 4.3.2 Lexically Disallowed Forms
 
-#### 4.3.1 Lexically Disallowed Forms (MUST be rejected during tokenization)
+다음 항목은 MiniC89의 **3. Lexical Elements**에 정의된 토큰 집합에 존재하지 않으며,
+해당 형태가 소스에 등장하면 구현체는 토큰화 단계에서 오류로 진단한다.
 
-다음 항목은 MiniC89의 토큰 집합(Chapter 3)에 존재하지 않으며,
-해당 형태가 소스에 등장하면 구현체는 토큰화 단계에서 오류로 진단 MUST 한다.
+- 전처리 지시문: `#`로 시작하는 전처리 라인 전체 (MC89-E106)
+- 문자열 리터럴: `"`로 시작하는 문자열 리터럴 (MC89-E107) 
+- 문자 리터럴: `'`로 시작하는 문자 상수 (MC89-E108)
+- 실수 리터럴: `1.0`, `1E2` 등의 실수 상수 (Mc89-E109)
+- 라인 주석: `//`로 시작하는 주석  (MC89-E105)
 
-Normative Rules
-- 아래 항목이 등장하면 구현체는 컴파일 타임 오류를 보고 MUST 한다.
-- 권장 오류 코드는 다음과 같다.
-  - 잘못된 문자/형태: MC89-E101
-  - 종료되지 않은 주석: MC89-E104
-  - 잘못된 정수 리터럴: MC89-E103
+#### 4.3.2 Syntactically Disallowed Constructs
 
-Lexically disallowed (at minimum)
-- 전처리 지시문: `#include`, `#define` 등 (`#`로 시작하는 전처리 라인 전체)
-- 문자열 리터럴: "..."
-- 문자 상수: 'a', '\n' 등
-- (선택 정책) 라인 주석: `// ...`  (MiniC89는 /* */만 주석으로 인정)
 
-Allowed Examples
-    int main() {
-        return 0;
-    }
+다음 항목은 MiniC89 문법으로 파싱될 수 없어야 한다.
 
-Forbidden Examples (MUST be Compile-time Error)
-(1) Preprocessor directive
-    #include <stdio.h>
-    int main() { return 0; }
-
-(2) String literal
-    int main() {
-        return "hi";   /* ERROR */
-    }
-
-(3) Character constant
-    int main() {
-        return 'a';    /* ERROR */
-    }
-
-Notes (Non-Normative)
-- MiniC89가 “C89 부분집합”이라는 것은 “MiniC89 프로그램은 C89에서도 유효”임을 뜻하며,
-  C89의 모든 구문을 MiniC89가 허용한다는 뜻이 아니다.
-
----
-
-#### 4.3.2 Syntactically Disallowed Constructs (Not in MiniC89 EBNF)
-
-다음 항목은 MiniC89의 EBNF(Chapter 4, 6, 7, 8, 9)에 존재하지 않으며,
-따라서 해당 형태는 MiniC89 문법으로 파싱될 수 없어야 한다.
-
-Normative Rules
-- 아래 항목을 포함하는 프로그램은 MiniC89 문법으로 유효 MUST NOT 하다.
-- 구현체가 더 정밀한 진단 코드를 제공할 수 있다면, 다음을 SHOULD 따른다.
-  - 전역 선언/프로토타입 관련: MC89-E404, MC89-E405
-  - C99-style for 선언: MC89-E302
-  - 선언 위치 위반: MC89-E301
-  - 금지된 연산자/구문(++, ?: 등): MC89-E203
-
-Syntactically disallowed (at minimum)
-- 파일 스코프에서의 전역 변수/선언 (external object definitions)
-- 파일 스코프에서의 함수 프로토타입(선언만 있고 본문이 없는 형태)
-- `int` 이외의 타입/키워드: char, float, double, short, long, unsigned, signed, void 등
-- 사용자 정의 타입: struct, union, enum, typedef
-- 포인터/배열 관련 선언 및 구문: `*`(선언자), `&`, `[]`
-- 증감 연산자: `++`, `--`
-- sizeof 연산
-- 조건(삼항) 연산자: `?:`
-- 비트 연산자: `& | ^ ~ << >>`
-- (7.1.1에 의해) 콤마 연산자: (E1, E2) 형태
-- 전처리(3.6에서 이미 lexical 금지로도 처리 가능)
-
-Allowed Examples
-    int main() {
-        int x;
-        x = 1 + 2 * 3;
-        return x;
-    }
-
-Forbidden Examples (MUST be Compile-time Error)
-(1) Global variable (not allowed at file scope)
-    int g;
-    int main() { return 0; }
-
-(2) Function prototype (not allowed)
-    int f(int a);
-    int main() { return 0; }
-
-(3) Pointer/array (not in grammar)
-    int main() {
-        int *p;      /* ERROR */
-        return 0;
-    }
-
-Notes (Non-Normative)
-- 구현체가 “전체 C89 파서”를 사용하더라도, 위 항목들은 MiniC89 관점에서 반드시 거부해야 한다.
-  즉, “파싱 성공”은 “MiniC89로 허용”을 의미하지 않는다.
+- 파일 스코프에서의 전역 변수/선언 (MC89-E405)
+- 파일 스코프에서의 함수 프로토타입 (MC89-E404)
+- C99 스타일 `for` 선언 (MC89-E302)
+- `int` 이외의 타입/키워드: `char`, `float`, `double`, `short`, `long`, `unsigned`, `signed`, `void` (MC89-E210)
+- 사용자 정의 타입: `struct`, `union`, `enum`, `typedef` (MC89-E211)
+- 포인터/배열 관련 선언 및 구문: `*`(선언자), `&`, `[]` (MC89-E212)
+- 증감 연산자: `++`, `--` (MC89-E213)
+- sizeof 연산자 (MC89-E214)
+- 조건(삼항) 연산자: `?:` (MC89-E215)
+- 비트 연산자: `& | ^ ~ << >>` (MC89-E216)
+- 콤마 연산자: `E1, E2` 형태 (MC89-E217)
+- 허용되지 않는 키워드: `while`, `do`, `switch`, `case`, `default`, `goto`, `case`,`default` (MC89-E110)
 
 ---
 
 #### 4.3.3 Semantically Disallowed but Syntactically Valid Forms (Static semantic errors)
 
 다음 항목은 MiniC89 문법으로는 파싱될 수 있으나,
-정적 의미 규칙(Chapter 9, Chapter 11 Diagnostics)을 위반하므로 금지된다.
+정적 의미 규칙을 위반하므로 금지된다.
 
-Normative Rules
-- 아래 항목이 발견되면 구현체는 컴파일 타임 오류로 거부 MUST 한다.
-- 본 항목은 “표준 라이브러리 호출 금지”를 포함한다. MiniC89에는 표준 라이브러리가 없으며,
-  프로그램 외부에 정의된 함수를 호출할 수 없다.
-
-Semantically disallowed (at minimum)
 - 선언되지 않은 변수 사용: MC89-E201
 - 초기화되지 않은 변수 읽기: MC89-E202
 - 프로그램 내에 정의되지 않은 함수 호출(표준 라이브러리 호출 포함): MC89-E407
   - 예: printf, scanf, puts, getchar 등 (예시는 비한정 목록)
 - 함수 인자 개수 불일치: MC89-E408
 
-Allowed Examples
-    int add(int a, int b) { return a + b; }
-    int main() { return add(1, 2); }
+"표준 라이브러리 호출 금지"는 문법으로 금지할 수 없으므로(식별자는 항상 문법적으로 가능),
+정적 의미 규칙(정의 존재성 검사)으로 금지한다.
 
-Forbidden Examples (MUST be Compile-time Error)
-(1) Standard library call (treated as undefined function in MiniC89)
-    int main() {
-        printf(1);   /* ERROR: MC89-E407 */
-        return 0;
-    }
-
-(2) Undefined variable
-    int main() {
-        x = 1;       /* ERROR: MC89-E201 */
-        return 0;
-    }
-
-Notes (Non-Normative)
-- “표준 라이브러리 호출 금지”는 문법으로 금지할 수 없으므로(식별자는 항상 문법적으로 가능),
-  정적 의미 규칙(정의 존재성 검사)으로 금지한다.
 ---
 
 ## 5. Types
@@ -1981,7 +2072,115 @@ Required Message
 Example
     /* unterminated comment
 
+#### MC89-E105 — Line Comment Not Allowed
+Condition (MUST detect)
+- 입력 소스에서 `"//"` 토큰 시퀀스가 등장한 경우.
 
+Required Message
+```text
+error MC89-E105: line comments ('//') are not allowed
+```
+
+Location
+- 위치는 `//`의 첫 번째 `/` 문자의 (line:col)을 사용한다. MUST
+
+Example
+```c
+int main() { return 0; } // hello
+/*                   ^ MC89-E105 here */
+```
+#### MC89-E106 — Preprocessor Directive Not Allowed
+**Condition (MUST detect)**
+- 소스 코드에서 `'#'` 문자가 주석 밖에서 등장한 경우.
+
+**Required Message**
+```text
+error MC89-E106: preprocessor directives are not allowed
+```
+
+**Location (Normative)**
+- 위치는 해당 `#`의 첫 문자 위치 `(line:col)` ㅡㅕㄴㅆ
+
+**Example**
+```c
+#include <stdio.h>   /* ERROR: MC89-E106 */
+int main() { return 0; }
+```
+
+#### MC89-E107 — String Literal Not Allowed
+**Condition (MUST detect)**
+- 소스 코드에서 `"` 로 시작하는 문자열 리터럴이 등장한 경우
+
+**Required Message**
+```text
+error MC89-E107: string literals are not allowed
+```
+
+**Example**
+```c
+int main() {
+    return "hello";   /* MC89-E107 */
+}
+```
+
+#### MC89-E108 — Character Constant Not Allowed
+**Condition (MUST detect)**
+- 소스 코드에서 `'a'`, `'\n'` 등 문자 상수가 등장한 경우
+
+**Required Message**
+```text
+error MC89-E108: character constants are not allowed
+```
+
+**Example**
+```c
+int main() {
+    return 'a';   /* MC89-E108 */
+}
+```
+
+#### MC89-E109 — Floating Constant Not Allowed
+**Condition (MUST detect)**
+- 실수 상수 형태가 등장한 경우 (`1.0`, `0.5`, `.3`, `1e3`, `2E-1` 등)
+
+**Required Message**
+```text
+error MC89-E109: floating-point constants are not allowed
+```
+
+**Example**
+```c
+int main() {
+    return 1.5;   /* MC89-E109 */
+}
+```
+
+#### MC89-E110 — Forbidden Keyword
+**Condition (MUST detect)**
+- 소스 코드에서 키워드 토큰이 등장하였으나,
+  해당 키워드가 MiniC89에서 허용된 키워드 집합에 포함되지 않은 경우.
+- 제어/분기/점프 키워드:  
+  `while`, `do`, `switch`, `case`, `default`, `goto`
+- 사용자 정의 타입 키워드:  
+  `struct`, `union`, `enum`, `typedef`
+- 기타 MiniC89에서 제거된 키워드:  
+  `sizeof`
+  
+**Required Message**
+```text
+error MC89-E110: forbidden keyword '<keyword>'
+```
+
+**Location**
+- 문제의 키워드 토큰의 첫 문자 위치를 사용한다.
+
+**Example**
+```c
+int main() {
+  while (1) { }   /* ERROR: MC89-E110 (forbidden keyword 'while') */
+  return 0;
+}
+```
 
 ### 11.b Expression / Type Diagnostics (Normative)
 > 적용 범위:
@@ -2034,19 +2233,19 @@ Example
 
 
 ##### MC89-E202 — Uninitialized Variable Read
-Condition (MUST detect)
+**Condition (MUST detect)**
 - 지역 변수(매개변수 제외)가 초기화되기 전에 그 값을 읽는 경우.
 - 구현체는 “definitely initialized” 분석을 수행 MUST 하며,
   모든 실행 경로에서 해당 읽기 지점 이전에 초기화가 보장되지 않으면
   MC89-E202로 오류를 보고 MUST 한다.
 
-초기화 규칙 (Normative)
+**초기화 규칙 (Normative)**
 - 매개변수는 함수 진입 시 초기화된 것으로 간주한다.
 - `int x;`는 초기화되지 않은 변수 x를 생성한다.
 - `int x = E;`는 E의 평가가 성공적으로 끝난 후 x가 초기화된 것으로 간주한다.
 - `x = E;`는 E의 평가가 성공적으로 끝난 후 x가 초기화된 것으로 간주한다.
 
-용어 정의 (Normative)
+**용어 정의 (Normative)**
 
 - **Initialized set (DI)**  
   어떤 프로그램 지점에서 “반드시 초기화(definitely initialized)된 변수들의 집합”을 DI라 한다.
@@ -2067,10 +2266,180 @@ Condition (MUST detect)
 > 요약: E202는 “실행 가능 경로(feasible path) 정밀 판정”이 아니라,  
 > “CTCE 상수만 반영한 보수적 CFG 경로” 기준으로 definite init을 정의한다.
 
-Required Message
+**Required Message**
 - 다음 형식을 포함 MUST 한다.
   - error MC89-E202: read of uninitialized variable '<name>'
 
+**A. 분석 입력/출력 (Normative)**
+
+구현체는 각 함수에 대해 다음 분석을 수행 MUST 한다.
+
+- 입력:
+  - 함수의 AST/CFG
+  - 심볼 테이블(스코프에 있는 변수/매개변수)
+- 출력:
+  - 각 “읽기 지점(read site)”에서의 DI
+  - DI에 포함되지 않은 변수 읽기 발견 시 **MC89-E202** MUST 진단
+
+---
+
+**B. CFG 기반 최소 알고리즘 (Normative)**
+
+**B.1 초기 DI (Normative)**
+- 함수 진입 시:
+  - **모든 매개변수는 initialized로 간주**하므로 DI에 포함 MUST 한다.
+  - 지역 변수는 선언되더라도, initializer가 없으면 DI에 포함 MUST NOT 한다.
+
+**B.2 Join(합류) 규칙 (Normative)**
+- CFG에서 여러 전이(edge)가 한 지점으로 합류할 때,
+  해당 지점의 DI는 **모든 선행 경로에서 공통으로 initialized인 변수만 유지**해야 하므로,
+  **교집합(intersection)** 을 meet 연산자로 사용 MUST 한다.
+
+즉,
+- `DI_in(node) = ⋂ DI_out(pred)`  (단, pred→node edge가 “reachable”일 때만 포함)
+
+**B.3 Reachability 최소 규칙 (Normative)**
+- 구현체는 CTCE를 이용해 다음 “분기/루프의 상수 판정”을 수행 MUST 한다.
+  - `if (CTCE)`에서 CTCE 값이 0이면 then-branch edge는 unreachable
+  - `if (CTCE)`에서 CTCE 값이 0이 아니면 else-branch edge는 unreachable
+  - `for(...; CTCE; ...)`에서도 동일 (조건이 0이면 body 진입 edge unreachable)
+- 위 경우를 제외하고, **비-CTCE 조건은 true/false 모두 가능하다고 간주 MUST 한다.**
+  - (즉, 추가적인 상수 전파/관계 추론으로 분기를 제거하는 것은 “표준 요구”가 아니다)
+
+> 이 규칙은 “보수적(거짓 양성 가능)”을 **표준이 의도적으로 선택**하는 부분이다.
+> (동일 프로그램이 구현체마다 다르게 통과하는 것을 막기 위해)
+
+---
+
+**C. 문장(Statement) 전이 규칙 (Normative)**
+
+아래 규칙은 “정상 완료(normal completion)” 기준의 DI 전이를 정의한다.
+
+**C.1 선언 (Declarations)**
+- `int x;`
+  - `x`는 scope에 추가되지만 **DI에는 추가되지 않는다.**
+- `int x = E;`
+  - `E`를 평가하는 과정에서의 read는 DI 기준으로 검증 MUST
+  - `E` 평가가 정상 종료한 뒤 `x`를 DI에 추가 MUST
+- 하나의 선언문 `int d1, d2, ...;`에 여러 initializer가 있는 경우:
+  - init-declarator를 **소스 순서대로(left-to-right)** 처리 MUST
+  - 각 initializer `Ei`는 독립된 full-expression로 취급하며,
+    `di`는 `Ei` 평가 후 initialized로 간주 MUST
+
+**C.2 표현식 문장 / return**
+- `E;`, `return E;`
+  - `E` 내부의 모든 read는 해당 지점의 DI 기준으로 검증 MUST
+  - `E` 평가 중 발생하는 write(대입)는, `E`가 정상 완료하면 DI에 반영 MUST
+
+**C.3 if / if-else**
+`if (E) S1 else S2` 에 대해:
+
+- 조건식 분석 결과로 `(DI_true(E), DI_false(E))`를 계산 MUST
+- then-branch 진입 DI = `DI_true(E)`
+- else-branch 진입 DI = `DI_false(E)`
+- if 문 정상 완료 후 DI = `DI_out(S1) ∩ DI_out(S2)` (도달 가능한 경로만)
+
+`if (E) S1` (else 없음) 은 else-branch를 “empty statement”로 간주하여:
+- else 쪽 DI_out은 `DI_false(E)` 그대로로 처리한다.
+
+**C.4 for (반복문)**
+`for (init; cond; step) body` 는 다음 순서의 CFG를 구성 MUST 한다.
+
+1) `init` (비어있지 않으면 1회 평가)
+2) `cond` (비어있으면 항상 참으로 간주)
+3) `body`
+4) `step` (비어있지 않으면 평가)
+5) 다시 `cond`
+
+**루프의 DI는 고정점(fixpoint)으로 계산 MUST**
+- `DI_header` = cond 평가 직전의 DI (루프 헤더)
+- 초기값: `DI_header₀ = DI_after(init)`
+- 반복 갱신(개념적 정의):
+  - `cond`를 `DI_header_k`로 분석하여 `DI_true/DI_false`
+  - `body` 진입 DI = `DI_true(cond)`
+  - `step` 진입 DI는:
+    - body 정상 완료 경로 + continue 경로가 합류한 결과(교집합)
+  - `DI_header_{k+1} = DI_after(init) ∩ DI_after(step)`  
+    (첫 iteration은 init에서, 이후 iteration은 step에서 header로 오므로 교집합)
+
+- 수렴할 때까지 반복하며, 최종 `DI_header*`를 사용 MUST 한다.
+
+**break/continue 처리 (Normative)**
+- `continue`는 “현재 루프의 step으로 이동”하는 edge를 생성 MUST
+- `break`는 “루프 밖(루프 이후 문장)으로 이동”하는 edge를 생성 MUST
+- 루프 이후 DI(`DI_after_loop`)는 다음 모든 exit 경로의 교집합 MUST:
+  - `cond`가 false가 되어 종료되는 경로의 DI(`DI_false(cond)` at `DI_header*`)
+  - `break`로 종료되는 모든 경로의 DI(각 break 지점의 DI_out을 교집합)
+
+---
+
+**D. 표현식(Expression) 분석 최소 규칙 (Normative)**
+
+E202는 표현식 내부에서도 read를 검증해야 하므로,
+표현식 분석은 다음 최소 의미를 만족 MUST 한다.
+
+**D.1 기본 규칙**
+- 정수 리터럴: DI 변화 없음
+- 식별자 `v`:
+  - `v ∈ DI`가 아니면 **MC89-E202 MUST**
+- 단항 연산: 피연산자를 동일 DI로 분석
+- 비교/산술 등 **비-단락 이항 연산자**(`+ - * / % < <= > >= == !=`):
+  - 피연산자 평가 순서는 미지정이므로,  
+    **각 피연산자는 동일한 DI_in으로 독립 분석 MUST** (서로의 write를 가정해서는 안 됨)
+  - 단, 연산 전체가 정상 완료하면, 양쪽 피연산자에서 발생한 write는 모두 반영되어
+    DI_out에 포함 MAY (일반적으로 union)
+
+**D.2 대입식 `v = RHS`**
+- RHS를 먼저 분석 MUST (RHS 내부 read는 현재 DI 기준)
+- RHS가 정상 완료하면 `v`를 initialized로 만들어 DI_out에 포함 MUST
+
+**D.3 `&&` / `||` (단락 평가 반영이 E202에서도 필수)**
+E202는 `&&`/`||`의 단락 평가로 인해 “어느 경로에서 RHS가 평가되는지”가 달라지므로,
+조건식 분석은 최소로 `(DI_true, DI_false)`를 반환 MUST 한다.
+
+`A && B`
+- `A`를 분석하여 `(DI_A_true, DI_A_false)`를 얻는다.
+- `B`는 `A`가 true일 때만 평가되므로:
+  - `B`는 `DI_A_true`를 입력으로 분석한다.
+- 결과:
+  - `DI_true(A&&B)  = DI_true(B)`  (A true & B true 경로)
+  - `DI_false(A&&B) = DI_A_false ∩ DI_false(B)`  
+    (A false 경로 + (A true & B false) 경로의 교집합)
+- `A`가 CTCE이고 값이 0이면 `B`는 “평가되지 않음”으로 간주 MUST  
+  (따라서 `B` 내부 read/write는 E202 판정에 포함 MUST NOT)
+
+`A || B`
+- `A`를 분석하여 `(DI_A_true, DI_A_false)`를 얻는다.
+- `B`는 `A`가 false일 때만 평가되므로:
+  - `B`는 `DI_A_false`를 입력으로 분석한다.
+- 결과:
+  - `DI_false(A||B) = DI_false(B)` (A false & B false 경로)
+  - `DI_true(A||B)  = DI_A_true ∩ DI_true(B)`  
+    (A true 경로 + (A false & B true) 경로의 교집합)
+- `A`가 CTCE이고 값이 0이 아니면 `B`는 “평가되지 않음”으로 간주 MUST
+
+**D.4 함수 호출 `f(a1, ..., an)`**
+- 인자 평가 순서는 미지정이므로,
+  **각 인자 `ai`는 동일 DI_in으로 독립 분석 MUST** (인자 간 write 전파 금지)
+- 호출 전체가 정상 완료하면, 각 인자에서 발생한 write는 모두 반영되어 DI_out에 포함 MAY
+
+---
+
+**E. 보수성(거짓 양성) 정책을 표준으로 고정 (Normative)**
+
+**E.1 보수성 원칙 (Normative)**
+- **CTCE로 판별되는 상수 조건**만 도달 불가능(unreachable)로 취급 MUST 한다.
+- 그 외 조건(식별자 포함/함수 호출 포함/대입 포함 등)은
+  true/false 모두 가능하다고 간주 MUST 한다.
+- 따라서 E202는 일부 “실제로는 항상 초기화되는” 프로그램도
+  위 보수적 CFG 기준에서 초기화가 증명되지 않으면 오류가 될 수 있다.
+  - 이는 표준이 의도한 제약이며, 구현체 간 판정 불일치를 방지하기 위한 것이다.
+
+> Note (Non-Normative):  
+> 예를 들어, `if (a==0) x=1; if (a!=0) x=1;` 같은 코드는 실제로 x가 항상 초기화되지만,  
+> 상보성(조건 관계) 추론을 요구하지 않으므로 MiniC89에서는 E202가 날 수 있다(보수적 규칙).
+
+---
 Example
     int main() {
         int x;
@@ -2293,6 +2662,270 @@ int main() {
   return i;             /* 0 */
 }
 ```
+
+
+#### MC89-E209 — Duplicate Declaration
+**Condition (MUST detect)**
+- 어떤 매개변수/지역 변수 선언이 식별자 `<name>`을 도입할 때,
+  다음 중 하나라도 만족하면 MC89-E209이다.
+  1) 현재 스코프에 `<name>`이 이미 선언되어 있음 (duplicate in same scope)  
+  2) 같은 선언 리스트(`<parameter-list>` / `<init-declarator-list>`) 안에서 `<name>`이 2회 이상 등장함
+
+**Required Message**
+```text
+error MC89-E209: duplicate declaration of identifier '<name>'
+```
+
+
+#### MC89-E210 — Invalid Type Keyword
+**Condition (MUST detect)**
+- `int`가 아닌 다른 타입 키워드가 등장한 경우
+- `char`, `float`, `double`, `short`, `long`, `unsigned`, `signed`, `void`
+
+**Required Message**
+```text
+error MC89-E210: invalid type keyword (only 'int' is allowed)
+```
+
+**Location**
+- 문제의 타입 키워드 토큰의 시작 위치 (line:col)
+
+**Example**
+```c
+int main() {
+    char c;          /* ERROR: MC89-E210 */
+    return 0;
+}
+```
+
+
+#### MC89-E211 — User-defined Types Not Allowed
+**Condition (MUST detect)**
+- 다음 키워드가 등장한 경우: 
+  `struct`, `union`, `enum`, `typedef`
+
+**Required Message**
+```text
+error MC89-E211: user-defined types are not allowed
+```
+
+**Location**
+- 문제의 키워드 토큰의 시작 위치 (line:col)
+
+**Example**
+```c
+struct S { int x; };    /* ERROR: MC89-E211 */
+int main() { return 0; }
+```
+
+#### MC89-E212 — Pointers and Arrays Not Allowed
+
+**Condition (MUST detect)**
+다음 중 하나라도 만족하면 MC89-E212이다.
+
+1) **포인터 선언자**
+- 선언문에서 선언자 부분에 `*`가 등장한 경우  
+  예: `int *p;`, `int **pp;`, `int *p = 0;`
+
+2) **주소 연산자**
+- 표현식에서 단항 연산자 `&`가 등장한 경우  
+  예: `&x`
+
+3) **배열 구문**
+- 소스 코드에서 `[` 또는 `]`가 등장하여 배열 선언 또는 첨자 표현식을 구성하는 경우  
+  예: `int a[10];`, `a[i]`
+
+**Required Message**
+```text
+error MC89-E212: pointers and arrays are not allowed
+```
+
+**Location**
+- 금지된 기호의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int *p;        /* ERROR: MC89-E212 */
+  return 0;
+}
+```
+```c
+int main() {
+  int a[10];     /* ERROR: MC89-E212 */
+  return 0;
+}
+```
+#### MC89-E213 — Increment/Decrement Operators Not Allowed
+
+**Condition (MUST detect)**
+- 소스 코드에서 다음 연산자 중 하나가 등장한 경우:
+  - `++`
+  - `--`
+- 해당 연산자가 전위(prefix) 또는 후위(postfix) 형태인지와 무관하다.
+  - 예: `++x`, `x++`, `--x`, `x--` 모두 포함
+
+**Required Message**
+```text
+error MC89-E213: increment and decrement operators are not allowed
+```
+
+**Location**
+- 해당 연산자 토큰의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int x;
+  x = 0;
+  x++;        /* ERROR: MC89-E213 */
+  return x;
+}
+```
+
+#### MC89-E214 — sizeof Operator Not Allowed
+
+**Condition (MUST detect)**
+- 소스 코드에서 키워드 `sizeof`가 연산자로 사용된 경우.
+- 다음 모든 형태를 포함 MUST 한다.
+  - `sizeof x`
+  - `sizeof(x)`
+  - `sizeof(type-name)` (MiniC89에는 type-name 자체가 거의 없지만, 형태상 포함)
+
+**Required Message**
+```text
+error MC89-E214: sizeof operator is not allowed
+```
+
+**Location**
+- 해당 `sizeof` 키워드 토큰의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int x;
+  return sizeof(x);   /* ERROR: MC89-E214 */
+}
+```
+
+#### MC89-E215 — Conditional Operator Not Allowed
+
+**Condition (MUST detect)**
+- 소스 코드에서 조건(삼항) 연산자 형태가 등장한 경우:
+  - `E1 ? E2 : E3`
+- `?` 또는 `:`가 단독으로 등장하여
+  조건 연산자 구문을 구성하려는 모든 시도를 포함 MUST 한다.
+  
+**Required Message**
+```text
+error MC89-E215: conditional operator '?:' is not allowed
+```
+
+**Location**
+- 해당 `?` 키워드 토큰의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int x;
+  x = 1;
+  return x ? 10 : 20;   /* ERROR: MC89-E215 */
+}
+```
+
+#### MC89-E216 — Bitwise Operators Not Allowed
+
+**Condition (MUST detect)**
+- 소스 코드에서 다음 비트 연산자 중 하나가 등장한 경우:
+  - `&`   (bitwise AND)
+  - `|`   (bitwise OR)
+  - `^`   (bitwise XOR)
+  - `~`   (bitwise NOT)
+  - `<<`  (left shift)
+  - `>>`  (right shift)
+
+다음 모든 형태를 포함 MUST 한다.
+- 이항 연산자 형태: `a & b`, `a | b`, `a ^ b`, `a << b`, `a >> b`
+- 단항 연산자 형태: `~a`
+  
+**Required Message**
+```text
+error MC89-E216: bitwise operators are not allowed
+```
+
+**Location**
+- 해당 비트 연산자 토큰의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int a;
+  int b;
+  a = 3;
+  b = 5;
+  return a & b;    /* ERROR: MC89-E216 */
+}
+```
+
+#### MC89-E217 — Comma Operator Not Allowed
+
+**Condition (MUST detect)**
+- 소스 코드에서 다음 형태의 콤마 연산자가 등장한 경우:
+  - `E1, E2`
+- 단, 다음 경우는 제외 MUST 한다.
+  - 함수 호출에서 인자 구분자로 사용되는 `,`
+    - 예: `f(a, b, c)`
+  - 선언문에서 init-declarator-list를 구분하는 `,`
+    - 예: `int a, b;`
+  
+**Required Message**
+```text
+error MC89-E217: comma operator is not allowed
+```
+
+**Location**
+- 해당 콤마 연산자 토큰의 첫 문자 위치를 사용한다.
+
+**Examples**
+```c
+int main() {
+  int a;
+  int b;
+  a = 1;
+  b = 2;
+  return (a = 3, b);   /* ERROR: MC89-E217 */
+}
+```
+
+```c
+int f(int a, int b) {
+  return a + b;        /* OK */
+}
+
+int main() {
+  int x;
+  int y;
+  x = 1;
+  y = 2;
+  return f(x, y);      /* OK: argument separator */
+}
+```
+
+```c
+int main() {
+  int a;
+  int b;
+  int c;
+  a = 1;
+  b = 2;
+  c = 3;
+  /* declaration comma */
+  int x, y;            /* OK */
+  return a;
+}
+```
+
+---
 ### 11.x Statement-related Diagnostics (Normative)
 > **적용 범위**
 >
@@ -2301,24 +2934,6 @@ int main() {
 > 경고로 대체하는 것은 허용되지 않는다.
 
 ---
-
-#### MC89-E209 — Duplicate or Shadowing Declaration
-**Condition (MUST detect)**
-- 어떤 매개변수/지역 변수 선언이 식별자 `<name>`을 도입할 때,
-  다음 중 하나라도 만족하면 MC89-E209이다.
-  1) 현재 스코프에 `<name>`이 이미 선언되어 있음 (duplicate in same scope)  
-  2) 어떤 enclosing 스코프(아직 종료되지 않은 바깥 스코프)에 `<name>`이 이미 선언되어 있음 (shadowing)  
-  3) 같은 선언 리스트(매개변수 리스트 / init-declarator-list) 안에서 `<name>`이 2회 이상 등장함
-
-**Required Message**
-```text
-error MC89-E209: duplicate declaration of identifier '<name>'
-```
-**Note (Non-Normative):**
-메시지에 “shadowing”이라는 단어를 추가해도 되지만, Required Message 접두는 반드시 포함해야 한다.
-
----
-
 ### 11.x.1 Error Code Naming Convention
 - Statements 관련 오류 코드는 다음 범위를 사용한다.
 ```cpp
@@ -2436,7 +3051,64 @@ warning MC89-E307: unreachable statement
 #### Notes (Non-Normative)
 > 이 오류는 **SHOULD** 수준이다.
 >
-> 구현 단순성을 위해 생략 가능하다다.
+> 구현 단순성을 위해 생략 가능하다.
+
+
+### MC89-E308 -- while Statement Not Allowed
+#### Condition
+- 소스 코드에서 `while` 키워드가
+  반복문(statement)을 구성하려는 형태로 등장한 경우.
+  - 예: `while (E) S`
+
+#### Required Message
+```text
+error MC89-E308: 'while' statement is not allowed
+```
+
+#### Location
+- `while` 키워드의 첫 문자 위치를 사용한다.
+
+
+### MC89-E309 — do-while Statement Not Allowed
+#### Condition
+- 소스 코드에서 `do S while (E);` 형태의 반복문이 등장한 경우.
+
+#### Required Message
+```text
+error MC89-E309: 'do-while' statement is not allowed
+```
+
+#### Location
+- `do` 키워드의 첫 문자 위치를 사용한다.
+
+
+### MC89-E310 — switch Statement Not Allowed
+#### Condition
+- 소스 코드에서 `switch (E) S` 형태의 분기문이 등장한 경우.
+
+#### Required Message
+```text
+error MC89-E310: 'switch' statement is not allowed
+```
+
+#### Location
+- `switch` 키워드의 첫 문자 위치를 사용한다.
+
+
+### MC89-E311 — goto Statement Not Allowed
+#### Condition
+- 소스 코드에서 `goto` 키워드가 점프 문장을 구성하려는 형태로 등장한 경우.
+
+#### Required Message
+```text
+error MC89-E311: 'goto' statement is not allowed
+```
+
+#### Location
+- `switch` 키워드의 첫 문자 위치를 사용한다.
+
+
+
 
 ### 11.x.3 Mapping from Grammar to Diagnostics (Normative)
 |Grammar Rule|Error Code|
@@ -2531,7 +3203,8 @@ error MC89-E406: invalid parameter declaration (only 'int <identifier>' allowed)
   (1) 호출 지점보다 앞쪽(소스 코드 상 earlier in the translation unit)에 `f`의 함수 정의가 존재함
   (2) 현재 정의 중인 함수가 `f`이며, 그 본문 내부에서의 재귀 호출임
 
-즉, 정의가 뒤에 등장하는 forward call도 MC89-E407으로 진단 MUST 한다.#### Message
+즉, 정의가 뒤에 등장하는 forward call도 MC89-E407으로 진단 MUST 한다.
+#### Message
 ```
 error MC89-E407: call to undefined function '<name>'
 ```
@@ -2876,6 +3549,12 @@ MC89-E101   Invalid Character       정의되지 않은 문자가 토큰에 등�
 MC89-E102   Invalid Identifier      식별자 규칙 위반
 MC89-E103   Invalid Integer Literal 정수 리터럴 형식 오류
 MC89-E104   Unterminated Comment    주석이 종료되지 않음
+MC89-E105   Line Comment Not Allowed             "//" 토큰 시퀀스가 등장
+MC89-E106   Preprocessor Directive Not Allowed   '#' 등장
+MC89-E107   String Literal Not Allowed           '"' 등장
+MC89-E108   Character Constant Not Allowed       ''' 등장
+MC89-E109   Floating Constant Not Allowed        '1.' 등장
+MC89-E110   Forbidden Keyword                    MiniC89에서 금지된 키워드 사용
 
 Example:
     int @x;    /* MC89-E101 */
@@ -2893,9 +3572,16 @@ MC89-E205   Invalid Expression Form         문법적으로 허용되지 않은 
 MC89-E206   Division by Zero                컴파일 타임에 판별 가능한 0으로 나누기
 MC89-E207   Integer Overflow (Detected)     컴파일 타임에 검출 가능한 오버플로
 MC89-E208   Evaluation Order Dependency     평가 순서 의존 표현식
+MC89-E209   Duplicate Declaration           같은 스코프에 같은 이름이 중복해서 선언됨
+MC89-E210   Invalid Type Keyword            `int` 이외의 타입이 사용됨
+MC89-E211   User-defined Types Not Allowed  `struct`, `union`, `enum`, `typedef`가 사용됨
+MC89-E212   Pointers and Arrays Not Allowed 포인터 또는 배열 사용됨
+MC89-E213   Increment/Decrement Operators Not Allowed 증감연산자 사용됨
+MC89-E214   sizeof Operator Not Allowed     sizeof 연산자 사용됨
+MC89-E215   Conditional Operator Not Allowed     ?: 연산자 사용됨
+MC89-E216   Bitwise Operators Not Allowed   비트연산자 사용됨
+MC89-E217   Comma Operator Not Allowed      콤마연산자 사용됨
 
-Example:
-    x = y++;     /* MC89-E203 */
 
 ---
 
@@ -2909,6 +3595,11 @@ MC89-E304   continue Outside Loop       반복문 외부 continue
 MC89-E305   return Outside Function     함수 외부 return
 MC89-E306   Missing return Expression   int 함수에서 return;
 MC89-E307   Unreachable Statement       도달 불가능 문장 (SHOULD)
+MC89-E308   while Statement Not Allowed while문 사용
+MC89-E309   do-while Statement Not Allowed  do..while문 사용
+MC89-E310   switch Statement Not Allowed    switch문 사용
+MC89-E311   goto Statement Not Allowed      goto문 사용
+
 
 Example:
     {
