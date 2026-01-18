@@ -697,19 +697,19 @@ MiniC89 구현체는 본 절에 해당하는 프로그램을 컴파일 타임에
 
 #### 5.1.1 Normative Rules
 - MiniC89에는 오직 하나의 타입 `int`만 존재 MUST 한다.
-- MiniC89의 `int`는 정확히 8-bit이며, 표현은 2의 보수(two’s complement) MUST 이다.
+- MiniC89의 `int`는 정확히 8-bit이며, 표현은 2의 보수다.
 - 따라서 `int`의 값 범위는 다음과 같이 고정된다.
   - INT_MIN = -128
   - INT_MAX =  127
 - 모든 변수, 매개변수, 함수 반환값은 `int` 타입 MUST 이다.
 
-정수 리터럴(10진 정수 상수) 정책:
+정수 리터럴 정책:
 - 10진 정수 리터럴의 값은 0 이상 127 이하 MUST 이다.
-- 위 범위를 벗어나는 정수 리터럴은 컴파일 타임 오류(MUST be Compile-time Error)이다.
-  - 진단 코드: MC89-E103 (invalid integer literal)
+- 위 범위를 벗어나는 정수 리터럴은 컴파일 타임 오류다.
+  - 진단 코드: MC89-E103
 
-#### Allowed Example
-##### 범위 내 리터럴/연산
+#### 5.1.2 Allowed Example
+**1) 범위 내 리터럴/연산**
 ```c
 int main() {
     int x;
@@ -719,7 +719,7 @@ int main() {
 }
 ```
 
-##### -128을 “128 리터럴 없이” 만들기
+**2) -128을 “128 리터럴 없이” 만들기**
 ```c
 int main() {
     int m;
@@ -728,8 +728,8 @@ int main() {
 }
 ```
 
-#### Forbidden Examples
-##### 정수 리터럴 범위 위반 (구현이 8-bit 정책을 채택하는 경우)
+#### 5.1.3 Forbidden Examples
+**1) 정수 리터럴 범위 위반**
 ```c
 int main() {
     int x;
@@ -738,7 +738,7 @@ int main() {
 }
 ```
 
-##### 허용 타입 위반
+**2) 허용 타입 위반**
 ```c
 int main() {
     char c;           /* ERROR: only 'int' type is allowed */
@@ -746,32 +746,23 @@ int main() {
 }
 ```
 
-#### Notes (Non-Normative)
-- 본 절은 “타입이 하나뿐인 C89 부분집합”을 목표로 한다.
-- int의 비트폭을 표준에서 “MUST로 고정”할지(예: 8-bit) “SHOULD로 둘지”는 프로젝트 정책으로 결정한다.
-  (온라인 저지/채점 안정성을 최우선하면 고정(MUST) 권장)
-
----
 ### 5.2 Arithmetic Semantics and Undefined Behavior
 
-#### Normative Rules
-- MiniC89의 산술 연산은 “수학적 정수(정확한 정수)”에서 수행한 뒤,
-  그 결과가 `int` 범위(INT_MIN..INT_MAX)에 포함되는지 검사 MUST 한다.
-- 다음 연산자들의 결과가 `int` 범위를 벗어나면 Undefined Behavior(UB) MUST 이다.
+#### 5.2.1 Normative Rules
+- MiniC89의 산술 연산은 정확한 정수에서 수행한 뒤,
+  그 결과가 `int` 범위에 포함되는지 검사한다.
+- 다음 연산자들의 결과가 `int` 범위를 벗어나면 Undefined Behavior(UB)다.
   - 단항: `+`, `-`
   - 이항: `+`, `-`, `*`, `/`, `%`
 - 나눗셈과 나머지 연산에 대해:
-  - 제수(divisor)가 0이면 UB MUST 이다.
-  - `a / b`는 정수 나눗셈의 몫을 의미하며(구현은 교육/채점 목적상 결정적으로 제공 SHOULD),
-    그 몫이 범위를 벗어나면 UB MUST 이다.
-  - `a % b`는 나머지를 의미하며, 제수가 0이면 UB MUST 이다.
-- 다음은 위 규칙에서 즉시 따라오는 대표 UB 사례이다.
-  - `-(-128)`은 결과가 128이므로 UB
-  - `(-128) / (-1)`은 결과가 128이므로 UB
-- wrap-around(모듈러) 동작은 정의하지 않는다(MUST NOT).
+  - 제수(divisor)가 0이면 UB다.
+  - `a / b`는 정수 나눗셈의 몫을 의미하며,
+    그 몫이 범위를 벗어나면 UB다.
+  - `a % b`는 나머지를 의미하며, 제수가 0이면 UB다.
+- wrap-around(모듈러) 동작은 정의하지 않는다.
 
-#### Allowed Examples
-##### 범위 내 산술
+#### 5.2.2 Allowed Examples
+**1) 범위 내 산술 연산**
 ```c
 int main() {
     int a;
@@ -782,7 +773,7 @@ int main() {
 }
 ```
 
-##### 0으로 나누기를 피하는 형태
+**2) 0으로 나누기를 피하는 형태**
 ```c
 int main() {
     int x;
@@ -792,53 +783,43 @@ int main() {
 }
 ```
 
-#### Forbidden Examples (MUST be Compile-time Error under Chapter 11 constant-folding policy)
-아래 예제들은 “컴파일 타임 상수식(CTCE)”로 구성되어 있으며,
-Chapter 11의 CTCE 정책에 의해 구현체는 컴파일 타임에 오류로 진단 MUST 한다.
+#### Forbidden Examples
 
-##### 상수식 0으로 나누기 (MC89-E206)
+**1) 상수식 0으로 나누기**
 ```c
 int main() {
     return 1 / 0;     /* ERROR: MC89-E206 */
 }
 ```
 
-##### 상수식 오버플로 (MC89-E207)
+**2) 상수식 오버플로**
 ```c
 int main() {
     return 127 + 1;   /* ERROR: MC89-E207 */
 }
 ```
 
-##### -(-128) 오버플로 (MC89-E207)
+**3) -(-128) 오버플로**
 ```c
 int main() {
-    return -(-127 - 1);  /* ERROR: MC89-E207 (i.e., -(-128)) */
+    return -(-127 - 1);  /* ERROR: MC89-E207 */
 }
 ```
 
-##### (-128)/(-1) 오버플로 (MC89-E207)
+**4) (-128)/(-1) 오버플로**
 ```c
 int main() {
     return (-127 - 1) / -1;  /* ERROR: MC89-E207 */
 }
 ```
 
-##### 미초기화 변수 읽기 (MC89-E202)
+**5) 미초기화 변수 읽기**
 ```c
 int main() {
     int x;
     return x;         /* ERROR: MC89-E202 */
 }
 ```
-
-#### Notes (Non-Normative)
-- 본 표준은 오버플로 시 wrap-around를 제공하지 않는다.
-- UB는 “정의되지 않은 동작”이므로, CTCE가 아닌 경우 구현이 런타임에서 어떤 결과를 내더라도
-  언어 의미로 보장되지 않는다.
-  단, 구현체는 UB를 검출 가능하다면 추가 진단을 보고 MAY 한다.
-
----
 
 #### 5.2.x Integer Division and Remainder Semantics (Normative)
 
