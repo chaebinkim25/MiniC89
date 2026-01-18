@@ -695,7 +695,7 @@ MiniC89 구현체는 본 절에 해당하는 프로그램을 컴파일 타임에
 
 ### 5.1 Integer Type
 
-#### Normative Rules
+#### 5.1.1 Normative Rules
 - MiniC89에는 오직 하나의 타입 `int`만 존재 MUST 한다.
 - MiniC89의 `int`는 정확히 8-bit이며, 표현은 2의 보수(two’s complement) MUST 이다.
 - 따라서 `int`의 값 범위는 다음과 같이 고정된다.
