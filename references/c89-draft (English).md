@@ -844,7 +844,7 @@ In the following list, unmarked names denote principal members and * denotes alt
 | **File position indicator** | [A.6.5.16](#a6516-defined-file-position-indicator) | **Foreword** | [A.7](#a7-index) |
 
 ## 1. INTRODUCTION
-This Standard specifies the form and establishes the interpretation of programs written in the C programming language[\[1\]](#-1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it).
+This Standard specifies the form and establishes the interpretation of programs written in the C programming language[\[1\]](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it).
 
 ### 1.1 PURPOSE
 
