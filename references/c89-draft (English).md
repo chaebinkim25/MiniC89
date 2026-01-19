@@ -844,19 +844,134 @@ In the following list, unmarked names denote principal members and * denotes alt
 | **File position indicator** | [A.6.5.16](#a6516-defined-file-position-indicator) | **Foreword** | [A.7](#a7-index) |
 
 ## 1. INTRODUCTION
-This Standard specifies the form and establishes the interpretation of programs written in the C programming language[\[1\]](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it).
 
 ### 1.1 PURPOSE
 
+This Standard specifies the form and establishes the interpretation of programs written in the C programming language[\[1\]](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it).
+
 ### 1.2 SCOPE
+
+This Standard specifies:
+
+* the representation of C programs;
+
+* the syntax and constraints of the C language;
+
+* the semantic rules for interpreting C programs;
+
+* the representation of input data to be processed by C programs;
+
+* the representation of output data produced by C programs;
+
+* the restrictions and limits imposed by a conforming implementation of C.
+
+This Standard does not specify:
+
+* the mechanism by which C programs are transformed for use by a data-processing system;
+
+* the mechanism by which C programs are invoked for use by a data-processing system;
+
+* the mechanism by which input data are transformed for use by a C program;
+
+* the mechanism by which output data are transformed after being produced by a C program;
+
+* the size or complexity of a program and its data that will exceed the capacity of any specific data-processing system or the capacity of a particular processor;
+
+* all minimal requirements of a data-processing system that is capable of supporting a conforming implementation.
 
 ### 1.3 REFERENCES
 
+1. "The C Reference Manual" by Dennis M. Ritchie, a version of which was published in The C Programming Language by Brian W. Kernighan and Dennis M. Ritchie, Prentice-Hall, Inc., (1978). Copyright owned by AT&T.
+
+2. 1984 /usr/group Standard by the /usr/group Standards Committee, Santa Clara, California, USA (November, 1984).
+
+3. American National Dictionary for Information Processing Systems, Information Processing Systems Technical Report ANSI X3/TR-1-82 (1982).
+
+4. ISO 646-1983 Invariant Code Set.
+
+5. IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985).
+
+6. ISO 4217 Codes for the Representation of Currency and Funds.
+
 ### 1.4 ORGANIZATION OF THE DOCUMENT
+
+This document is divided into four major sections:
+
+1. this introduction;
+
+2. the characteristics of environments that translate and execute C programs;
+
+3. the language syntax, constraints, and semantics;
+
+4. the library facilities.
+
+Examples are provided to illustrate possible forms of the constructions described. Footnotes are provided to emphasize consequences of the rules described in the section or elsewhere in the Standard. References are used to refer to other related sections. A set of appendices summarizes information contained in the Standard. The abstract, the foreword, the examples, the footnotes, the references, and the appendices are not part of the Standard.
 
 ### 1.5 BASE DOCUMENTS
 
+The language section ([3.](#3-language)) is derived from ``The C Reference Manual'' by Dennis M. Ritchie, a version of which was published as Appendix A of The C Programming Language by Brian W. Kernighan and Dennis M. Ritchie, Prentice-Hall, Inc., 1978; copyright owned by AT&T.
+
+The library section ([4.](#4-library)) is based on the 1984 /usr/group Standard by the /usr/group Standards Committee, Santa Clara, California, USA (November 14, 1984).
+
 ### 1.6 DEFINITIONS OF TERMS
+
+In this Standard, "shall" is to be interpreted as a requirement on an implementation or on a program; conversely, "shall not" is to be interpreted as a prohibition.
+
+The following terms are used in this document:
+
+* Implementation --- a particular set of software, running in a particular translation environment under particular control options, that performs translation of programs for, and supports execution of functions in, a particular execution environment.
+
+* Bit --- the unit of data storage in the execution environment large enough to hold an object that may have one of two values. It need not be possible to express the address of each individual bit of an object.
+
+* Byte --- the unit of data storage in the execution environment large enough to hold any member of the basic character set of the execution environment. It shall be possible to express the address of each individual byte of an object uniquely. A byte is composed of a contiguous sequence of bits, the number of which is implementation-defined. The least significant bit is called the low-order bit; the most significant bit is called the high-order bit.
+
+* Object --- a region of data storage in the execution environment, the contents of which can represent values. Except for bit-fields, objects are composed of contiguous sequences of one or more bytes, the number, order, and encoding of which are either explicitly specified or implementation-defined.
+
+* Character --- a single byte representing a member of the basic character set of either the source or the execution environment.
+
+* Multibyte character --- a sequence of one or more bytes representing a member of the extended character set of either the source or the execution environment. The extended character set is a superset of the basic character set.
+
+* Alignment --- a requirement that objects of a particular type be located on storage boundaries with addresses that are particular multiples of a byte address.
+
+* Argument --- an expression in the comma-separated list bounded by the parentheses in a function call expression, or a sequence of preprocessing tokens in the comma-separated list bounded by the parentheses in a function-like macro invocation. Also known as "actual argument" or "actual parameter."
+
+* Parameter --- an object declared as part of a function declaration or definition that acquires a value on entry to the function, or an identifier from the comma-separated list bounded by the parentheses immediately following the macro name in a function-like macro definition. Also known as "formal argument" or "formal parameter."
+
+* Unspecified behavior --- behavior, for a correct program construct and correct data, for which the Standard imposes no requirements.
+
+* Undefined behavior --- behavior, upon use of a nonportable or erroneous program construct, of erroneous data, or of indeterminately-valued objects, for which the Standard imposes no requirements. Permissible undefined behavior ranges from ignoring the situation completely with unpredictable results, to behaving during translation or program execution in a documented manner characteristic of the environment (with or without the issuance of a diagnostic message), to terminating a translation or execution (with the issuance of a diagnostic message).
+
+If a "shall" or "shall not" requirement that appears outside of a constraint is violated, the behavior is undefined. Undefined behavior is otherwise indicated in this Standard by the words "undefined behavior" or by the omission of any explicit definition of behavior. There is no difference in emphasis among these three; they all describe "behavior that is undefined."
+
+* Implementation-defined behavior --- behavior, for a correct program construct and correct data, that depends on the characteristics of the implementation and that each implementation shall document.
+
+* Locale-specific behavior --- behavior that depends on local conventions of nationality, culture, and language that each implementation shall document.
+
+* Diagnostic message --- a message belonging to an implementation-defined subset of the implementation's message output.
+
+* Constraints --- syntactic and semantic restrictions by which the exposition of language elements is to be interpreted.
+
+* Implementation limits --- restrictions imposed upon programs by the implementation.
+
+* Forward references --- references to later sections of the Standard that contain additional information relevant to this section.
+
+Other terms are defined at their first appearance, indicated by italic type. Terms explicitly defined in this Standard are not to be presumed to refer implicitly to similar terms defined elsewhere.
+
+Terms not defined in this Standard are to be interpreted according to the American National Dictionary for Information Processing Systems, Information Processing Systems Technical Report ANSI X3/TR-1-82 (1982).
+
+**Forward references:** localization ([4.4](#44-localization-localeh)).
+
+"Examples"
+
+An example of unspecified behavior is the order in which the arguments to a function are evaluated.
+
+An example of undefined behavior is the behavior on integer overflow.
+
+An example of implementation-defined behavior is the propagation of the high-order bit when a signed integer is shifted right.
+
+An example of locale-specific behavior is whether the islower function returns true for characters other than the 26 lower-case English letters.
+
+**Forward references:** bitwise shift operators ([3.3.7](#337-bitwise-shift-operators)), expressions ([3.3](#33-expressions)), function calls ([3.3.2.2](#3322-function-calls)), the islower function ([4.3.1.6](#4316-the-islower-function)).
 
 ### 1.7 COMPLIANCE
 
