@@ -1,5 +1,5 @@
 # MiniC89 Language Standard
-**Draft Version:** v0.31
+**Draft Version:** v0.4
 **Status:** Revision
 
 본 문서는 사이버보안학과 신입생 교육을 목적으로 하는  
@@ -11,133 +11,69 @@ C89 부분집합 언어 **MiniC89**의 공식 표준을 정의한다.
 
 ### 1 Introduction
 - 1.1 Purpose
-- 1.2 Design Goals
-- 1.3 Relationship to ISO C89
+- 1.2 Scope
+- 1.3 Relationship to ANSI C89
+- 1.4 Conformance
+- 1.5 Definition of terms
 
-### 2 Conformance
-- 2.1 Language Conformance
-- 2.2 Implementation Conformance
-- 2.3 Normative Keywords and Document Conventions (Normative)
-  - 2.3.1 Normative vs Non-Normative Text
-  - 2.3.2 Requirement Keywords
-  - 2.3.3 Conformance and Diagnostics Terminology
+### 2 Environment
+- 2.1 Conceptual models
+  - 2.1.1 Translation environment
+    - 2.1.1.1 Program structure
+    - 2.1.1.2 Translation phases
+    - 2.1.1.3 Diagnostics
+  - 2.1.2 Execution environments
+    - 2.1.2.1 Freestanding environment
+    - 2.1.2.2 Program execution
+- 2.2 Environmental considerations
+  - 2.2.1 Character sets
+  - 2.2.2 Signals and interrupts
+  - 2.2.3 Environmental limits
+    - 2.2.3.1 Translation limits
+    - 2.2.3.2 Numerical limits
 
 ### 3 Lexical Elements
-- 3.1 Tokens
-- 3.2 Keywords
-- 3.3 Identifiers
-- 3.4 Integer Constants
-- 3.5 Comments and Whitespace
-- 3.6 Lexical Grammar (Normative)
-  - 3.6.1 Source Character Set (Normative)
-  - 3.6.2 Regular Definitions (Normative)
-  - 3.6.3 Tokenization Rules (Normative)
-  - 3.6.4 Allowed Examples
-  - 3.6.5 Forbidden Examples
-  - 3.6.6 Notes (Non-Normative)
+- 3.1 Keywords
+- 3.2 Identifiers
+  - 3.2.1 Scopes
+  - 3.2.2 Storage durations
+  - 3.2.3 Type
+- 3.4 Constants
+- 3.5 Operators
+- 3.6 Punctuators
+- 3.7 Comments
 
-### 4 Syntax (Grammar)
-- 4.1 Grammar Notation
-- 4.2 Program Grammar (Translation Unit) (Normative)
-  - 4.2.1 EBNF Definition (Normative)
-  - 4.2.2 Normative Rules
-  - 4.2.3 Allowed Examples
-  - 4.2.4 Forbidden Examples
-  - 4.2.5 Notes (Non-Normative)
-- 4.3 Disallowed Constructs and Prohibitions
-  - 4.3.1 Lexically Disallowed Forms
-  - 4.3.2 Syntactically Disallowed Constructs
-  - 4.3.3 Semantically Disallowed but Syntactically Valid Forms
+### 4 Expressions
+- 4.1 Primary expressions
+- 4.2 Postfix operator
+  - 4.2.1 Function calls 
+- 4.3 Unary operators
+  - 4.3.1 Unary arithmetic operators  
+- 4.4 Multiplicative operators
+- 4.5 Additive operators
+- 4.6 Relational operators
+- 4.7 Equality operators
+- 4.8 Logical AND operator
+- 4.9 Logical OR operator
+- 4.10 Assignment operator
+- 4.11 Constant expressions
 
-### 5 Types
-- 5.1 Integer Type (Normative)
-- 5.2 Arithmetic Semantics and Undefined Behavior (Normative)
-- 5.3 Truth Values and Conditional Context (Normative)
-- 5.4 Undefined Behavior and Diagnostics Policy (Normative)
-  - 5.4.1 Classification (Normative)
-  - 5.4.2 Required Diagnostic Mapping (Normative)
+### 5 Declarations
+- 5.1 Declarators
+- 5.2 Type name
+- 5.3 Initialization
 
-### 6 Declarations
-- 6.1 EBNF Definition (Normative)
-- 6.2 Normative Rules
-- 6.3 Examples
+### 6 Statements
+- 6.1 Block
+- 6.2 Expression statements
+- 6.3 The if statement
+- 6.4 The for statement
+- 6.5 The continue statement
+- 6.6 The break statement
+- 6.7 The return statement
 
-### 7 Expressions
-- 7.1 Expression Grammar (Normative)
-  - 7.1.1 EBNF Definition (Normative)
-  - 7.1.2 Operator Hierarchy and Associativity (Normative) 
-  - 7.1.3 Evaluation Order (Normative) 
-- 7.2 Assignment Expressions (Normative) 
-- 7.3 Boolean Interpretation (Normative) 
-
-### 8 Statements
-- 8.1 EBNF Definition (Normative)
-- 8.2 Normative Rules
-- 8.3 Allowed Examples
-- 8.4 Forbidden Examples
-- 8.5 Notes (Non-Normative)
-
-### 9 Functions
-- 9.1 Function Definition EBNF (Normative) 
-- 9.2 Normative Rules
-- 9.3 Allowed Examples
-- 9.4 Forbidden Examples
-
-### 10 Program Execution Model
-- 10.1 Purpose
-- 10.2 Abstract Machine Components
-  - 10.2.1 Program
-  - 10.2.2 Program Counter (PC)
-  - 10.2.3 Call Stack
-  - 10.2.4 Stack Frame
-- 10.3 Memory Model
-  - 10.3.1 Objects
-  - 10.3.2 Lifetime
-- 10.4 Execution Semantics
-  - 10.4.1 Program Start
-  - 10.4.2 Statement Execution
-  - 10.4.3 Function Call
-  - 10.4.4 Function Return
-- 10.5 Control Flow Semantics
-  - 10.5.1 Conditional (`if / else`)
-  - 10.5.2 Iteration (`for`)
-  - 10.5.3 `break` / `continue`
-- 10.6 Undefined Behavior
-- 10.7 Observability and Visualization (Non-Normative)
-  - 10.7.1 Statement-level PC vs Implementation-level Step
-  - 10.7.2 Observable State Checklist
-  - 10.7.3 Suggested Presentation Rules
-
-### 11 Diagnostics
-- 11.1 Overview 
-- 11.2 Diagnostic Message Format (Normative)
-  - 11.2.1 One-line Format (Normative)
-  - 11.2.2 Location Counting Rules (Normative)
-  - 11.2.3 Examples (Non-Normative)
-  - 11.2.4 Interaction with “Required Message” Fields (Normative)
-- 11.3 Lexical Diagnostics (Normative) 
-- 11.4 Expression / Type Diagnostics (Normative)
-- 11.5 Statement Diagnostics (Normative)
-- 11.6 Function / Program Diagnostics (Normative) 
-
-### 12 Standard Library
-- 12.1 Standard Library Policy (Normative)
-
-### 13 Annex (기본 Non-Normative, 별도 표기 시 Normative)
-- Annex A Standard Examples
-- Annex B Forbidden / Invalid Programs
-- Annex C Undefined / Removed Behaviors
-- Annex D Diagnostics — Error Code Summary (Normative)
-  - D.1 Purpose
-  - D.2 Conformance Requirement
-  - D.3 Error Code Categories
-  - D.4 MC89-E1xx — Lexical Errors
-  - D.5 MC89-E2xx — Expression / Type Errors
-  - D.6 MC89-E3xx — Statement / Control-flow Errors
-  - D.7 MC89-E4xx — Function / Program Errors
-  - D.8 Diagnostics Severity Rules
-  - D.9 Grammar ↔ Diagnostics Mapping (Summary)
-  - D.10 Implementation Checklist (Normative)
+### 7 External definition
+- 7.1 Function Definition
 
 ---
 
@@ -145,125 +81,66 @@ C89 부분집합 언어 **MiniC89**의 공식 표준을 정의한다.
 
 ### 1.1 Purpose
 
-MiniC89는 C 언어를 가장 낮은 진입 장벽으로 이해할 수 있게 만드는 것을 목적으로 한다.
+C 언어를 가장 낮은 진입 장벽으로 이해할 수 있게 만드는 것을 목적으로 한다.
 
-### 1.2 Design Goals
+설계 목표는 다음과 같다.
 
 - 초심자를 위한 최소 언어
 - ANSI C89 의미론 보존
-- 하드웨어 동작 단순화
+
+### 1.2 Scope
+
+본 표준은 다음 내용을 다룬다.
+
+- MiniC89의 문법
+- MiniC89의 정적 의미 규칙
+- MiniC89의 동적 의미(추상 머신 의미)
+- Undefined Behavior의 정의와 처리 규칙
+- 관찰 가능한 실행 결과
+- 진단 규칙(에러/UB의 분류와 코드)
+
+본 표준은 다음 내용은 다루지 않는다.
+
+- Virtual Machine의 내부 구조
+- 최적화 전략
+- 구현 언어
+- 호스트 환경 의존 동작
 
 ### 1.3 Relationship to ANSI C89
 
 - MiniC89는 ANSI C89의 엄격한 부분집합이다.
-- 모든 유효한 MiniC89 프로그램은 유효한 C89 프로그램이다.
-- 그 역은 성립하지 않는다.
+- 모든 적합한 MiniC89 프로그램은 적합한 C89 프로그램이다.
+- MiniC89는 ANSI C89의 문법을 보존하지만, MiniC89 프로그램의 의미 해석은 본 표준과 그에 정의된 추상 실행 모델에 의해 결정된다.
+- 프로그램의 동작은 특정 C 구현체나 호스트 환경이 아니라, MiniC89 추상 머신을 기준으로 정의된다.
 
----
+### 1.4 Conformance
 
-## 2. Conformance
+- 적합한 프로그램은 본 표준에 명시된 기능만 쓰는 프로그램이다.
 
-### 2.1 Language Conformance
-MiniC89 프로그램은 본 표준의 모든 MUST / MUST NOT 규칙을 만족해야 한다.
+- 적합한 구현체는 적합한 프로그램을 허용해야 하고, 본 표준에서 금지된 프로그램에 대해 정의된 진단 메시지를 출력해야 한다.
+- 본 표준에서 정의된 Undefined Behavior는 교육 목적상 반드시 검출되어야 하며, 적합한 구현체는 UB 발생시 본 표준에서 규정한 진단 메시지를 출력해야 한다.
 
-### 2.2 Implementation Conformance
-MiniC89 구현체는 다음을 만족해야 한다.
+### 1.5 Definition of terms
 
-- 본 표준에 정의되지 않은 문법을 허용하지 않는다.
-- 오류를 컴파일 타임에 검출하고, 오류 코드를 반드시 출력한다.
+- Shall
+  - 본 표준에서 “shall”로 표현된 요구사항은 반드시 충족되어야 한다. 위반한 프로그램 또는 구현체는 MiniC89에 부적합하다.
 
-### 2.3 Normative Keywords and Document Conventions (Normative)
+- Shall not
+  - 본 표준에서 “shall not”으로 표현된 요구사항은 절대적으로 금지된다. 위반한 프로그램 또는 구현체는 MiniC89에 부적합이다.
 
-본 절은 본 표준 문서 전체에서 사용되는 규범 키워드의 의미와,
-규범(Normative) / 비규범(Non-Normative) 텍스트의 효력을 정의한다.
+- Implementation 
+  - MiniC89 구현체는 본 표준에 정의된 문법, 의미, 진단 규칙을 충실히 구현하여야 한다.
+  - 구현체는 MiniC89 프로그램의 동작을 **MiniC89 추상 머신(Abstract Machine)**의 관점에서 해석하고 실행하여야 한다.
+  - 구현체는 특정 호스트 환경, 운영체제, 하드웨어, 또는 기존 C 컴파일러의 동작에 의존하여서는 안 된다.
 
-#### 2.3.1 Normative vs Non-Normative Text
-
-- 본 표준에서 다음에 해당하는 내용은 규범적(Normative)이며,
-  MiniC89 적합성(conformance) 판단의 기준이 된다.
-  - 제목에 (Normative)가 명시된 절/하위절
-  - Normative Rules 하위 섹션의 모든 문장
-  - EBNF Definition에 포함된 문법 정의
-  - Operator Hierarchy 및 우선순위/결합 규칙 표
-  - Diagnostics에 포함된 오류 코드/발생 조건/필수 메시지
-
-- 다음에 해당하는 내용은 비규범적(Non-Normative)이며,
-  구현/채점/학생 이해를 돕기 위한 설명일 뿐 언어 의미를 추가/변경하지 않는다.
-  - Notes
-  - Allowed Examples
-  - Forbidden Examples
-
-- 규범적 텍스트와 비규범적 텍스트(예제/노트)가 충돌할 경우,
-  규범적 텍스트가 우선한다.
-  - 예제는 설명 목적이며, 언어를 정의하지 않는다.
-
-#### 2.3.2 Requirement Keywords
-
-본 표준에서 사용되는 규범 키워드는 다음 의미를 갖는다.
-
-- MUST
-  - 절대적인 요구사항이다.
-  - 프로그램 또는 구현체가 이를 위반하면 MiniC89 적합(conforming)으로 간주될 수 없다.
-
-- MUST NOT
-  - 절대적인 금지사항이다.
-  - 프로그램 또는 구현체가 이를 위반하면 MiniC89 적합으로 간주될 수 없다.
-
-- SHOULD
-  - 강하게 권장되는 요구사항이다.
-  - 정당한 이유가 있는 경우에 한해 위반할 수 있으나,
-    그 결과(호환성/교육 목적/채점/이식성 저하 등)를 충분히 이해하고 문서화해야 한다.
-
-- SHOULD NOT
-  - 강하게 권장되는 금지사항이다.
-  - 정당한 이유가 있는 경우에 한해 허용될 수 있으나,
-    그 결과를 충분히 이해하고 문서화해야 한다.
-
-- MAY
-  - 선택 사항이다.
-  - 구현체/프로그램은 해당 기능을 제공/사용해도 되고 제공/사용하지 않아도 된다.
-
-#### 2.3.3 Conformance and Diagnostics Terminology
-
-- Conforming Program
-  - 본 표준의 문법(EBNF)과 모든 정적 제약(MUST/MUST NOT)을 만족하는 프로그램을 말한다.
+- Conforming program
+  - 본 표준의 문법과 모든 요구사항, 금지사항을 만족하는 프로그램을 말한다.
   - 단, 특정 입력/실행 경로에서 Undefined Behavior(UB)를 유발할 수 있는 프로그램도
-    문법적으로는 적합할 수 있으나, UB가 발생한 이후의 동작은 정의되지 않는다.
+    문법적으로는 적합할 수 있으나, UB가 발생한 이후 에러메시지 출력 후 프로그램 실행이 종료된다.
 
-- Conforming Implementation
+- Conforming implementation
   - 본 표준이 요구하는 문법/의미 규칙을 만족하고,
-    본 표준이 진단을 요구(MUST detect)하는 모든 상황을 진단하는 구현체를 말한다.
-
-- Compile-time
-  - 파싱, 정적 분석, 의미 분석, 코드 생성 등 실행 이전 단계를 의미한다.
-  - 인터프리터/VM 기반 구현체의 경우에도, 사용자 코드 실행 이전에 수행되는
-    모든 정적 검사 단계를 포함한다.
-
-- Diagnostic
-  - 컴파일 타임에 보고되는 오류/경고 메시지를 말한다.
-  - 본 표준이 오류 코드를 규정한 경우, 구현체는 반드시 오류 코드와 메시지를 함께 출력한다.
-
-- MUST be Compile-time Error
-  - 구현체는 해당 프로그램을 거부(reject)하며,
-    최소 1개의 진단을 error 수준으로 보고한다.
-  - 본 표준이 특정 오류 코드(MC89-Exxx)를 지정한 경우,
-    구현체는 그 오류 코드를 포함하여 보고한다.
-
-- Undefined Behavior (UB)
-  - 본 표준이 UB로 정의한 상황이 실행 중 발생하면,
-    그 이후 프로그램의 동작은 정의되지 않는다.
-  - UB에 대한 진단은 본 표준이 별도로 요구하지 않는 한 필수는 아니다.
-  - 단, 구현체는 UB를 정적으로 검출 가능하다면 진단을 추가로 보고한다.
-
-- Unspecified Behavior
-  - 표준이 일부 동작을 “지정하지 않음”으로 남겨둔 경우를 말한다.
-  - 예: 대부분의 연산자에서 피연산자 평가 순서, 함수 인자 평가 순서.
-  - 구현체는 이 경우들에 대해 특정 동작을 가정해서는 안 된다.
-
-- Implementation-defined Behavior
-  - 표준이 구현마다 달라질 수 있음을 허용하되, 구현이 반드시 문서화해야 하는 동작을 말한다.
-  - MiniC89는 교육/채점 목적상 implementation-defined 동작을 최소화하는 것을 목표로 하며,
-    본 표준에 등장하는 경우 구현체는 그 내용을 문서화 한다.
+    본 표준이 진단을 요구하는 모든 상황을 진단하는 구현체를 말한다.
 
 ---
     
