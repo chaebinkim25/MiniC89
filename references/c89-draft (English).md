@@ -847,7 +847,7 @@ In the following list, unmarked names denote principal members and * denotes alt
 
 ### 1.1 PURPOSE
 
-This Standard specifies the form and establishes the interpretation of programs written in the C programming language. [1](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it)
+This Standard specifies the form and establishes the interpretation of programs written in the C programming language. [^1]
 
 ### 1.2 SCOPE
 
@@ -979,7 +979,7 @@ A strictly conforming program shall use only those features of the language and 
 
 The two forms of conforming implementation are hosted and freestanding. A conforming hosted implementation shall accept any strictly conforming program. A conforming freestanding implementation shall accept any strictly conforming program in which the use of the features specified in the library section ([4.](#4-library)) is confined to the contents of the standard headers `<float.h>`, `<limits.h>`, `<stdarg.h>`, and `<stddef.h>`. A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
 
-A conforming program is one that is acceptable to a conforming implementation. [2](#-2-strictly-conforming-programs-are-intended-to-be-maximally-portable-among-conforming-implementations-conforming-programs-may-depend-upon-nonportable-features-of-a-conforming-implementation)
+A conforming program is one that is acceptable to a conforming implementation. [^2]
 
 An implementation shall be accompanied by a document that defines all implementation-defined characteristics and all extensions.
 
@@ -1839,7 +1839,7 @@ This section and the difference marks themselves will not appear in the publishe
 
 ### A.7 INDEX
 
-##### 1 This Standard is designed to promote the portability of C programs among a variety of data-processing systems. It is intended for use by implementors and knowledgeable programmers, and is not a tutorial. It is accompanied by a Rationale document that explains many of the decisions of the Technical Committee that produced it.
+[^1] This Standard is designed to promote the portability of C programs among a variety of data-processing systems. It is intended for use by implementors and knowledgeable programmers, and is not a tutorial. It is accompanied by a Rationale document that explains many of the decisions of the Technical Committee that produced it.
 
-##### 2 Strictly conforming programs are intended to be maximally portable among conforming implementations. Conforming programs may depend upon nonportable features of a conforming implementation.
+[^2] Strictly conforming programs are intended to be maximally portable among conforming implementations. Conforming programs may depend upon nonportable features of a conforming implementation.
 
