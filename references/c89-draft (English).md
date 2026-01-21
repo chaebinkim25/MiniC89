@@ -847,7 +847,7 @@ In the following list, unmarked names denote principal members and * denotes alt
 
 ### 1.1 PURPOSE
 
-This Standard specifies the form and establishes the interpretation of programs written in the C programming language[\[1\]](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it).
+This Standard specifies the form and establishes the interpretation of programs written in the C programming language. [1](#1-this-standard-is-designed-to-promote-the-portability-of-c-programs-among-a-variety-of-data-processing-systems-it-is-intended-for-use-by-implementors-and-knowledgeable-programmers-and-is-not-a-tutorial-it-is-accompanied-by-a-rationale-document-that-explains-many-of-the-decisions-of-the-technical-committee-that-produced-it)
 
 ### 1.2 SCOPE
 
@@ -975,9 +975,29 @@ An example of locale-specific behavior is whether the islower function returns t
 
 ### 1.7 COMPLIANCE
 
+A strictly conforming program shall use only those features of the language and library specified in this Standard. It shall not produce output dependent on any unspecified, undefined, or implementation-defined behavior, and shall not exceed any minimum implementation limit.
+
+The two forms of conforming implementation are hosted and freestanding. A conforming hosted implementation shall accept any strictly conforming program. A conforming freestanding implementation shall accept any strictly conforming program in which the use of the features specified in the library section ([4.](#4-library)) is confined to the contents of the standard headers `<float.h>`, `<limits.h>`, `<stdarg.h>`, and `<stddef.h>`. A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
+
+A conforming program is one that is acceptable to a conforming implementation. [2](#-2-strictly-conforming-programs-are-intended-to-be-maximally-portable-among-conforming-implementations-conforming-programs-may-depend-upon-nonportable-features-of-a-conforming-implementation)
+
+An implementation shall be accompanied by a document that defines all implementation-defined characteristics and all extensions.
+
+**Forward references**: limits `<float.h>` and `<limits.h>` ([4.1.4](#414-limits-floath-and-limitsh)), variable arguments `<stdarg.h>` ([4.8](#48-variable-arguments-stdargh)), common definitions `<stddef.h>` ([4.1.5](#415-common-definitions-stddefh)).
+
 ### 1.8 FUTURE DIRECTIONS
 
+With the introduction of new devices and extended character sets, new features may be added to the Standard. Subsections in the language and library sections warn implementors and programmers of usages which, though valid in themselves, may conflict with future additions.
+
+Certain features are obsolescent, which means that they may be considered for withdrawal in future revisions of the Standard. They are retained in the Standard because of their widespread use, but their use in new implementations (for implementation features) or new programs (for language or library features) is discouraged.
+
+**Forward references**: future language directions ([3.9.9](#39-future-language-directions)), future library directions ([4.13](#413-future-library-directions)).
+
 ### 1.9 ABOUT THIS DRAFT
+
+Symbols in the right margin mark substantive differences between this draft and its predecessor (ANSI X3J11/88-001, January 11, 1988). A plus sign indicates an addition, a minus sign a deletion, and a vertical bar a replacement.
+
+This section and the difference marks themselves will not appear in the published document.
 
 ## 2. ENVIRONMENT
 
@@ -1820,3 +1840,6 @@ An example of locale-specific behavior is whether the islower function returns t
 ### A.7 INDEX
 
 ##### 1 This Standard is designed to promote the portability of C programs among a variety of data-processing systems. It is intended for use by implementors and knowledgeable programmers, and is not a tutorial. It is accompanied by a Rationale document that explains many of the decisions of the Technical Committee that produced it.
+
+##### 2 Strictly conforming programs are intended to be maximally portable among conforming implementations. Conforming programs may depend upon nonportable features of a conforming implementation.
+
