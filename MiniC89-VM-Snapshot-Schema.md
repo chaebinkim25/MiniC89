@@ -319,3 +319,93 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
     }
   }
 }
+```
+---
+
+## 6. 스냅샷 예시
+
+### 6.1 RUNNING 예시
+
+```json
+{
+  "schema_version": "MiniC89.VM.Snapshot.v0.1",
+  "step": 0,
+  "status": "RUNNING",
+  "pc": { "fid": 1, "ip": 0 },
+  "next_instruction": { "op": "DBG_LINE", "args": [1] },
+  "source": { "file": "main.c", "line": null },
+  "operand_stack": [],
+  "call_stack": [
+    {
+      "fid": 1,
+      "func_name": "main",
+      "return_pc": null,
+      "param_count": 0,
+      "local_count": 2,
+      "locals": [
+        { "slot": 0, "name": "i",   "value": { "t": "uninit" } },
+        { "slot": 1, "name": "sum", "value": { "t": "uninit" } }
+      ]
+    }
+  ],
+  "counters": { "steps_executed": 0, "step_limit": 100000 }
+}
+```
+
+### 6.2 TRAPPED 예시(미초기화 읽기)
+```json
+{
+  "schema_version": "MiniC89.VM.Snapshot.v0.1",
+  "step": 7,
+  "status": "TRAPPED",
+  "pc": { "fid": 1, "ip": 3 },
+  "next_instruction": { "op": "LOAD_LOCAL", "args": [1] },
+  "source": { "file": "main.c", "line": 5 },
+  "operand_stack": [],
+  "call_stack": [
+    {
+      "fid": 1,
+      "func_name": "main",
+      "return_pc": null,
+      "locals": [
+        { "slot": 0, "name": "i",   "value": { "t": "i8", "v": 3 } },
+        { "slot": 1, "name": "sum", "value": { "t": "uninit" } }
+      ]
+    }
+  ],
+  "trap": {
+    "code": "TRAP_UNINIT_READ",
+    "message": "read of uninitialized local slot",
+    "at_pc": { "fid": 1, "ip": 3 },
+    "at_source": { "file": "main.c", "line": 5 },
+    "details": { "slot": 1 }
+  }
+}
+```
+
+### 6.3 HALTED 예시
+```json
+{
+  "schema_version": "MiniC89.VM.Snapshot.v0.1",
+  "step": 42,
+  "status": "HALTED",
+  "pc": null,
+  "source": { "file": "main.c", "line": 12 },
+  "operand_stack": [],
+  "call_stack": [],
+  "halt": {
+    "result": { "t": "i8", "v": 0 },
+    "at_pc": null
+  }
+}
+```
+
+## 7. 구현 메모(권장)
+- VM은 `step()` 호출마다:
+  1. 현재 `pc`의 명령 실행
+  2. 상태 갱신
+  3. 새 스냅샷 생성/반환
+ - UI는 연속 스냅샷의 diff로 변화를 표시할 수 있다.
+ - `next_instruction`은 UI가 디스어셈블을 따로 하지 않아도 되게 해준다(권장).
+
+---
