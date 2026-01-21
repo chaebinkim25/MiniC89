@@ -969,9 +969,9 @@ An example of undefined behavior is the behavior on integer overflow.
 
 An example of implementation-defined behavior is the propagation of the high-order bit when a signed integer is shifted right.
 
-An example of locale-specific behavior is whether the islower function returns true for characters other than the 26 lower-case English letters.
+An example of locale-specific behavior is whether the `islower` function returns true for characters other than the 26 lower-case English letters.
 
-**Forward references:** bitwise shift operators ([3.3.7](#337-bitwise-shift-operators)), expressions ([3.3](#33-expressions)), function calls ([3.3.2.2](#3322-function-calls)), the islower function ([4.3.1.6](#4316-the-islower-function)).
+**Forward references:** bitwise shift operators ([3.3.7](#337-bitwise-shift-operators)), expressions ([3.3](#33-expressions)), function calls ([3.3.2.2](#3322-function-calls)), the `islower` function ([4.3.1.6](#4316-the-islower-function)).
 
 ### 1.7 COMPLIANCE
 
