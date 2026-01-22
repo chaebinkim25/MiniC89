@@ -1001,21 +1001,97 @@ This section and the difference marks themselves will not appear in the publishe
 
 ## 2. ENVIRONMENT
 
+An implementation translates C source files and executes C programs in two data-processing-system environments, which will be called the translation environment and the execution environment in this Standard. Their characteristics define and constrain the results of executing conforming C programs constructed according to the syntactic and semantic rules for conforming implementations.
+
+Forward references: In the environment section (2.), only a few of many possible forward references have been noted.
+
 ### 2.1 CONCEPTUAL MODELS
 
 #### 2.1.1 Translation environment
 
 ##### 2.1.1.1 Program structure
 
+A C program need not all be translated at the same time. The text of the program is kept in units called source files in this Standard. A source file together with all the headers and source files included via the preprocessing directive #include , less any source lines skipped by any of the conditional inclusion preprocessing directives, is called a translation unit. Previously translated translation units may be preserved individually or in libraries. The separate translation units of a program communicate by (for example) calls to functions whose identifiers have external linkage, by manipulation of objects whose identifiers have external linkage, and by manipulation of data files. Translation units may be separately translated and then later linked to produce an executable program.
+
+Forward references: conditional inclusion (3.8.1), linkages of identifiers (3.1.2.2), source file inclusion (3.8.2).
+
 ##### 2.1.1.2 Translation phases
+
+The precedence among the syntax rules of translation is specified by the following phases.[^3]
+
+1. Physical source file characters are mapped to the source character set (introducing new-line characters for end-of-line indicators) if necessary. Trigraph sequences are replaced by corresponding single-character internal representations.
+
+2. Each instance of a new-line character and an immediately preceding backslash character is deleted, splicing physical source lines to form logical source lines. A source file that is not empty shall end in a new-line character, which shall not be immediately preceded by a backslash character.
+
+3. The source file is decomposed into preprocessing tokens[^4] and sequences of white-space characters (including comments). A source file shall not end in a partial preprocessing token or comment. Each comment is replaced by one space character. New-line characters are retained. Whether each nonempty sequence of other white-space characters is retained or replaced by one space character is implementation-defined.
+
+4. Preprocessing directives are executed and macro invocations are expanded. A #include preprocessing directive causes the named header or source file to be processed from phase 1 through phase 4, recursively.
+
+5. Each escape sequence in character constants and string literals is converted to a member of the execution character set.
+
+6. Adjacent character string literal tokens are concatenated and adjacent wide string literal tokens are concatenated.
+
+7. White-space characters separating tokens are no longer significant. Preprocessing tokens are converted into tokens. The resulting tokens are syntactically and semantically analyzed and translated.
+
+8. All external object and function references are resolved. Library components are linked to satisfy external references to functions and objects not defined in the current translation. All such translator output is collected into a program image which contains information needed for execution in its execution environment.
+
+**Forward references**: lexical elements (3.1), preprocessing directives (3.8), trigraph sequences (2.2.1.1).
 
 ##### 2.1.1.3 Diagnostics
 
+A conforming implementation shall produce at least one diagnostic message (identified in an implementation-defined manner) for every translation unit that contains a violation of any syntax rule or constraint. Diagnostic messages need not be produced in other circumstances.
+
 #### 2.1.2 Execution environments
+
+Two execution environments are defined: freestanding and hosted. In both cases, program startup occurs when a designated C function is called by the execution environment. All objects in static storage shall be initialized (set to their initial values) before program startup. The manner and timing of such initialization are otherwise unspecified. Program termination returns control to the execution environment.
+
+**Forward references**: initialization (3.5.7).
 
 ##### 2.1.2.1 Freestanding environment
 
+In a freestanding environment (in which C program execution may take place without any benefit of an operating system), the name and type of the function called at program startup are implementation-defined. There are otherwise no reserved external identifiers. Any library facilities available to a freestanding program are implementation-defined.
+
+The effect of program termination in a freestanding environment is implementation-defined.
+
 ##### 2.1.2.2 Hosted environment
+
+A hosted environment need not be provided, but shall conform to the following specifications if present.
+
+"Program startup"
+
+The function called at program startup is named `main`. The implementation declares no prototype for this function. It can be defined with no parameters:
+
+```c
+int main(void) { /*...*/ }
+```
+
+or with two parameters (referred to here as `argc` and `argv`, though any names may be used, as they are local to the function in which they are declared):
+
+```c
+int main(int argc, char *argv[]) { /*...*/ }
+```
+
+If they are defined, the parameters to the main function shall obey the following constraints:
+
+* The value of `argc` shall be nonnegative.
+
+* `argv[argc]` shall be a null pointer.
+
+* If the value of `argc` is greater than zero, the array members `argv[0]` through `argv[argc-1]` inclusive shall contain pointers to strings, which are given implementation-defined values by the host environment prior to program startup. The intent is to supply to the program information determined prior to program startup from elsewhere in the hosted environment. If the host environment is not capable of supplying strings with letters in both upper-case and lower-case, the implementation shall ensure that the strings are received in lower-case.
+
+* If the value of `argc` is greater than zero, the string pointed to by `argv[0]` represents the program name; `argv[0][0]` shall be the null character if the program name is not available from the host environment. If the value of `argc` is greater than one, the strings pointed to by `argv[1]` through `argv[argc-1]` represent the program parameters.
+
+* The parameters `argc` and `argv` and the strings pointed to by the argv array shall be modifiable by the program, and retain their last-stored values between program startup and program termination.
+
+"Program execution"
+
+In a hosted environment, a program may use all the functions, macros, type definitions, and objects described in the library section (4.).
+
+"Program termination"
+
+A return from the initial call to the main function is equivalent to calling the exit function with the value returned by the main function as its argument. If the main function executes a return that specifies no value, the termination status returned to the host environment is undefined.
+
+Forward references: definition of terms (4.1.1), the exit function (4.10.4.3).
 
 ##### 2.1.2.3 Program execution
 
@@ -1842,4 +1918,8 @@ This section and the difference marks themselves will not appear in the publishe
 [^1]: This Standard is designed to promote the portability of C programs among a variety of data-processing systems. It is intended for use by implementors and knowledgeable programmers, and is not a tutorial. It is accompanied by a Rationale document that explains many of the decisions of the Technical Committee that produced it.
 
 [^2]: Strictly conforming programs are intended to be maximally portable among conforming implementations. Conforming programs may depend upon nonportable features of a conforming implementation.
+
+[^3]: Implementations must behave as if these separate phases occur, even though many are typically folded together in practice.
+
+[^4]: As described in 3.1, the process of dividing a source file's characters into preprocessing tokens is context-dependent. For example, see the handling of `<` within a `#include` preprocessing directive.
 
