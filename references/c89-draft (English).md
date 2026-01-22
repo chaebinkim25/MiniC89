@@ -971,7 +971,7 @@ An example of implementation-defined behavior is the propagation of the high-ord
 
 An example of locale-specific behavior is whether the `islower` function returns true for characters other than the 26 lower-case English letters.
 
-**Forward references:** bitwise shift operators ([3.3.7](#337-bitwise-shift-operators)), expressions ([3.3](#33-expressions)), function calls ([3.3.2.2](#3322-function-calls)), the `islower` function ([4.3.1.6](#4316-the-islower-function)).
+**Forward references:** bitwise shift operators ([3.3.7](#337-bitwise-shift-operators)), expressions ([3.3](#33-expressions)), function calls ([3.3.2.2](#3322-function-calls)), the islower function ([4.3.1.6](#4316-the-islower-function)).
 
 ### 1.7 COMPLIANCE
 
@@ -983,7 +983,7 @@ A conforming program is one that is acceptable to a conforming implementation. [
 
 An implementation shall be accompanied by a document that defines all implementation-defined characteristics and all extensions.
 
-**Forward references**: limits `<float.h>` and `<limits.h>` ([4.1.4](#414-limits-floath-and-limitsh)), variable arguments `<stdarg.h>` ([4.8](#48-variable-arguments-stdargh)), common definitions `<stddef.h>` ([4.1.5](#415-common-definitions-stddefh)).
+**Forward references**: limits <float.h> and <limits.h> ([4.1.4](#414-limits-floath-and-limitsh)), variable arguments <stdarg.h> ([4.8](#48-variable-arguments-stdargh)), common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)).
 
 ### 1.8 FUTURE DIRECTIONS
 
@@ -1003,7 +1003,7 @@ This section and the difference marks themselves will not appear in the publishe
 
 An implementation translates C source files and executes C programs in two data-processing-system environments, which will be called the translation environment and the execution environment in this Standard. Their characteristics define and constrain the results of executing conforming C programs constructed according to the syntactic and semantic rules for conforming implementations.
 
-Forward references: In the environment section (2.), only a few of many possible forward references have been noted.
+**Forward references**: In the environment section [2.](#2-environment), only a few of many possible forward references have been noted.
 
 ### 2.1 CONCEPTUAL MODELS
 
@@ -1013,7 +1013,7 @@ Forward references: In the environment section (2.), only a few of many possible
 
 A C program need not all be translated at the same time. The text of the program is kept in units called source files in this Standard. A source file together with all the headers and source files included via the preprocessing directive #include , less any source lines skipped by any of the conditional inclusion preprocessing directives, is called a translation unit. Previously translated translation units may be preserved individually or in libraries. The separate translation units of a program communicate by (for example) calls to functions whose identifiers have external linkage, by manipulation of objects whose identifiers have external linkage, and by manipulation of data files. Translation units may be separately translated and then later linked to produce an executable program.
 
-Forward references: conditional inclusion (3.8.1), linkages of identifiers (3.1.2.2), source file inclusion (3.8.2).
+Forward references: conditional inclusion ([3.8.1](#381-conditional-inclusion)), linkages of identifiers ([3.1.2.2](#3122-linkages-of-identifiers)), source file inclusion ([3.8.2](#382-source-file-inclusion)).
 
 ##### 2.1.1.2 Translation phases
 
@@ -1035,7 +1035,7 @@ The precedence among the syntax rules of translation is specified by the followi
 
 8. All external object and function references are resolved. Library components are linked to satisfy external references to functions and objects not defined in the current translation. All such translator output is collected into a program image which contains information needed for execution in its execution environment.
 
-**Forward references**: lexical elements (3.1), preprocessing directives (3.8), trigraph sequences (2.2.1.1).
+**Forward references**: lexical elements ([3.1](#31-lexical-elements)), preprocessing directives ([3.8](#38-preprocessing-directives)), trigraph sequences ([2.2.1.1](#2211-trigraph-sequences)).
 
 ##### 2.1.1.3 Diagnostics
 
@@ -1045,7 +1045,7 @@ A conforming implementation shall produce at least one diagnostic message (ident
 
 Two execution environments are defined: freestanding and hosted. In both cases, program startup occurs when a designated C function is called by the execution environment. All objects in static storage shall be initialized (set to their initial values) before program startup. The manner and timing of such initialization are otherwise unspecified. Program termination returns control to the execution environment.
 
-**Forward references**: initialization (3.5.7).
+**Forward references**: initialization ([3.5.7](#357-initialization)).
 
 ##### 2.1.2.1 Freestanding environment
 
@@ -1091,7 +1091,7 @@ In a hosted environment, a program may use all the functions, macros, type defin
 
 A return from the initial call to the main function is equivalent to calling the exit function with the value returned by the main function as its argument. If the main function executes a return that specifies no value, the termination status returned to the host environment is undefined.
 
-**Forward references**: definition of terms (4.1.1), the exit function (4.10.4.3).
+**Forward references**: definition of terms ([4.1.1](#411-definitions-of-terms)), the exit function ([4.10.4.3](#41043-the-exit-function)).
 
 ##### 2.1.2.3 Program execution
 
@@ -1111,7 +1111,7 @@ The least requirements on a conforming implementation are:
 
 * At program termination, all data written into files shall be identical to the result that execution of the program according to the abstract semantics would have produced.
 
-* The input and output dynamics of interactive devices shall take place as specified in 4.9.3 The intent of these requirements is that unbuffered or line-buffered output appear as soon as possible, to ensure that prompting messages actually appear prior to a program waiting for input.
+* The input and output dynamics of interactive devices shall take place as specified in [4.9.3](#493-files). The intent of these requirements is that unbuffered or line-buffered output appear as soon as possible, to ensure that prompting messages actually appear prior to a program waiting for input.
 
 What constitutes an interactive device is implementation-defined.
 
@@ -1144,7 +1144,7 @@ f1 = f2 * d;
 
 the multiplication may be executed using single-precision arithmetic if the implementation can ascertain that the result would be the same as if it were executed using double-precision arithmetic (for example, if `d` were replaced by the constant `2.0`, which has type `double`). Alternatively, an operation involving only `int`s or `float`s may be executed using double-precision operations if neither range nor precision is lost thereby.
 
-**Forward references**: compound statement, or block (3.6.2), files (4.9.3), sequence points (3.3, 3.6), the signal function (4.7), type qualifiers (3.5.3).
+**Forward references**: compound statement, or block ([3.6.2](#362-compound-statement-or-block)), files ([4.9.3](#493-files)), sequence points ([3.3](#33-expressions), [3.6](#36-statements)), the signal function ([4.7](#47-signal-handling-signalh)), type qualifiers ([3.5.3](#353-type-qualifiers)).
 
 ### 2.2 ENVIRONMENTAL CONSIDERATIONS
 
@@ -1175,7 +1175,7 @@ the following 29 graphic characters
 
 the space character, and control characters representing horizontal tab, vertical tab, and form feed. In both the source and execution basic character sets, the value of each character after 0 in the above list of decimal digits shall be one greater than the value of the previous. In source files, there shall be some way of indicating the end of each line of text; this Standard treats such an end-of-line indicator as if it were a single new-line character. In the execution character set, there shall be control characters representing alert, backspace, carriage return, and new line. If any other characters are encountered in a source file (except in a preprocessing token that is never converted to a token, a character constant, a string literal, or a comment), the behavior is undefined.
 
-**Forward references**: character constants (3.1.3.4), preprocessing directives (3.8), string literals (3.1.4), comments (3.1.9).
+**Forward references**: character constants ([3.1.3.4](#3134-character-constants)), preprocessing directives ([3.8](#38-preprocessing-directives)), string literals ([3.1.4](#314-string-literals)), comments ([3.1.9](#319-comments)).
 
 ##### 2.2.1.1 Trigraph sequences
 
@@ -1212,7 +1212,7 @@ becomes (after replacement of the trigraph sequence `??/`)
 
 The source character set may contain multibyte characters, used to represent members of the extended character set. The execution character set may also contain multibyte characters, which need not have the same encoding as for the source character set. For both character sets, the following shall hold:
 
-* The single-byte characters defined in 2.2.1 shall be present.
+* The single-byte characters defined in [2.2.1](#221-character-sets) shall be present.
 
 * The presence, meaning, and representation of any additional members is locale-specific.
 
@@ -1230,13 +1230,13 @@ For the source character set, the following shall hold:
 
 #### 2.2.2 Character display semantics
 
-The active position is that location on a display device where the next character output by the fputc function would appear. The intent of writing a printable character (as defined by the isprint function) to a display device is to display a graphic representation of that character at the active position and then advance the active position to the next position on the current line. The direction of printing is locale-specific. If the active position is at the final position of a line (if there is one), the behavior is unspecified.
+The active position is that location on a display device where the next character output by the fputc function would appear. The intent of writing a printable character (as defined by the `isprint` function) to a display device is to display a graphic representation of that character at the active position and then advance the active position to the next position on the current line. The direction of printing is locale-specific. If the active position is at the final position of a line (if there is one), the behavior is unspecified.
 
 Alphabetic escape sequences representing nongraphic characters in the execution character set are intended to produce actions on display devices as follows: ( alert ) Produces an audible or visible alert. The active position shall not be changed. ( backspace ) Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior is unspecified. ( "form feed" ) Moves the active position to the initial position at the start of the next logical page. ( "new line" ) Moves the active position to the initial position of the next line. ( "carriage return" ) Moves the active position to the initial position of the current line. ( "horizontal tab" ) Moves the active position to the next horizontal tabulation position on the current line. If the active position is at or past the last defined horizontal tabulation position, the behavior is unspecified. ( "vertical tab" ) Moves the active position to the initial position of the next vertical tabulation position. If the active position is at or past the last defined vertical tabulation position, the behavior is unspecified.
 
 Each of these escape sequences shall produce a unique implementation-defined value which can be stored in a single char object. The external representations in a text file need not be identical to the internal representations, and are outside the scope of this Standard.
 
-**Forward references**: the fputc function (4.9.7.3), the isprint function (4.3.1.7).
+**Forward references**: the fputc function ([4.9.7.3](#4973-the-fputc-function)), the isprint function ([4.3.1.7](#4317-the-isprint-function)).
 
 #### 2.2.3 Signals and interrupts
 
@@ -1497,7 +1497,7 @@ x_d = s \times 2^{e} \times \sum_{k=1}^{53} f_k \times 2^{-k}, \qquad -1021 \le 
 
 The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for the ANSI/IEEE Std 754-1985 default rounding mode (to nearest). Their values may differ for other rounding modes.
 
-**Forward references**: conditional inclusion (3.8.1). conditional inclusion (3.8.1).
+**Forward references**: conditional inclusion ([3.8.1](#381-conditional-inclusion)). conditional inclusion ([3.8.1](#381-conditional-inclusion)).
 
 ## 3. LANGUAGE
 
@@ -2313,7 +2313,7 @@ The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for t
 
 [^6]: Implementations should avoid imposing fixed translation limits whenever possible.
 
-[^7]: See 3.1.2.5
+[^7]: See [3.1.2.5](#3125-types)
 
 [^8]: This model precludes floating-point representations other than sign-magnitude.
 
