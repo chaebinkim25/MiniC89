@@ -1091,27 +1091,413 @@ In a hosted environment, a program may use all the functions, macros, type defin
 
 A return from the initial call to the main function is equivalent to calling the exit function with the value returned by the main function as its argument. If the main function executes a return that specifies no value, the termination status returned to the host environment is undefined.
 
-Forward references: definition of terms (4.1.1), the exit function (4.10.4.3).
+**Forward references**: definition of terms (4.1.1), the exit function (4.10.4.3).
 
 ##### 2.1.2.3 Program execution
+
+The semantic descriptions in this Standard describe the behavior of an abstract machine in which issues of optimization are irrelevant.
+
+Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.
+
+In the abstract machine, all expressions are evaluated as specified by the semantics. An actual implementation need not evaluate part of an expression if it can deduce that its value is not used and that no needed side effects are produced (including any caused by calling a function or accessing a volatile object).
+
+When the processing of the abstract machine is interrupted by receipt of a signal, only the values of objects as of the previous sequence point may be relied on. Objects that may be modified between the previous sequence point and the next sequence point need not have received their correct values yet.
+
+An instance of each object with automatic storage duration is associated with each entry into a block. Such an object exists and retains its last-stored value during the execution of the block and while the block is suspended (by a call of a function or receipt of a signal).
+
+The least requirements on a conforming implementation are:
+
+* At sequence points, volatile objects are stable in the sense that previous evaluations are complete and subsequent evaluations have not yet occurred.
+
+* At program termination, all data written into files shall be identical to the result that execution of the program according to the abstract semantics would have produced.
+
+* The input and output dynamics of interactive devices shall take place as specified in 4.9.3 The intent of these requirements is that unbuffered or line-buffered output appear as soon as possible, to ensure that prompting messages actually appear prior to a program waiting for input.
+
+What constitutes an interactive device is implementation-defined.
+
+More stringent correspondences between abstract and actual semantics may be defined by each implementation.
+
+"Examples"
+
+An implementation might define a one-to-one correspondence between abstract and actual semantics: at every sequence point, the values of the actual objects would agree with those specified by the abstract semantics. The keyword volatile would then be redundant.
+
+Alternatively, an implementation might perform various optimizations within each translation unit, such that the actual semantics would agree with the abstract semantics only when making function calls across translation unit boundaries. In such an implementation, at the time of each function entry and function return where the calling function and the called function are in different translation units, the values of all externally linked objects and of all objects accessible via pointers therein would agree with the abstract semantics. Furthermore, at the time of each such function entry the values of the parameters of the called function and of all objects accessible via pointers therein would agree with the abstract semantics. In this type of implementation, objects referred to by interrupt service routines activated by the signal function would require explicit specification of volatile storage, as well as other implementation-defined restrictions.
+
+In executing the fragment
+
+```c
+char c1, c2;
+/*...*/
+c1 = c1 + c2;
+```
+
+the "integral promotions" require that the abstract machine promote the value of each variable to `int` size and then add the two `int`s and truncate the sum. Provided the addition of two `char`s can be done without creating an overflow exception, the actual execution need only produce the same result, possibly omitting the promotions.
+
+Similarly, in the fragment
+
+```c
+float f1, f2;
+double d;
+/*...*/
+f1 = f2 * d;
+```
+
+the multiplication may be executed using single-precision arithmetic if the implementation can ascertain that the result would be the same as if it were executed using double-precision arithmetic (for example, if `d` were replaced by the constant `2.0`, which has type `double`). Alternatively, an operation involving only `int`s or `float`s may be executed using double-precision operations if neither range nor precision is lost thereby.
+
+**Forward references**: compound statement, or block (3.6.2), files (4.9.3), sequence points (3.3, 3.6), the signal function (4.7), type qualifiers (3.5.3).
 
 ### 2.2 ENVIRONMENTAL CONSIDERATIONS
 
 #### 2.2.1 Character sets
 
+Two sets of characters and their associated collating sequences shall be defined: the set in which source files are written, and the set interpreted in the execution environment. The values of the members of the execution character set are implementation-defined; any additional members beyond those required by this section are locale-specific.
+
+In a character constant or string literal, members of the execution character set shall be represented by corresponding members of the source character set or by escape sequences consisting of the backslash `\` followed by one or more characters. A byte with all bits set to 0, called the null character, shall exist in the basic execution character set; it is used to terminate a character string literal.
+
+Both the basic source and basic execution character sets shall have at least the following members: the 26 upper-case letters of the English alphabet
+
+         A  B  C  D  E  F  G  H  I  J  K  L  M
+         N  O  P  Q  R  S  T  U  V  W  X  Y  Z
+
+the 26 lower-case letters of the English alphabet
+
+         a  b  c  d  e  f  g  h  i  j  k  l  m
+         n  o  p  q  r  s  t  u  v  w  x  y  z
+
+the 10 decimal digits
+
+         0  1  2  3  4  5  6  7  8  9
+
+the following 29 graphic characters
+
+         !  "  #  %  &  '  (  )  *  +  ,  -  .  /  :
+         ;  <  =  >  ?  [  \  ]  ^  _  {  |  }  ~
+
+the space character, and control characters representing horizontal tab, vertical tab, and form feed. In both the source and execution basic character sets, the value of each character after 0 in the above list of decimal digits shall be one greater than the value of the previous. In source files, there shall be some way of indicating the end of each line of text; this Standard treats such an end-of-line indicator as if it were a single new-line character. In the execution character set, there shall be control characters representing alert, backspace, carriage return, and new line. If any other characters are encountered in a source file (except in a preprocessing token that is never converted to a token, a character constant, a string literal, or a comment), the behavior is undefined.
+
+**Forward references**: character constants (3.1.3.4), preprocessing directives (3.8), string literals (3.1.4), comments (3.1.9).
+
 ##### 2.2.1.1 Trigraph sequences
+
+All occurrences in a source file of the following sequences of three characters (called trigraph sequences[^5]) are replaced with the corresponding single character.
+
+```
+         ??=      #
+         ??(      [
+         ??/      \
+         ??)      ]
+         ??'      ^
+         ??<      {
+         ??!      |
+         ??>      }
+         ??-      ~
+```
+
+No other trigraph sequences exist. Each `?` that does not begin one of the trigraphs listed above is not changed.
+
+###### Example
+
+The following source line
+```c
+         printf("Eh???/n");
+```
+
+becomes (after replacement of the trigraph sequence `??/`)
+
+```c
+         printf("Eh?\n");
+```
 
 ##### 2.2.1.2 Multibyte characters
 
+The source character set may contain multibyte characters, used to represent members of the extended character set. The execution character set may also contain multibyte characters, which need not have the same encoding as for the source character set. For both character sets, the following shall hold:
+
+* The single-byte characters defined in 2.2.1 shall be present.
+
+* The presence, meaning, and representation of any additional members is locale-specific.
+
+* A multibyte character may have a state-dependent encoding, wherein each sequence of multibyte characters begins in an initial shift state and enters other implementation-defined shift states when specific multibyte characters are encountered in the sequence. While in the initial shift state, all single-byte characters retain their usual interpretation and do not alter the shift state. The interpretation for subsequent bytes in the sequence is a function of the current shift state.
+
+* A byte with all bits zero shall be interpreted as a null character independent of shift state.
+
+* A byte with all bits zero shall not occur in the second or subsequent bytes of a multibyte character.
+
+For the source character set, the following shall hold:
+
+* A comment, string literal, character constant, or header name shall begin and end in the initial shift state.
+
+* A comment, string literal, character constant, or header name shall consist of a sequence of valid multibyte characters.
+
 #### 2.2.2 Character display semantics
+
+The active position is that location on a display device where the next character output by the fputc function would appear. The intent of writing a printable character (as defined by the isprint function) to a display device is to display a graphic representation of that character at the active position and then advance the active position to the next position on the current line. The direction of printing is locale-specific. If the active position is at the final position of a line (if there is one), the behavior is unspecified.
+
+Alphabetic escape sequences representing nongraphic characters in the execution character set are intended to produce actions on display devices as follows: ( alert ) Produces an audible or visible alert. The active position shall not be changed. ( backspace ) Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior is unspecified. ( "form feed" ) Moves the active position to the initial position at the start of the next logical page. ( "new line" ) Moves the active position to the initial position of the next line. ( "carriage return" ) Moves the active position to the initial position of the current line. ( "horizontal tab" ) Moves the active position to the next horizontal tabulation position on the current line. If the active position is at or past the last defined horizontal tabulation position, the behavior is unspecified. ( "vertical tab" ) Moves the active position to the initial position of the next vertical tabulation position. If the active position is at or past the last defined vertical tabulation position, the behavior is unspecified.
+
+Each of these escape sequences shall produce a unique implementation-defined value which can be stored in a single char object. The external representations in a text file need not be identical to the internal representations, and are outside the scope of this Standard.
+
+**Forward references**: the fputc function (4.9.7.3), the isprint function (4.3.1.7).
 
 #### 2.2.3 Signals and interrupts
 
+Functions shall be implemented such that they may be interrupted at any time by a signal, or may be called by a signal handler, or both, with no alteration to earlier, but still active, invocations' control flow (after the interruption), function return values, or objects with automatic storage duration. All such objects shall be maintained outside the function image (the instructions that comprise the executable representation of a function) on a per-invocation basis.
+
+The functions in the standard library are not guaranteed to be reentrant and may modify objects with static storage duration.
+
 #### 2.2.4 Environmental limits
+
+Both the translation and execution environments constrain the implementation of language translators and libraries. The following summarizes the environmental limits on a conforming implementation.
 
 ##### 2.2.4.1 Translation limits
 
+The implementation shall be able to translate and execute at least one program that contains at least one instance of every one of the following limits:[^6]
+
+* 15 nesting levels of compound statements, iteration control structures, and selection control structures
+
+* 8 nesting levels of conditional inclusion
+
+* 12 pointer, array, and function declarators (in any combinations) modifying an arithmetic, a structure, a union, or an incomplete type in a declaration
+
+* 31 declarators nested by parentheses within a full declarator
+
+* 32 expressions nested by parentheses within a full expression
+
+* 31 significant initial characters in an internal identifier or a macro name
+
+* 6 significant initial characters in an external identifier
+
+* 511 external identifiers in one translation unit
+
+* 127 identifiers with block scope declared in one block
+
+* 1024 macro identifiers simultaneously defined in one translation unit
+
+* 31 parameters in one function definition
+
+* 31 arguments in one function call
+
+* 31 parameters in one macro definition
+
+* 31 arguments in one macro invocation
+
+* 509 characters in a logical source line
+
+* 509 characters in a character string literal or wide string literal (after concatenation)
+
+* 32767 bytes in an object (in a hosted environment only)
+
+* 8 nesting levels for `#include`'d files
+
+* 257 case labels for a switch statement (excluding those for any nested switch statements)
+
+* 127 members in a single structure or union
+
+* 127 enumeration constants in a single enumeration
+
+* 15 levels of nested structure or union definitions in a single struct-declaration-list
+ 
 ##### 2.2.4.2 Numerical limits
+
+A conforming implementation shall document all the limits specified in this section, which shall be specified in the headers `<limits.h>` and `<float.h>`.
+
+"Sizes of integral types `<limits.h>`"
+
+The values given below shall be replaced by constant expressions suitable for use in `#if` preprocessing directives. Their implementation-defined values shall be equal or greater in magnitude (absolute value) to those shown, with the same sign.
+
+* maximum number of bits for smallest object that is not a bit-field (byte) `CHAR_BIT` `8`
+
+* minimum value for an object of type signed char `SCHAR_MIN` `-127`
+
+* maximum value for an object of type signed char `SCHAR_MAX` `+127`
+
+* maximum value for an object of type unsigned char `UCHAR_MAX` `255`
+
+* minimum value for an object of type char `CHAR_MIN` see below
+
+* maximum value for an object of type char `CHAR_MAX` see below
+
+* maximum number of bytes in a multibyte character, for any supported locale `MB_LEN_MAX` `1`
+
+* minimum value for an object of type short int `SHRT_MIN` `-32767`
+
+* maximum value for an object of type short int `SHRT_MAX` `+32767`
+
+* maximum value for an object of type unsigned short int `USHRT_MAX` `65535`
+
+* minimum value for an object of type int `INT_MIN` `-32767`
+
+* maximum value for an object of type int `INT_MAX` `+32767`
+
+* maximum value for an object of type unsigned int `UINT_MAX` `65535`
+
+* minimum value for an object of type long int `LONG_MIN` `-2147483647`
+
+* maximum value for an object of type long int `LONG_MAX` `+2147483647`
+
+* maximum value for an object of type unsigned long int `ULONG_MAX` `4294967295`
+
+If the value of an object of type char sign-extends when used in an expression, the value of `CHAR_MIN` shall be the same as that of `SCHAR_MIN` and the value of `CHAR_MAX` shall be the same as that of `SCHAR_MAX`. If the value of an object of type char does not sign-extend when used in an expression, the value of `CHAR_MIN` shall be 0 and the value of `CHAR_MAX` shall be the same as that of `UCHAR_MAX`. [^7]
+
+"Characteristics of floating types `<float.h>`"
+
+The characteristics of floating types are defined in terms of a model that describes a representation of floating-point numbers and values that provide information about an implementation's floating-point arithmetic. The following parameters are used to define the model for each floating-point type:
+
+A normalized floating-point number $x$ ($f_1 > 0$ if $x$ is defined by the following model):[^8] 
+
+```math
+x = s \times b^e \times \sum_{k=1}^{p} (f_k \times b^{-k}), \quad e_{min} \le e \le e_{max}
+```
+
+Of the values in the `<float.h>` header, `FLT_RADIX` shall be a constant expression suitable for use in `#if` preprocessing directives; all other values need not be constant expressions. All except `FLT_RADIX` and `FLT_ROUNDS` have separate names for all three floating-point types. The floating-point model representation is provided for all values except `FLT_ROUNDS`.
+
+The rounding mode for floating-point addition is characterized by the value of `FLT_ROUNDS`: `-1` indeterminable, `0` toward zero, `1` to nearest, `2` toward positive infinity, `3` toward negative infinity. All other values for `FLT_ROUNDS` characterize implementation-defined rounding behavior.
+
+The values given in the following list shall be replaced by implementation-defined expressions that shall be equal or greater in magnitude (absolute value) to those shown, with the same sign.
+
+* radix of exponent representation, b
+
+|   |   |
+| :--- | :--- |
+| `FLT_RADIX` | `2` |
+
+* number of base-`FLT_RADIX` digits in the floating-point mantissa, p
+
+|   |   |
+| :--- | :----- |
+| `FLT_MANT_DIG` |   |
+| `DBL_MANT_DIG` |   |
+| `LDBL_MANT_DIG` |   |
+
+* number of decimal digits of precision,
+```math
+\lfloor (p - 1) \times \log_{10} b \rfloor + 
+\begin{cases} 
+1 & \text{if } b \text{ is a power of 10} \\ 
+0 & \text{otherwise} 
+\end{cases}
+```
+
+|   |   |
+| :--- | :----- |
+| `FLT_DIG` | `6` |
+| `DBL_DIG` | `10` |
+| `LDBL_DIG` |  `10` |
+
+* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, $e_{min}$
+
+|   |   |
+| :--- | :----- |
+| `FLT_MIN_EXP` |   |
+| `DBL_MIN_EXP` |   |
+| `LDBL_MIN_EXP` |   |
+
+* minimum negative integer such that 10 raised to that power is in the range of normalized floating-point numbers,
+
+|   |   |
+| :--- | :----- |
+| `FLT_MIN_10_EXP` | `-37` |
+| `DBL_MIN_10_EXP` | `-37` |
+| `LDBL_MIN_10_EXP` | `-37` |
+
+* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, $e_{max}$
+
+|   |   |
+| :--- | :----- |
+| `FLT_MAX_EXP` |   |
+| `DBL_MAX_EXP` |   |
+| `LDBL_MAX_EXP` |   |
+
+* maximum integer such that 10 raised to that power is in the range of representable finite floating-point numbers,
+
+|   |   |
+| :--- | :----- |
+| `FLT_MAX_10_EXP` | `+37` |
+| `DBL_MAX_10_EXP` | `+37` |
+| `LDBL_MAX_10_EXP` | `+37` |
+
+The values given in the following list shall be replaced by implementation-defined expressions with values that shall be equal to or greater than those shown.
+
+* maximum representable finite floating-point number,
+
+|   |   |
+| :--- | :----- |
+| `FLT_MAX` | `1E+37` |
+| `DBL_MAX` | `1E+37` |
+| `LDBL_MAX` | `1E+37` |
+
+The values given in the following list shall be replaced by implementation-defined expressions with values that shall be equal to or smaller than those shown.
+
+* minimum positive floating-point number $x$ such that $1.0 + x$
+
+|   |   |
+| :--- | :----- |
+| `FLT_EPSILON` | `1E-5` |
+| `DBL_EPSILON` | `1E-9` |
+| `LDBL_EPSILON` | `1E-9` |
+
+* minimum normalized positive floating-point number, $b^{ e_{min} - 1 }$
+
+|   |   |
+| :--- | :----- |
+| `FLT_MIN` | `1E-37` |
+| `DBL_MIN` | `1E-37` |
+| `LDBL_MIN` | `1E-37` |
+
+###### Examples
+
+The following describes an artificial floating-point representation that meets the minimum requirements of the Standard, and the appropriate values in a <float.h> header for type `float`:
+
+```math
+x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \le +32
+```
+
+
+         FLT_RADIX                       16
+         FLT_MANT_DIG                     6
+         FLT_EPSILON        9.53674316E-07F
+         FLT_DIG                          6
+         FLT_MIN_EXP                    -31
+         FLT_MIN            2.93873588E-39F
+         FLT_MIN_10_EXP                 -38
+         FLT_MAX_EXP                    +32
+         FLT_MAX            3.40282347E+38F
+         FLT_MAX_10_EXP                 +38
+
+The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] b and the appropriate values in a <float.h> header for types `float` and `double`: 
+
+```math
+x_f = s \times 2^{e} \times \sum_{k=1}^{24} f_k \times 2^{-k}, \qquad -125 \le e \le +128
+```
+
+```math
+x_d = s \times 2^{e} \times \sum_{k=1}^{53} f_k \times 2^{-k}, \qquad -1021 \le e \le +1024
+```
+
+
+         FLT_RADIX                        2
+         FLT_MANT_DIG                    24
+         FLT_EPSILON        1.19209290E-07F
+         FLT_DIG                          6
+         FLT_MIN_EXP                   -125
+         FLT_MIN            1.17549435E-38F
+         FLT_MIN_10_EXP                 -37
+         FLT_MAX_EXP                   +128
+         FLT_MAX            3.40282347E+38F
+         FLT_MAX_10_EXP                 +38
+         DBL_MANT_DIG                    53
+         DBL_EPSILON 2.2204460492503131E-16
+         DBL_DIG                         15
+         DBL_MIN_EXP                  -1021
+         DBL_MIN    2.2250738585072016E-308
+         DBL_MIN_10_EXP                -307
+         DBL_MAX_EXP                  +1024
+         DBL_MAX    1.7976931348623157E+308
+         DBL_MAX_10_EXP                +308
+
+
+The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for the ANSI/IEEE Std 754-1985 default rounding mode (to nearest). Their values may differ for other rounding modes.
+
+**Forward references**: conditional inclusion (3.8.1). conditional inclusion (3.8.1).
 
 ## 3. LANGUAGE
 
@@ -1923,3 +2309,12 @@ Forward references: definition of terms (4.1.1), the exit function (4.10.4.3).
 
 [^4]: As described in 3.1, the process of dividing a source file's characters into preprocessing tokens is context-dependent. For example, see the handling of `<` within a `#include` preprocessing directive.
 
+[^5]: The trigraph sequences enable the input of characters that are not defined in the "ISO 646-1983" Invariant Code Set, which is a subset of the seven-bit ASCII code set.
+
+[^6]: Implementations should avoid imposing fixed translation limits whenever possible.
+
+[^7]: See 3.1.2.5
+
+[^8]: This model precludes floating-point representations other than sign-magnitude.
+
+[^9]: The floating-point model in that standard sums powers of from zero, so the values of the exponent limits are one less than shown here.
