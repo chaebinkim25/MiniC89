@@ -1501,13 +1501,154 @@ The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for t
 
 ## 3. LANGUAGE
 
+In the syntax notation used in the language section ([3.](#3-language)), syntactic categories (nonterminals) are indicated by italic type, and literal words and character set members (terminals) by bold type. A colon (:) following a nonterminal introduces its definition. Alternative definitions are listed on separate lines, except when prefaced by the words "one of." An optional symbol is indicated by the so that
+
+**{** *expression<sub>opt</sub>* **}**
+
+indicates an optional expression enclosed in braces.
+
 ### 3.1 LEXICAL ELEMENTS
+
+###### Syntax
+
+*token*:
+
+[*keyword*](#311-keywords)
+
+[*identifier*](#312-identifiers)
+
+[*constant*](#313-constants)
+
+[*string-literal*](#314-string-literals)
+
+[*operator*](#315-operators)
+
+[*punctuator*](#316-punctuators)
+
+*preprocessing-token*:
+
+[*header-name*](#317-header-names)
+
+[*identifier*](#312-identifiers)
+
+[*pp-number*](#318-preprocessing-numbers)
+
+[*character-constant*](#3134-character-constants)
+
+[*string-literal*](#314-string-literals)
+
+[*operator*](#315-operators)
+
+[*punctuator*](#316-punctuators)
+
+**<sub>each non-white-space character that cannot be one of the above</sub>**
+
+###### Constraints
+
+Each preprocessing token that is converted to a token shall have the lexical form of a keyword, an identifier, a constant, a string literal, an operator, or a punctuator.
+
+###### Semantics
+
+A token is the minimal lexical element of the language in translation phases 7 and 8. The categories of tokens are: keywords, identifiers, constants, string literals, operators, and punctuators. A preprocessing token is the minimal lexical element of the language in translation phases 3 through 6. The categories of preprocessing token are: header names, identifiers, preprocessing numbers, character constants, string literals, operators, punctuators, and single non-white-space characters that do not lexically match the other preprocessing token categories. If a `'` or a `"` character matches the last category, the behavior is undefined. Comments (described later) and the characters space, horizontal tab, new-line, vertical tab, and form-feed --- collectively called white space --- can separate preprocessing tokens. As described in [3.8](#38-preprocessing-directives), in certain circumstances during translation phase 4, white space (or the absence thereof) serves as more than preprocessing token separation. White space may appear within a preprocessing token only as part of a header name or between the quotation characters in a character constant or string literal.
+
+If the input stream has been parsed into preprocessing tokens up to a given character, the next preprocessing token is the longest sequence of characters that could constitute a preprocessing token.
+
+###### Examples
+
+The program fragment `1Ex` is parsed as a preprocessing number token (one that is not a valid floating or integer constant token), even though a parse as the pair of preprocessing tokens `1` and `Ex` might produce a valid expression (for example, if `Ex` were a macro defined as `+1` ). Similarly, the program fragment `1E1` is parsed as a preprocessing number (one that is a valid floating constant token), whether or not `E` is a macro name.
+
+The program fragment `x+++++y` is parsed as `x ++ ++ + y`, which violates a constraint on increment operators, even though the parse `x ++ + ++ y` might yield a correct expression.
+
+**Forward references**: character constants ([3.1.3.4](#3134-character-constants)), comments ([3.1.9](#319-comments)), expressions ([3.3](#33-expressions)), floating constants ([3.1.3.1](#3131-floating-constants)), header names ([3.1.7](#317-header-names)), macro replacement ([3.8.3](#383-macro-replacement)), postfix increment and decrement operators ([3.3.2.4](#3324-postfix-increment-and-decrement-operators)), prefix increment and decrement operators ([3.3.3.1](#3331-prefix-increment-and-decrement-operators)), preprocessing directives ([3.8](#38-preprocessing-directives)), preprocessing numbers ([3.1.8](#318-preprocessing-numbers)), string literals ([3.1.4](#314-string-literals)).
 
 #### 3.1.1 Keywords
 
+###### Syntax
+
+*keyword*: <sub>one of</sub>
+
+**auto** **double** **int** **struct**
+
+**break** **else** **long** **switch**
+
+**case** **enum** **register** **typedef**
+
+**char** **extern** **return** **union**
+
+**const** **float** **short** **unsigned**
+
+**continue** **for** **signed** **void**
+
+**default** **goto** **sizeof** **volatile**
+
+**do** **if** **static** **while**
+
+###### Semantics
+
+The above tokens (entirely in lower-case) are reserved (in translation phases 7 and 8) for use as keywords, and shall not be used otherwise.
+
 #### 3.1.2 Identifiers
 
+###### Syntax
+
+<a name="identifier"></a>
+*identifier*:
+
+[*nondigit*](#nondigit)
+
+[*identifier*](#identifier) [*nondigit*](#nondigit)
+
+[*identifier*](#identifier) [*digit*](#digit)
+
+<a name="nondigit"></a>
+*nondigit*: <sub>one of</sub>
+
+**_** **a** **b** **c** **d** **e** **f** **g** **h** **i** **j** **k** **l** **m**
+
+**n** **o** **p** **q** **r** **s** **t** **u** **v** **w** **x** **y** **z**
+
+**A** **B** **C** **D** **E** **F** **G** **H** **I** **J** **K** **L** **M**
+
+**N** **O** **P** **Q** **R** **S** **T** **U** **V** **W** **X** **Y** **Z**
+
+<a name="digit"></a>
+*digit*: <sub>one of</sub>
+
+**0** **1** **2** **3** **4** **5** **6** **7** **8** **9**
+
+###### Description
+
+An identifier is a sequence of nondigit characters (including the underscore `_` and the lower-case and upper-case letters) and digits. The first character shall be a nondigit character.
+
+###### Constraints
+
+In translation phases 7 and 8, an identifier shall not consist of the same sequence of characters as a keyword.
+
+###### Semantics
+
+An identifier denotes an object, a function, or one of the following entities that will be described later: a tag or a member of a structure, union, or enumeration; a typedef name; a label name; a macro name; or a macro parameter. A member of an enumeration is called an enumeration constant. Macro names and macro parameters are not considered further here, because prior to the semantic phase of program translation any occurrences of macro names in the source file are replaced by the preprocessing token sequences that constitute their macro definitions.
+
+There is no specific limit on the maximum length of an identifier.
+
+"Implementation limits"
+
+The implementation shall treat at least the first 31 characters of an internal name (a macro name or an identifier that does not have external linkage) as significant. Corresponding lower-case and upper-case letters are different. The implementation may further restrict the significance of an external name (an identifier that has external linkage) to six characters and may ignore distinctions of alphabetical case for such names.[^10] These limitations on identifiers are all implementation-defined.
+
+Any identifiers that differ in a significant character are different identifiers. If two identifiers differ in a non-significant character, the behavior is undefined.
+
+**Forward references**: linkages of identifiers ([3.1.2.2](#3122-linkages-of-identifiers)), macro replacement ([3.8.3](#383-macro-replacement)).
+
 ##### 3.1.2.1 Scopes of identifiers
+
+An identifier is visible (i.e., can be used) only within a region of program text called its scope. There are four kinds of scopes: function, file, block, and function prototype. (A function prototype is a declaration of a function that declares the types of its parameters.)
+
+A label name is the only kind of identifier that has function scope. It can be used (in a `goto` statement) anywhere in the function in which it appears, and is declared implicitly by its syntactic appearance (followed by a `:` and a statement). Label names shall be unique within a function.
+
+Every other identifier has scope determined by the placement of its declaration (in a declarator or type specifier). If the declarator or type specifier that declares the identifier appears outside of any block or list of parameters, the identifier has file scope, which terminates at the end of the translation unit. If the declarator or type specifier that declares the identifier appears inside a block or within the list of parameter declarations in a function definition, the identifier has block scope, which terminates at the `}` that closes the associated block. If the declarator or type specifier that declares the identifier appears within the list of parameter declarations in a function prototype (not part of a function definition), the identifier has function prototype scope, which terminates at the end of the function declarator. If an outer declaration of a lexically identical identifier exists in the same name space, it is hidden until the current scope terminates, after which it again becomes visible.
+
+Structure, union, and enumeration tags have scope that begins just after the appearance of the tag in a type specifier that declares the tag. Each enumeration constant has scope that begins just after the appearance of its defining enumerator in an enumerator list. Any other identifier has scope that begins just after the completion of its declarator.
+
+**Forward references**: compound statement, or block ([3.6.2](#362-compound-statement-or-block)), declarations ([3.5](#35-declarations)), enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), function calls ([3.3.2.2](#3322-function-calls)), function declarators (including prototypes) ([3.5.4.3](#3543-function-declarators-including-prototypes)), function definitions ([3.7.1](#371-function-definitions)), the goto statement ([3.6.6.1](#3661-the-goto-statement)), labeled statements ([3.6.1](#361-labeled-statements)), name spaces of identifiers ([3.1.2.3](#3123-name-spaces-of-identifiers)), scope of macro definitions ([3.8.3.5](#3835-scope-of-macro-definitions)), source file inclusion ([3.8.2](#382-source-file-inclusion)), tags ([3.5.2.3](#3523-tags)), type specifiers ([3.5.2](#352-type-specifiers)).
 
 ##### 3.1.2.2 Linkages of identifiers
 
@@ -2318,3 +2459,6 @@ The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for t
 [^8]: This model precludes floating-point representations other than sign-magnitude.
 
 [^9]: The floating-point model in that standard sums powers of from zero, so the values of the exponent limits are one less than shown here.
+
+[^10]: See "future language directions" ([3.9.1](#391-external-names)).
+
