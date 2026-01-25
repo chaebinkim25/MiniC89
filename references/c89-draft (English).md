@@ -1652,9 +1652,45 @@ Structure, union, and enumeration tags have scope that begins just after the app
 
 ##### 3.1.2.2 Linkages of identifiers
 
+An identifier declared in different scopes or in the same scope more than once can be made to refer to the same object or function by a process called linkage. There are three kinds of linkage: external, internal, and none.
+
+In the set of translation units and libraries that constitutes an entire program, each instance of a particular identifier with external linkage denotes the same object or function. Within one translation unit, each instance of an identifier with internal linkage denotes the same object or function. Identifiers with no linkage denote unique entities.
+
+If the declaration of an identifier for an object or a function has file scope and contains the storage-class specifier `static`, the identifier has internal linkage.
+
+If the declaration of an identifier for an object or a function contains the storage-class specifier `extern`, the identifier has the same linkage as any visible declaration of the identifier with file scope. If there is no visible declaration with file scope, the identifier has external linkage.
+
+If the declaration of an identifier for a function has no storage-class specifier, its linkage is determined exactly as if it were declared with the storage-class specifier `extern`. If the declaration of an identifier for an object has file scope and no storage-class specifier, its linkage is external.
+
+The following identifiers have no linkage: an identifier declared to be anything other than an object or a function; an identifier declared to be a function parameter; an identifier declared to be an object inside a block without the storage-class specifier `extern`.
+
+If, within a translation unit, the same identifier appears with both internal and external linkage, the behavior is undefined.
+
+**Forward references**: compound statement, or block ([3.6.2](#362-compound-statement-or-block)), declarations ([3.5](#35-declarations)), expressions ([3.3](#33-expressions)), external definitions ([3.7](#37-external-definitions)).
+
 ##### 3.1.2.3 Name spaces of identifiers
 
+If more than one declaration of a particular identifier is visible at any point in a translation unit, the syntactic context disambiguates uses that refer to different entities. Thus, there are separate name spaces for various categories of identifiers, as follows:
+
+* label names (disambiguated by the syntax of the label declaration and use);
+
+* the tags of structures, unions, and enumerations (disambiguated by following any[^11] of the keywords `struct`, `union`, or `enum`);
+
+* the members of structures or unions; each structure or union has a separate name space for its members (disambiguated by the type of the expression used to access the member via the `.` or `->` operator);
+
+* all other identifiers, called ordinary identifiers (declared in ordinary declarators or as enumeration constants).
+
+**Forward references**: declarators ([3.5.4](#354-declarators)), enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), labeled statements ([3.6.1](#361-labeled-statements)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)), structure and union members ([3.3.2.3](#3323-structure-and-union-members)), tags ([3.5.2.3](#3523-tags)).
+
 ##### 3.1.2.4 Storage durations of objects
+
+An object has a storage duration that determines its lifetime. There are two storage durations: static and automatic.
+
+An object declared with external or internal linkage, or with the storage-class specifier `static` has static storage duration. For such an object, storage is reserved and its stored value is initialized only once, prior to program startup. The object exists and retains its last-stored value throughout the execution of the entire program.[^12]
+
+An object declared with no linkage and without the storage-class specifier `static` has automatic storage duration. Storage is guaranteed to be reserved for a new instance of such an object on each normal entry into the block in which it is declared, or on a jump from outside the block to a label in the block or in an enclosed block. If an initialization is specified for the value stored in the object, it is performed on each normal entry, but not if the block is entered by a jump to a label. Storage for the object is no longer guaranteed to be reserved when execution of the block ends in any way. (Entering an enclosed block suspends but does not end execution of the enclosing block. Calling a function that returns suspends but does not end execution of the block containing the call.) The value of a pointer that referred to an object with automatic storage duration that is no longer guaranteed to be reserved is indeterminate.
+
+**Forward references**: compound statement, or block ([3.6.2](#362-compound-statement-or-block)), function calls ([3.3.2.2](#3322-function-calls)), initialization ([3.5.7](#357-initialization)).
 
 ##### 3.1.2.5 Types
 
@@ -2461,4 +2497,8 @@ Structure, union, and enumeration tags have scope that begins just after the app
 [^9]: The floating-point model in that standard sums powers of from zero, so the values of the exponent limits are one less than shown here.
 
 [^10]: See "future language directions" ([3.9.1](#391-external-names)).
+
+[^11]: There is only one name space for tags even though three are possible.
+
+[^12]: In the case of a volatile object, the last store may not be explicit in the program.
 
