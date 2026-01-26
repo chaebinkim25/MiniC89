@@ -1451,7 +1451,7 @@ The following describes an artificial floating-point representation that meets t
 x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \le +32
 ```
 
-
+```c
          FLT_RADIX                       16
          FLT_MANT_DIG                     6
          FLT_EPSILON        9.53674316E-07F
@@ -1462,6 +1462,7 @@ x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \
          FLT_MAX_EXP                    +32
          FLT_MAX            3.40282347E+38F
          FLT_MAX_10_EXP                 +38
+```
 
 The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] b and the appropriate values in a <float.h> header for types `float` and `double`: 
 
@@ -1473,7 +1474,7 @@ x_f = s \times 2^{e} \times \sum_{k=1}^{24} f_k \times 2^{-k}, \qquad -125 \le e
 x_d = s \times 2^{e} \times \sum_{k=1}^{53} f_k \times 2^{-k}, \qquad -1021 \le e \le +1024
 ```
 
-
+```c
          FLT_RADIX                        2
          FLT_MANT_DIG                    24
          FLT_EPSILON        1.19209290E-07F
@@ -1493,7 +1494,7 @@ x_d = s \times 2^{e} \times \sum_{k=1}^{53} f_k \times 2^{-k}, \qquad -1021 \le 
          DBL_MAX_EXP                  +1024
          DBL_MAX    1.7976931348623157E+308
          DBL_MAX_10_EXP                +308
-
+```
 
 The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for the ANSI/IEEE Std 754-1985 default rounding mode (to nearest). Their values may differ for other rounding modes.
 
@@ -1694,7 +1695,96 @@ An object declared with no linkage and without the storage-class specifier `stat
 
 ##### 3.1.2.5 Types
 
+The meaning of a value stored in an object or returned by a function is determined by the type of the expression used to access it. (An identifier declared to be an object is the simplest such expression; the type is specified in the declaration of the identifier.) Types are partitioned into object types (types that describe objects), function types (types that describe functions), and incomplete types (types that describe objects but lack information needed to determine their sizes).
+
+An object declared as type char is large enough to store any member of the basic execution character set. If a member of the required source character set enumerated in [2.2.1](#221-character-sets) is stored in a char object, its value is guaranteed to be positive. If other quantities are stored in a char object, the behavior is implementation-defined: the values are treated as either signed or nonnegative integers.
+
+There are four signed integer types, designated as `signed char`, `short int`, `int`, and `long int`. (The signed integer and other types may be designated in several additional ways, as described in [3.5.2](#352-type-specifiers))
+
+An object declared as type `signed char` occupies the same amount of storage as a "plain" `char` object. A "plain" `int` object has the natural size suggested by the architecture of the execution environment (large enough to contain any value in the range `INT_MIN` to `INT_MAX` as defined in the header `<limits.h>`). In the list of signed integer types above, the range of values of each type is a subrange of the values of the next type in the list.
+
+For each of the signed integer types, there is a corresponding (but different) unsigned integer type (designated with the keyword `unsigned`) that uses the same amount of storage (including sign information) and has the same alignment requirements. The range of nonnegative values of a signed integer type is a subrange of the corresponding unsigned integer type, and the representation of the same value in each type is the same. A computation involving unsigned operands can never overflow, because a result that cannot be represented by the resulting unsigned integer type is reduced modulo the number that is one greater than the largest value that can be represented by the resulting unsigned integer type.
+
+There are three floating types, designated as `float`, `double`, and `long double`. The set of values of the type `float` is a subset of the set of values of the type `double`; the set of values of the type `double` is a subset of the set of values of the type `long double`.
+
+The type `char`, the signed and unsigned integer types, and the floating types are collectively called the basic types. Even if the implementation defines two or more basic types to have the same representation, they are nevertheless different types.
+
+There are three character types, designated as `char`, `signed char`, and `unsigned char`.
+
+An enumeration comprises a set of named integer constant values. Each distinct enumeration constitutes a different enumerated type.
+
+The `void` type comprises an empty set of values; it is an incomplete type that cannot be completed.
+
+Any number of derived types can be constructed from the basic, enumerated, and incomplete types, as follows:
+
+* An array type describes a contiguously allocated set of objects with a particular member object type, called the element type. Array types are characterized by their element type and by the number of members of the array. An array type is said to be derived from its element type, and if its element type is `T`, the array type is sometimes called "array of `T`." The construction of an array type from an element type is called "array type derivation."
+
+* A structure type describes a sequentially allocated set of member objects, each of which has an optionally specified name and possibly distinct type.
+
+* A union type describes an overlapping set of member objects, each of which has an optionally specified name and possibly distinct type.
+
+* A function type describes a function with specified return type. A function type is characterized by its return type and the number and types of its parameters. A function type is said to be derived from its return type, and if its return type is `T`, the function type is sometimes called "function returning `T`." The construction of a function type from a return type is called "function type derivation."
+
+* A pointer type may be derived from a function type, an object type, or an incomplete type, called the referenced type. A pointer type describes an object whose value provides a reference to an entity of the referenced type. A pointer type derived from the referenced type `T` is sometimes called "pointer to `T`." The construction of a pointer type from a referenced type is called "pointer type derivation."
+
+These methods of constructing derived types can be applied recursively.
+
+The type `char`, the signed and unsigned integer types, and the enumerated types are collectively called integral types. The representations of integral types shall define values by use of a pure binary numeration system. ([^13] American National Dictionary for Information Processing Systems.) The representations of floating types are unspecified.
+
+Integral and floating types are collectively called arithmetic types. Arithmetic types and pointer types are collectively called scalar types. Array and structure types are collectively called aggregate types.[^14]
+
+A pointer to `void` shall have the same representation and alignment requirements as a pointer to a character type. Other pointer types need not have the same representation or alignment requirements.
+
+An array type of unknown size is an incomplete type. It is completed, for an identifier of that type, by specifying the size in a later declaration (with internal or external linkage). A structure or union type of unknown content (as described in [3.5.2.3](#3523-tags)) is an incomplete type. It is completed, for all declarations of that type, by declaring the same structure or union tag with its defining content later in the same scope.
+
+Array, function, and pointer types are collectively called derived declarator types. A declarator type derivation from a type `T` is the construction of a derived declarator type from `T` by the application of an array, a function, or a pointer type derivation to `T`.
+
+A type is characterized by its top type, which is either the first type named in describing a derived type (as noted above in the construction of derived types), or the type itself if the type consists of no derived types.
+
+A type has qualified type if its top type is specified with a type qualifier; otherwise it has unqualified type. The type qualifiers `const` and `volatile` respectively designate const-qualified type and volatile-qualified type.[^15] For each qualified type there is an unqualified type that is specified the same way as the qualified type, but without any type qualifiers in its top type. This type is known as the unqualified version of the qualified type. Similarly, there are appropriately qualified versions of types (such as a const-qualified version of a type), just as there are appropriately non-qualified versions of types (such as a non-const-qualified version of a type).
+
+###### Examples
+
+The type designated as "`float *`" is called "pointer to `float`" and its top type is a pointer type, not a floating type. The const-qualified version of this type is designated as "`float * const`" whereas the type designated as "`const float *`" is not a qualified type --- it is called "pointer to` const float`" and is a pointer to a qualified type.
+
+Finally, the type designated as "`struct tag (*[5])(float)`" is called "array of pointer to function returning `struct` tag." Its top type is array type. The array has length five and the function has a single parameter of type `float`.
+
+**Forward references**: character constants ([3.1.3.4](#3134-character-constants)), declarations ([3.5](#35-declarations)), tags ([3.5.2.3](#3523-tags)), type qualifiers ([3.5.3](#353-type-qualifiers)).
+
 ##### 3.1.2.6 Compatible type and composite type
+
+Two types have compatible type if their types are the same. Additional rules for determining whether two types are compatible are described in [3.5.2](#352-type-specifiers) for type specifiers, in [3.5.3](#353-type-qualifiers) for type qualifiers, and in [3.5.4](#354-declarators) for declarators.[^16] Moreover, two structure, union, or enumeration types declared in separate translation units are compatible if they have the same number of members, the same member names, and compatible member types; for two structures, the members shall be in the same order; for two enumerations, the members shall have the same values.
+
+All declarations that refer to the same object or function shall have compatible type; otherwise the behavior is undefined.
+
+A composite type can be constructed from two types that are compatible; it is a type that is compatible with both of the two types and has the following additions:
+
+* If one type is an array of known size, the composite type is an array of that size.
+
+* If only one type is a function type with a parameter type list (a function prototype), the composite type is a function prototype with the parameter type list.
+
+* If both types have parameter type lists, the type of each parameter in the composite parameter type list is the composite type of the corresponding parameters.
+
+These rules apply recursively to the types from which the two types are derived.
+
+For an identifier with external or internal linkage declared in the same scope as another declaration for that identifier, the type of the identifier becomes the composite type.
+
+###### Example
+
+Given the following two file scope declarations:
+
+```c
+         int f(int (*)(), double (*)[3]);
+         int f(int (*)(char *), double (*)[]);
+```
+
+The resulting composite type for the function is:
+
+```c
+         int f(int (*)(char *), double (*)[3]);
+```
+
+**Forward references**: declarators ([3.5.4](#354-declarators)), enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)), type definitions ([3.5.6](#356-type-definitions)), type qualifiers ([3.5.3](#353-type-qualifiers)), type specifiers ([3.5.2](#352-type-specifiers)).
 
 #### 3.1.3 Constants
 
@@ -2502,3 +2592,8 @@ An object declared with no linkage and without the storage-class specifier `stat
 
 [^12]: In the case of a volatile object, the last store may not be explicit in the program.
 
+[^13]: A positional representation for integers that uses the binary digits 0 and 1, in which the values represented by successive bits are additive, begin with 1, and are multiplied by successive integral powers of 2, except perhaps the bit with the highest position.
+
+[^14]: Note that aggregate type does not include union type because an object with union type can only contain one member at a time.
+
+[^15]: There are three distinct combinations of qualified types.
