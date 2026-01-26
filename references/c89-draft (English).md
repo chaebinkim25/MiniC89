@@ -2597,3 +2597,5 @@ The resulting composite type for the function is:
 [^14]: Note that aggregate type does not include union type because an object with union type can only contain one member at a time.
 
 [^15]: There are three distinct combinations of qualified types.
+
+[^16]: Two types need not be identical to be compatible.
