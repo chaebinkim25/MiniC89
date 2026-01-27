@@ -1,4 +1,4 @@
-# MiniC89 VM 상태 스냅샷 JSON 스키마 (v0.1)
+# MiniC89 VM 상태 스냅샷 JSON 스키마 (v0.2)
 
 본 문서는 MiniC89 추상 머신(VM)의 실행 상태를 브라우저 UI가 시각화할 수 있도록,
 VM이 외부로 노출하는 **상태 스냅샷(JSON)** 의 형식과 그 **JSON Schema**를 정의한다.
@@ -9,12 +9,12 @@ VM이 외부로 노출하는 **상태 스냅샷(JSON)** 의 형식과 그 **JSON
 
 ---
 
-## 1. 스냅샷 의미(중요)
+## 1. 스냅샷 의미
 
 ### 1.1 스냅샷은 “명령 실행 경계”의 상태이다
 - 스냅샷의 `pc`는 **다음에 실행할 명령어의 위치**를 가리킨다.
 - 예외:
-  - `status == TRAPPED`인 경우 `pc`는 **트랩을 발생시킨 명령어의 위치**를 가리킨다(하이라이트 용).
+  - `status == TRAPPED`인 경우 `pc`는 **트랩을 발생시킨 명령어의 위치**를 가리킨다.
   - `status == HALTED`인 경우 `pc`는 `null`일 수 있다.
 
 ### 1.2 스택/프레임 배열의 방향
@@ -33,7 +33,7 @@ VM이 외부로 노출하는 **상태 스냅샷(JSON)** 의 형식과 그 **JSON
 
 VM은 값(Value)을 다음 3종류로만 표현한다.
 
-- I8 정수: `{ "t": "i8", "v": -128..127 }`
+- I16 정수: `{ "t": "i16", "v": -32768..32767 }`
 - 함수 참조(FUN): `{ "t": "fun", "v": 0.. }`  
   - `v == 0`이면 null function reference
 - 미초기화(UNINIT): `{ "t": "uninit" }`
@@ -42,7 +42,20 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
 
 ---
 
-## 3. TRAP 정보
+## 3. 프로그램 카운터(PC), step, status의 의미
+
+### 3.1 PC
+- `pc = { fid, ip }`
+  - fid: 함수 ID
+  - ip: 그 함수 코드 배열에서의 명령 인덱스(0부터)
+
+### 3.2 step 번호
+- `step = 0`은 **실행 시작 직전(첫 명령 실행 전)** 스냅샷을 권장한다.
+- 이후 VM이 한 번 “명령 실행을 시도(step attempt)”할 때마다 `step`을 1 증가시킨다.
+  - 성공하면 `RUNNING` 유지 + `pc`는 다음 명령 위치로 이동
+  - TRAP이면 `TRAPPED` 상태 + `pc`는 **트랩을 일으킨 명령 위치**로 유지/표시
+
+### 3.3 status가 TRAP 일 때
 
 `status == TRAPPED`이면 `trap` 객체가 반드시 포함된다.
 
@@ -51,93 +64,203 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
 - `trap.at_source`는 해당 시점의 `DBG_LINE` 기반 소스 위치(가능하면 제공)이다.
 - `trap.details`는 UI가 추가 설명을 표시할 수 있도록 선택적으로 제공한다.
 
----
-
-## 4. HALT 정보
+### 3.4 status가 HALT 일 때
 
 `status == HALTED`이면 `halt` 객체가 반드시 포함된다.
 
-- `halt.result`는 엔트리 함수의 반환값(I8)이다.
+- `halt.result`는 엔트리 함수의 반환값(I16)이다.
 
 ---
 
-## 5. JSON Schema (Draft 2020-12)
+## 4. Metadata JSON 스키마 
+
+### 4.1 Metadata가 제공해야 하는 정보
+UI가 스냅샷을 해석/표시하기 위해 필요한 정적 정보:
+
+- 함수 테이블(fid → 함수 이름, param/local 개수)
+- 각 함수의 바이트코드 디스어셈블(명령 리스트)
+- ip → 소스 위치 매핑(라인 하이라이트용)
+- 로컬 슬롯(slot) → 변수명(+스코프 범위)
+
+### 4.2 Metadata JSON Schema (Draft 2020-12)
 
 아래 스키마는 스냅샷 JSON을 검증하기 위한 **공식 JSON Schema**이다.
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://minic89.local/schema/vm-snapshot-v0.1.json",
-  "title": "MiniC89 VM Snapshot v0.1",
+  "$id": "https://minic89.local/schema/vm-metadata-v0.2.json",
+  "title": "MiniC89 VM Metadata v0.2",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "step",
-    "status",
-    "pc",
-    "source",
-    "operand_stack",
-    "call_stack"
-  ],
+  "required": ["schema_version", "isa_version", "functions"],
   "properties": {
-    "schema_version": {
-      "const": "MiniC89.VM.Snapshot.v0.1"
+    "schema_version": { "const": "MiniC89.VM.Metadata.v0.2" },
+    "isa_version": { "type": "string" },
+
+    "limits": {
+      "description": "선택: 실행 제한(예: step limit). 스냅샷을 가볍게 하기 위해 여기로 이동.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "step_limit": { "type": ["integer", "null"], "minimum": 0 }
+      }
     },
 
-    "step": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "스냅샷 시퀀스 번호(또는 실행된 명령 개수). step=0은 초기 스냅샷을 권장."
+    "functions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/functionMeta" }
+    }
+  },
+
+  "$defs": {
+    "instruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "args"],
+      "properties": {
+        "op": { "type": "string" },
+        "args": {
+          "type": "array",
+          "items": { "type": ["integer", "string", "null"] }
+        }
+      }
     },
 
-    "status": {
-      "type": "string",
-      "enum": ["RUNNING", "HALTED", "TRAPPED"]
+    "sourceLoc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line"],
+      "properties": {
+        "line": { "type": ["integer", "null"], "minimum": 1 }
+      }
     },
 
-    "pc": {
-      "description": "현재(다음) 실행 위치. TRAPPED일 때는 트랩 발생 명령 위치. HALTED일 때 null 가능.",
-      "$ref": "#/$defs/pcNullable"
+    "sourceMapEntry": {
+      "description": "ip가 이 값 이상일 때 적용되는 소스 위치(변경 지점 테이블). ip 오름차순 정렬 권장.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ip", "loc"],
+      "properties": {
+        "ip": { "type": "integer", "minimum": 0 },
+        "loc": { "$ref": "#/$defs/sourceLoc" }
+      }
     },
 
-    "next_instruction": {
-      "description": "선택: pc 위치의 디코딩된 명령(표시용).",
-      "$ref": "#/$defs/instruction"
+    "localDebug": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot", "name", "kind"],
+      "properties": {
+        "slot": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string" },
+        "kind": { "type": "string", "enum": ["param", "local"] },
+
+        "scope": {
+          "description": "선택: 스코프 범위. 제공 시 UI가 스코프 밖 변수를 숨기거나 흐리게 표시 가능.",
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["ip_start", "ip_end"],
+          "properties": {
+            "ip_start": { "type": "integer", "minimum": 0 },
+            "ip_end": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
     },
 
-    "source": {
-      "description": "DBG_LINE 기반 소스 위치(선택적으로 file 포함).",
-      "$ref": "#/$defs/source"
-    },
+    "functionMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fid", "name", "param_count", "local_count", "code"],
+      "properties": {
+        "fid": { "type": "integer", "minimum": 1 },
+        "name": { "type": "string" },
+
+        "param_count": { "type": "integer", "minimum": 0 },
+        "local_count": { "type": "integer", "minimum": 0 },
+
+        "code": {
+          "description": "디스어셈블. UI가 pc로 현재 명령을 찾는 데 사용.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/instruction" }
+        },
+
+        "source_map": {
+          "description": "선택: ip -> (file,line) 매핑. 제공 시 스냅샷에 source가 없어도 라인 하이라이트 가능.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceMapEntry" }
+        },
+
+        "locals": {
+          "description": "선택: slot -> 변수명/종류/스코프. 제공 시 locals 배열을 변수 테이블로 표시 가능.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/localDebug" }
+        }
+      }
+    }
+  }
+}
+```
+
+### 4.3 Metadata 사용 방법 (UI 규칙)
+
+UI는 스냅샷의 `pc = {fid, ip}`를 가지고:
+1. `functions[]`에서 `fid`가 같은 함수 메타데이터를 찾는다.
+2. 현재 명령은 `function.code[ip]`로 얻는다.
+3. 현재 소스 라인은 `function.source_map`에서
+   - `ip <= current_ip`인 entry중 가장 마지막 entry의 `loc.line`을 사용한다.
+   - 없으면 라인 표시 불가
+
+locals 표시:
+- 스냅샷 프레임의 `locals[k]`는 slot=k의 값이다.
+- `function.locals`가 있으면 slot->name 매핑으로 "변수이름:값"을 보여준다.
+- scope가 있으면 ip 범위 밖 변수는 흐리게 처리
+
+---
+
+## 5. Snapshot JSON 스키마 
+
+### 5.1 Snapshot이 포함해야 하는 정보
+
+- 실행 상태(status), step, pc
+- operand stack (값들)
+- call stack (각 프레임의 fid/return_pc/locals 값 배열)
+- TRAP시 trap 정보
+- HALT시 halt 정보
+
+### 4.2 Snapshot JSON Schema (Draft 2020-12)
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minic89.local/schema/vm-snapshot-v0.2.json",
+  "title": "MiniC89 VM Snapshot v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "step", "status", "pc", "operand_stack", "call_stack"],
+  "properties": {
+    "schema_version": { "const": "MiniC89.VM.Snapshot.v0.2" },
+
+    "step": { "type": "integer", "minimum": 0 },
+
+    "status": { "type": "string", "enum": ["RUNNING", "HALTED", "TRAPPED"] },
+
+    "pc": { "$ref": "#/$defs/pcNullable" },
 
     "operand_stack": {
       "type": "array",
-      "description": "바닥->꼭대기 순서. 마지막 원소가 top.",
       "items": { "$ref": "#/$defs/value" }
     },
 
     "call_stack": {
       "type": "array",
-      "description": "바닥(가장 오래된 프레임)->현재 프레임 순서. 마지막 프레임이 현재 프레임.",
       "items": { "$ref": "#/$defs/frame" }
     },
 
-    "trap": {
-      "description": "status==TRAPPED인 경우 필수.",
-      "$ref": "#/$defs/trap"
-    },
-
-    "halt": {
-      "description": "status==HALTED인 경우 필수.",
-      "$ref": "#/$defs/halt"
-    },
-
-    "counters": {
-      "description": "선택: 실행 제한/계측 정보.",
-      "$ref": "#/$defs/counters"
-    }
+    "trap": { "$ref": "#/$defs/trap" },
+    "halt": { "$ref": "#/$defs/halt" }
   },
 
   "allOf": [
@@ -175,27 +298,11 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
       ]
     },
 
-    "source": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["line"],
-      "properties": {
-        "file": { "type": ["string", "null"] },
-        "line": { "type": ["integer", "null"], "minimum": 1 }
-      }
-    },
-
     "value": {
+      "description": "v0.2: i16는 정수(number)로 직접 표현. fun/uninit는 객체로 표현.",
       "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["t", "v"],
-          "properties": {
-            "t": { "const": "i8" },
-            "v": { "type": "integer", "minimum": -128, "maximum": 127 }
-          }
-        },
+        { "type": "integer", "minimum": -32768, "maximum": 32767 },
+
         {
           "type": "object",
           "additionalProperties": false,
@@ -205,6 +312,7 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
             "v": { "type": "integer", "minimum": 0 }
           }
         },
+
         {
           "type": "object",
           "additionalProperties": false,
@@ -216,51 +324,22 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
       ]
     },
 
-    "localSlot": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["slot", "value"],
-      "properties": {
-        "slot": { "type": "integer", "minimum": 0 },
-        "name": { "type": ["string", "null"] },
-        "value": { "$ref": "#/$defs/value" }
-      }
-    },
-
     "frame": {
       "type": "object",
       "additionalProperties": false,
       "required": ["fid", "return_pc", "locals"],
       "properties": {
         "fid": { "type": "integer", "minimum": 1 },
-        "func_name": { "type": ["string", "null"] },
 
         "return_pc": {
           "description": "엔트리 프레임이면 null일 수 있음.",
           "$ref": "#/$defs/pcNullable"
         },
 
-        "param_count": { "type": ["integer", "null"], "minimum": 0 },
-        "local_count": { "type": ["integer", "null"], "minimum": 0 },
-
         "locals": {
+          "description": "locals[k]는 slot=k의 값이다. 길이는 해당 함수의 local_count와 일치하는 것이 권장된다.",
           "type": "array",
-          "items": { "$ref": "#/$defs/localSlot" }
-        }
-      }
-    },
-
-    "instruction": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["op", "args"],
-      "properties": {
-        "op": { "type": "string" },
-        "args": {
-          "type": "array",
-          "items": {
-            "type": ["integer", "string", "null"]
-          }
+          "items": { "$ref": "#/$defs/value" }
         }
       }
     },
@@ -268,7 +347,7 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
     "trap": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["code", "at_pc"],
+      "required": ["code"],
       "properties": {
         "code": {
           "type": "string",
@@ -288,10 +367,11 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
             "TRAP_INTERNAL"
           ]
         },
+
         "message": { "type": ["string", "null"] },
-        "at_pc": { "$ref": "#/$defs/pc" },
-        "at_source": { "$ref": "#/$defs/source" },
+
         "details": {
+          "description": "선택: UI가 추가 정보를 표시할 수 있는 자유 형식 객체(예: slot 번호, 기대 시그니처 등).",
           "type": ["object", "null"],
           "additionalProperties": true
         }
@@ -303,109 +383,129 @@ VM은 값(Value)을 다음 3종류로만 표현한다.
       "additionalProperties": false,
       "required": ["result"],
       "properties": {
-        "result": { "$ref": "#/$defs/value" },
-        "at_pc": { "$ref": "#/$defs/pcNullable" }
-      }
-    },
-
-    "counters": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["steps_executed"],
-      "properties": {
-        "steps_executed": { "type": "integer", "minimum": 0 },
-        "step_limit": { "type": ["integer", "null"], "minimum": 0 }
+        "result": { "$ref": "#/$defs/value" }
       }
     }
   }
 }
 ```
----
 
 ## 6. 스냅샷 예시
 
-### 6.1 RUNNING 예시
+### 6.1 Metadata 예시
 
+C 소스 코드:
+```c
+int main
+{
+  return 0;
+}
+```
+
+Snapshot:
 ```json
 {
-  "schema_version": "MiniC89.VM.Snapshot.v0.1",
-  "step": 0,
-  "status": "RUNNING",
-  "pc": { "fid": 1, "ip": 0 },
-  "next_instruction": { "op": "DBG_LINE", "args": [1] },
-  "source": { "file": "main.c", "line": null },
-  "operand_stack": [],
-  "call_stack": [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "MiniC89.VM.Metadata.v0.2",
+  "isa_version": "MiniC89.ISA.v0.1",
+  
+  "limits": { "step_limit": 1000 },
+
+  "functions": [
     {
       "fid": 1,
-      "func_name": "main",
-      "return_pc": null,
+      "name": "main",
       "param_count": 0,
-      "local_count": 2,
-      "locals": [
-        { "slot": 0, "name": "i",   "value": { "t": "uninit" } },
-        { "slot": 1, "name": "sum", "value": { "t": "uninit" } }
-      ]
+      "local_count": 0,
+      
+      "code": [
+        { "op": "PUSH_I16", "args": [0] }, // ip: 0
+        { "op": "RET", "args": [] }        // ip: 1
+      ],
+
+      "source_map": [
+        {
+          "ip": 0,            // 0번 명령어부터는
+          "loc": { "line": 3 } // 소스코드 3번째 줄("return 0;")이다.
+        }
+      ],
+
+      "locals": []
     }
-  ],
-  "counters": { "steps_executed": 0, "step_limit": 100000 }
+  ]
 }
 ```
 
-### 6.2 TRAPPED 예시(미초기화 읽기)
+### 6.2 RUNNING 예시
+C 소스 코드:
+```c
+int main
+{
+  return 0;
+}
+```
+
+Snapshot (RET 실행할 차례):
 ```json
 {
-  "schema_version": "MiniC89.VM.Snapshot.v0.1",
-  "step": 7,
-  "status": "TRAPPED",
-  "pc": { "fid": 1, "ip": 3 },
-  "next_instruction": { "op": "LOAD_LOCAL", "args": [1] },
-  "source": { "file": "main.c", "line": 5 },
-  "operand_stack": [],
+  "schema_version": "MiniC89.VM.Snapshot.v0.2",
+  "step": 2,
+  "status": "RUNNING",
+  "pc": {
+    "fid": 1,
+    "ip": 1
+  },
+  "operand_stack": [
+    0
+  ],
   "call_stack": [
     {
       "fid": 1,
-      "func_name": "main",
       "return_pc": null,
-      "locals": [
-        { "slot": 0, "name": "i",   "value": { "t": "i8", "v": 3 } },
-        { "slot": 1, "name": "sum", "value": { "t": "uninit" } }
-      ]
+      "locals": []
     }
-  ],
-  "trap": {
-    "code": "TRAP_UNINIT_READ",
-    "message": "read of uninitialized local slot",
-    "at_pc": { "fid": 1, "ip": 3 },
-    "at_source": { "file": "main.c", "line": 5 },
-    "details": { "slot": 1 }
-  }
+  ]
 }
 ```
+
+
 
 ### 6.3 HALTED 예시
+C 소스 코드:
+```c
+int main
+{
+  return 0;
+}
+```
+
+Snapshot (RET 실행 후):
 ```json
 {
-  "schema_version": "MiniC89.VM.Snapshot.v0.1",
-  "step": 42,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "MiniC89.VM.Snapshot.v0.2",
+  "step": 3,
   "status": "HALTED",
   "pc": null,
-  "source": { "file": "main.c", "line": 12 },
   "operand_stack": [],
   "call_stack": [],
   "halt": {
-    "result": { "t": "i8", "v": 0 },
-    "at_pc": null
+    "result": 0
   }
 }
 ```
 
-## 7. 구현 메모(권장)
-- VM은 `step()` 호출마다:
-  1. 현재 `pc`의 명령 실행
-  2. 상태 갱신
-  3. 새 스냅샷 생성/반환
- - UI는 연속 스냅샷의 diff로 변화를 표시할 수 있다.
- - `next_instruction`은 UI가 디스어셈블을 따로 하지 않아도 되게 해준다(권장).
+## 7. 구현 메모
+- 스냅샷 생성 시:
 
+  - locals는 slot 인덱스 순서 배열로 내보내기 → UI가 가장 처리하기 쉬움
+
+- 함수 포인터 값은 { "t":"fun","v":fid }로 내보내면
+
+  - UI는 metadata로 함수명을 즉시 표시 가능
+
+- 소스 라인은 스냅샷에서 제거했으므로
+
+  - 반드시 metadata의 source_map을 채우는 것을 권장
+  
 ---
