@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -239,13 +239,16 @@ void vm_step(VM* vm) {
 // ==========================================
 
 void print_state(VM* vm, int step_count, Instruction next_inst) {
-    printf("[Step %02d] FID:%d IP:%d | ", step_count, vm->pc_fid, vm->pc_ip);
+    // 1. 메타 정보 (FID, IP도 2자리 고정 너비로 확보)
+    printf("[Step %02d] FID:%-2d IP:%-2d | ", step_count, vm->pc_fid, vm->pc_ip);
     
-    // 명령어 출력
-    printf("INST: %-8s %d", OP_NAMES[next_inst.opcode], next_inst.operand);
+    // 2. 명령어 출력 (탭 대신 고정 너비 사용)
+    // %-10s : 문자열을 왼쪽 정렬하고 최소 10칸 확보 (PUSH_I16이 8글자이므로 여유있음)
+    // %5d   : 숫자를 오른쪽 정렬하고 최소 5칸 확보
+    printf("INST: %-10s %5d | ", OP_NAMES[next_inst.opcode], next_inst.operand);
 
-    // 스택 출력
-    printf("\t| STACK: [ ");
+    // 3. 스택 출력
+    printf("STACK: [ ");
     for (int i = 0; i < vm->sp; i++) {
         if (vm->stack[i].type == VAL_I16)
             printf("%d ", vm->stack[i].as.i_val);
