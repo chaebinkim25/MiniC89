@@ -16,9 +16,9 @@
 
 VM은 런타임 값에 대해 아래 두 타입만을 가진다.
 
-### 1.1 I8 (8-bit signed integer)
-- 표현: 8-bit 2의 보수
-- 값 범위: -128 .. 127
+### 1.1 I16 (16-bit signed integer)
+- 표현: 16-bit 2의 보수
+- 값 범위: -32768 .. 32767
 
 ### 1.2 FUN (function reference; 함수 참조/함수 포인터 값)
 - 의미: 함수 테이블의 항목을 가리키는 참조값
@@ -136,9 +136,9 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 
 ### 6.2 상수/스택 조작
 
-#### `PUSH_I8 k`
-- 입력: `k`는 -128..127 범위의 정수 상수
-- 스택: `[...] -> [..., I8(k)]`
+#### `PUSH_I16 k`
+- 입력: `k`는 -32768 .. 32767 범위의 정수 상수
+- 스택: `[...] -> [..., I16(k)]`
 
 #### `PUSH_FUN fid`
 - 스택: `[...] -> [..., FUN(fid)]`
@@ -182,13 +182,13 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 ### 6.4 정수 연산 (I8)
 
 #### 공통 타입 규칙
-- 아래 연산은 스택에서 I8 두 개(또는 한 개)를 요구한다.
-- 타입이 I8이 아니면 TRAP(`TRAP_TYPE`)
+- 아래 연산은 스택에서 I16 두 개(또는 한 개)를 요구한다.
+- 타입이 I16이 아니면 TRAP(`TRAP_TYPE`)
 
 #### `ADD`
 - 스택: `[..., a, b] -> [..., (a+b)]`
 - TRAP(UB 감지):
-  - 결과가 [-128,127] 범위 밖이면 `TRAP_INT_OVERFLOW`
+  - 결과가 [-32768, 32767] 범위 밖이면 `TRAP_INT_OVERFLOW`
 
 #### `SUB`
 - 스택: `[..., a, b] -> [..., (a-b)]`
@@ -203,45 +203,45 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 #### `NEG`
 - 스택: `[..., a] -> [..., (-a)]`
 - TRAP:
-  - a == -128 이면 overflow → `TRAP_INT_OVERFLOW`
+  - a == -32768 이면 overflow → `TRAP_INT_OVERFLOW`
 
 #### `DIV`
 - 스택: `[..., a, b] -> [..., (a/b)]`
 - TRAP(UB 감지):
   - b == 0 → `TRAP_DIV_ZERO`
-  - a == -128 && b == -1 → `TRAP_INT_OVERFLOW`
+  - a == -32768 && b == -1 → `TRAP_INT_OVERFLOW`
 
 #### `MOD`
 - 스택: `[..., a, b] -> [..., (a%b)]`
 - TRAP(UB 감지):
   - b == 0 → `TRAP_DIV_ZERO`
-  - a == -128 && b == -1 → `TRAP_INT_OVERFLOW`
+  - a == -32768 && b == -1 → `TRAP_INT_OVERFLOW`
 
 ---
 
 ### 6.5 비교/논리 (결과는 I8 0/1)
 
 #### `EQ`
-- 스택: `[..., x, y] -> [..., I8(x==y ? 1 : 0)]`
+- 스택: `[..., x, y] -> [..., I16(x==y ? 1 : 0)]`
 - 허용:
-  - I8 vs I8
+  - I16 vs I16
   - FUN vs FUN
 - TRAP:
   - 타입이 섞이면 `TRAP_TYPE`
 
 #### `NE`
-- 스택: `[..., x, y] -> [..., I8(x!=y ? 1 : 0)]`
+- 스택: `[..., x, y] -> [..., I16(x!=y ? 1 : 0)]`
 - 허용/TRAP는 EQ와 동일
 
 #### `LT`, `LE`, `GT`, `GE`
-- 스택: `[..., a, b] -> [..., I8(a<b ? 1 : 0)]` 등
-- 허용: I8 vs I8만
+- 스택: `[..., a, b] -> [..., I16(a<b ? 1 : 0)]` 등
+- 허용: I16 vs I16만
 - TRAP:
   - FUN 포함 시 `TRAP_TYPE`
 
 #### `LNOT`
-- 스택: `[..., a] -> [..., I8(a==0 ? 1 : 0)]`
-- 허용: I8만
+- 스택: `[..., a] -> [..., I16(a==0 ? 1 : 0)]`
+- 허용: I16만
 - TRAP: 타입 불일치 시 `TRAP_TYPE`
 
 > `&&`/`||`의 short-circuit은 별도 명령이 아니라
@@ -259,7 +259,7 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 #### `JZ target_ip`
 - 스택: `[..., cond] -> [...]`
 - 동작:
-  - cond는 I8이어야 함
+  - cond는 I6이어야 함
   - cond == 0 이면 `ip = target_ip`, 아니면 다음 명령으로 진행
 - TRAP:
   - cond 타입 불일치: `TRAP_TYPE`
@@ -281,11 +281,11 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
   - N은 `functions[fid].param_count`
   - 스택에서 args를 pop하여 새 프레임 locals[0..N-1]에 채운다
   - 새 프레임으로 전환하고 `(func_id=fid, ip=0)`부터 실행
-  - return 시 ret(I8)가 호출자 스택에 push된다
+  - return 시 ret(I16)이 호출자 스택에 push된다
 - TRAP:
   - fid가 유효하지 않으면 `TRAP_BAD_FUNID`
   - args 개수 부족/스택 언더플로는 `TRAP_STACK`
-  - 인자 타입이 I8가 아니면 `TRAP_TYPE` (MiniC89의 함수 인자는 int만 허용)
+  - 인자 타입이 I16이 아니면 `TRAP_TYPE` (MiniC89의 함수 인자는 int만 허용)
 
 #### `CALL_IND expected_param_count`
 - 스택: `[..., arg1, arg2, ..., argN, fun] -> [..., ret]`
@@ -304,7 +304,7 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 #### `RET`
 - 스택: `[..., ret] -> [...]`
 - 동작:
-  - ret은 I8이어야 함
+  - ret은 I16이어야 함
   - 현재 프레임을 pop하고 return_pc로 복귀
   - 호출자 스택에 ret을 push
 - TRAP:
@@ -318,7 +318,7 @@ MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
 - 호스트는 엔트리 함수 ID(`entry_fid`)를 지정한다.
 - VM은 `CALL_DIRECT entry_fid`와 동일한 방식으로 시작한다(인자 없음 권장).
 - 엔트리 함수가 `RET`하면 VM은 `HALTED`로 전환하며,
-  그 반환값(I8)이 프로그램 결과가 된다.
+  그 반환값(I16)이 프로그램 결과가 된다.
 
 > 일반적인 모드는 `int main(void)`를 entry로 삼는다.
 > (단, 이 문서는 online judge 규약을 포함하지 않는다.)
@@ -344,3 +344,13 @@ ISA 자체와 별개로, 시각화(UI)를 위해 아래 메타데이터를 권�
 int add1(int x) {
     return x + 1;
 }
+```
+
+### 바이트코드(예시)
+```
+0: DBG_LINE 1
+1: LOAD_LOCAL 0
+2: PUSH_I16 1
+3: ADD
+4: RET
+```
