@@ -1788,25 +1788,475 @@ The resulting composite type for the function is:
 
 #### 3.1.3 Constants
 
+###### Syntax
+
+<a name="constant"></a>
+*constant*:
+
+[*floating-constant*](#floating-constant)
+
+[*integer-constant*](#integer-constant)
+
+[*enumeration-constant*](#enumeration-constant)
+
+[*character-constant*](#character-constant)
+
+###### Constraints
+
+The value of a constant shall be in the range of representable values for its type.
+
+###### Semantics
+
+Each constant has a type, determined by its form and value, as detailed later.
+
 ##### 3.1.3.1 Floating constants
+
+###### Syntax
+
+<a name="floating-constant"></a>
+*floating-constant*:
+
+[*fractional-constant*](#fractional-constant) [*exponent-part*](#exponent-part)<sub>opt</sub> [*floating-suffix*](#floating-suffix)<sub>opt</sub>
+
+[*digit-sequence*](#digit-sequence) [*exponent-part*](#exponent-part) [*floating-suffix*](#floating-suffix)<sub>opt</sub>
+
+<a name="fractional-constant"></a>
+*fractional-constant*:
+
+[*digit-sequence*](#digit-sequence)<sub>opt</sub> **.** [*digit-sequence*](#digit-sequence)
+
+[*digit-sequence*](#digit-sequence) **.**
+
+<a name="exponent-part"></a>
+*exponent-part*:
+
+**e** [*sign*](#sign)<sub>opt</sub> [*digit-sequence*](#digit-sequence)
+
+**E** [*sign*](#sign)<sub>opt</sub> [*digit-sequence*](#digit-sequence)
+
+<a name="sign"></a>
+*sign*: <sub>one of</sub>
+
+**+** **-**
+
+<a name="digit-sequence"></a>
+*digit-sequence*:
+
+[*digit](#digit)
+
+[*digit-sequence*](#digit-sequence) [*digit](#digit)
+
+<a name="floating-suffix"></a>
+*floating-suffix*: <sub>one of</sub>
+
+**f** **l** **F** **L**
+
+###### Description
+
+A floating constant has a value part that may be followed by an exponent part and a suffix that specifies its type. The components of the value part may include a digit sequence representing the whole-number part, followed by a period (`.`), followed by a digit sequence representing the fraction part. The components of the exponent part are an `e` or `E` followed by an exponent consisting of an optionally signed digit sequence. Either the whole-number part or the fraction part shall be present; either the period or the exponent part shall be present.
+
+###### Semantics
+
+The value part is interpreted as a decimal rational number; the digit sequence in the exponent part is interpreted as a decimal integer. The exponent indicates the power of 10 by which the value part is to be scaled. If the scaled value is in the range of representable values (for its type) but cannot be represented exactly, the result is either the nearest higher or nearest lower value, chosen in an implementation-defined manner.
+
+An unsuffixed floating constant has type `double`. If suffixed by the letter `f` or `F`, it has type `float`. If suffixed by the letter `l` or `L`, it has type `long double`.
 
 ##### 3.1.3.2 Integer constants
 
+###### Syntax
+
+<a name="integer-constant"></a>
+*integer-constant*:
+
+[*decimal-constant*](#decimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+
+[*octal-constant*](#octal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+
+[*hexadecimal-constant*](#hexadecimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+
+<a name="decimal-constant"></a>
+*decimal-constant*:
+
+[*nonzero-digit*](#nonzero-digit)
+
+[*decimal-constant*](#decimal-constant) [*digit*](#digit)
+
+<a name="octal-constant"></a>
+*octal-constant*:
+
+**0**
+
+[*octal-constant*](#octal-constant) [*octal-digit*](#octal-digit)
+ 
+<a name="hexadecimal-constant"></a>
+*hexadecimal-constant*:
+
+**0x** [*hexadecimal-digit*](#hexadecimal-digit)
+
+**0X** [*hexadecimal-digit*](#hexadecimal-digit)
+
+[*hexadecimal-constant*](#hexadecimal-constant) [*hexadecimal-digit*](#hexadecimal-digit)
+
+<a name="nonzero-digit"></a>
+*nonzero-digit*: <sub>one of</sub>
+
+**1** **2** **3** **4** **5** **6** **7** **8** **9** 
+
+<a name="octal-digit"></a>
+*octal-digit*: <sub>one of</sub>
+
+**0** **1** **2** **3** **4** **5** **6** **7**
+
+<a name="hexadecimal-digit"></a>
+*hexadecimal-digit*: <sub>one of</sub>
+
+**0** **1** **2** **3** **4** **5** **6** **7** **8** **9** 
+
+**a** **b** **c** **d** **e** **f**
+
+**A** **B** **C** **D** **E** **F**
+
+<a name="integer-suffix"></a>
+*integer-suffix*:
+
+[*unsigned-suffix*](#unsigned-suffix) [*long-suffix*](#long-suffix)<sub>opt</sub>
+
+[*long-suffix*](#long-suffix) [*unsigned-suffix*](#unsigned-suffix)<sub>opt</sub>
+
+<a name="unsigned-suffix"></a>
+*unsigned-suffix*: <sub>one of</sub>
+
+**u** **U**
+
+<a name="long-suffix"></a>
+*long-suffix*: <sub>one of</sub>
+
+**l** **L**
+
+###### Description
+
+An integer constant begins with a digit, but has no period or exponent part. It may have a prefix that specifies its base and a suffix that specifies its type.
+
+A decimal constant begins with a nonzero digit and consists of a sequence of decimal digits. An octal constant consists of the prefix `0` optionally followed by a sequence of the digits `0` through `7` only. A hexadecimal constant consists of the prefix `0x` or `0X` followed by a sequence of the decimal digits and the letters `a` (or `A`) through `f` (or `F`) with values 10 through 15 respectively.
+
+###### Semantics
+
+The value of a decimal constant is computed base 10; that of an octal constant, base 8; that of a hexadecimal constant, base 16. The lexically first digit is the most significant.
+
+The type of an integer constant is the first of the corresponding list in which its value can be represented. Unsuffixed decimal: `int`, `long int`, `unsigned long int`; unsuffixed octal or hexadecimal: `int`, `unsigned int`, `long int`, `unsigned long int`; suffixed by the letter `u` or `U`: `unsigned int`, `unsigned long int`; suffixed by the letter `l` or `L`: `long int`, `unsigned long int`; suffixed by both the letters `u` or `U` and `l` or `L`: `unsigned long int`.
+
 ##### 3.1.3.3 Enumeration constants
+
+###### Syntax
+
+<a name="enumeration-constant"></a>
+*enumeration-constant*:
+
+[*identifier*](#identifier)
+
+###### Semantics
+
+An identifier declared as an enumeration constant has type int.
+
+**Forward references**: enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)).
 
 ##### 3.1.3.4 Character constants
 
+###### Syntax
+
+<a name="character-constant"></a>
+*character-constant*:
+
+**'** [*c-char-sequence*](#c-char-sequence) **'**
+
+**L** **'** [*c-char-sequence*](#c-char-sequence) **'**
+
+<a name="c-char-sequence"></a>
+*c-char-sequence*:
+
+[*c-char*](#c-char)
+
+[*c-char-sequence*](#c-char-sequence) [*c-char*](#c-char)
+
+<a name="c-char"></a>
+*c-char*:
+
+<sub>**any member of the source character set except the single-quote ', backslash \, or new-line character**</sub>
+
+[*escape-sequence*](#escape-sequence)
+
+<a name="escape-sequence"></a>
+*escape-sequence*:
+
+[*simple-escape-sequence*](#simple-escape-sequence)
+
+[*octal-escape-sequence*](#octal-escape-sequence)
+
+[*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence)
+
+<a name="simple-escape-sequence"></a>
+*simple-escape-sequence*: <sub>one of</sub>
+
+**\'** **\"** **\?** **\\**
+
+**\a** **\b** **\f** **\n** **\r** **\t** **\v**
+
+<a name="octal-escape-sequence"></a>
+*octal-escape-sequence*: 
+
+**\** [*octal-digit*](#octal-digit)
+
+**\** [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit)
+
+**\** [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit)
+
+<a name="hexadecimal-escape-sequence"></a>
+*hexadecimal-escape-sequence*: 
+
+**\x** [*hexadecimal-digit*](#hexadecimal-digit)
+
+[*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence) [*hexadecimal-digit*](#hexadecimal-digit)
+
+###### Description
+
+An integer character constant is a sequence of one or more multibyte characters enclosed in single-quotes, as in `'x'` or `'ab'`. A wide character constant is the same, except prefixed by the letter `L`. With a few exceptions detailed later, the elements of the sequence are any members of the source character set; they are mapped in an implementation-defined manner to members of the execution character set.
+
+The single-quote `'`, the double-quote `"`, the question-mark `?`, the backslash `\`, and arbitrary integral values, are representable according to the following table of escape sequences:
+
+```
+         single-quote '       \'
+         double-quote "       \"
+         question-mark ?      \?
+         backslash \          \\
+         octal integer        \ octal digits
+         hexadecimal integer  \x hexadecimal digits
+```
+
+The double-quote `"` and question-mark `?` are representable either by themselves or by the escape sequences `\"` and `\?` respectively, but the single-quote `'` and the backslash `\` shall be represented, respectively, by the escape sequences `\'` and `\\`.
+
+The octal digits that follow the backslash in an octal escape sequence are taken to be part of the construction of a single character for an integer character constant or of a single wide character for a wide character constant. The numerical value of the octal integer so formed specifies the value of the desired character.
+
+The hexadecimal digits that follow the backslash and the letter `x` in a hexadecimal escape sequence are taken to be part of the construction of a single character for an integer character constant or of a single wide character for a wide character constant. The numerical value of the hexadecimal integer so formed specifies the value of the desired character.
+
+Each octal or hexadecimal escape sequence is the longest sequence of characters that can constitute the escape sequence.
+
+In addition, certain nongraphic characters are representable by escape sequences consisting of the backslash `\` followed by a lower-case letter: `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, and `\v`.[^17] If any other escape sequence is encountered, the behavior is undefined.[^18]
+
+###### Constraints
+
+The value of an octal or hexadecimal escape sequence shall be in the range of representable values for the unsigned type corresponding to its type.
+
+###### Semantics
+
+An integer character constant has type `int`. The value of an integer character constant containing a single character that maps into a member of the basic execution character set is the numerical value of the representation of the mapped character interpreted as an integer. The value of an integer character constant containing more than one character, or containing a character or escape sequence not represented in the basic execution character set, is implementation-defined. In particular, in an implementation in which type `char` has the same range of values as `signed char`, the high-order bit position of a single-character integer character constant is treated as a sign bit.
+
+A wide character constant has type `wchar_t`, an integral type defined in the `<stddef.h>` header. The value of a wide character constant containing a single multibyte character that maps into a member of the extended execution character set is the wide character (code) corresponding to that multibyte character, as defined by the `mbtowc` function, with an implementation-defined current locale. The value of a wide character constant containing more than one multibyte character, or containing a multibyte character or escape sequence not represented in the extended execution character set, is implementation-defined.
+
+###### Examples
+
+The construction `'\0'` is commonly used to represent the null character.
+
+Consider implementations that use two's-complement representation for integers and eight bits for objects that have type char. In an implementation in which type `char` has the same range of values as `signed char`, the integer character constant `'\xFF'` has the value if type char has the same range of values as `unsigned char`, the character constant `'\xFF'` has the value
+
+Even if eight bits are used for objects that have type `char`, the construction `'\x123'` specifies an integer character constant containing only one character. (The value of this single-character integer character constant is implementation-defined and violates the above constraint.) To specify an integer character constant containing the two characters whose values are `0x12` and `'3'`, the construction `'\0223'` may be used, since a hexadecimal escape sequence is terminated only by a non-hexadecimal character. (The value of this two-character integer character constant is implementation-defined also.)
+
+Even if 12 or more bits are used for objects that have type `wchar_t`, the construction `L'\1234'` specifies the implementation-defined value that results from the combination of the values `0123` and `'4'`.
+
+**Forward references**: characters and integers ([3.2.1.1](#3211-characters-and-integers)) common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)), the mbtowc function ([4.10.7.2](#41072-the-mbtowc-function)).
+
 #### 3.1.4 String literals
+
+###### Syntax
+
+<a name="string-literal"></a>
+*string-literal*:
+
+**"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
+
+**L** **"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
+
+<a name="s-char-sequence"></a>
+*s-char-sequence*:
+
+[*s-char*](#s-char)
+
+[*s-char-sequence*](#s-char-sequence) [*s-char*](#s-char)
+
+<a name="s-char"></a>
+*s-char*:
+
+<sub>**any member of the source character set except the double-quote ", backslash \, or new-line character**</sub>
+
+[*escape-sequence*](#escape-sequence)
+
+###### Description
+
+A character string literal is a sequence of zero or more multibyte characters enclosed in double-quotes, as in `"xyz"`. A wide string literal is the same, except prefixed by the letter `L`.
+
+The same considerations apply to each element of the sequence in a character string literal or a wide string literal as if it were in an integer character constant or a wide character constant, except that the single-quote `'` is representable either by itself or by the escape sequence `\'`, but the double-quote shall be represented by the escape sequence `\"`.
+
+###### Semantics
+
+A character string literal has static storage duration and type "array of `char`," and is initialized with the given characters. A wide string literal has static storage duration and type "array of `wchar_t`," and is initialized with the wide characters corresponding to the given multibyte characters. Character string literals that are adjacent tokens are concatenated into a single character string literal. A null character is then appended.[^19] Likewise, adjacent wide string literal tokens are concatenated into a single wide string literal to which a code with value zero is then appended. If a character string literal token is adjacent to a wide string literal token, the behavior is undefined.
+
+Identical string literals of either form need not be distinct. If the program attempts to modify a string literal of either form, the behavior is undefined.
+
+###### Example
+
+This pair of adjacent character string literals
+
+```
+         "\x12" "3"
+```
+
+produces a single character string literal containing the two characters whose values are `\x12` and `'3'`, because escape sequences are converted into single members of the execution character set just prior to adjacent string literal concatenation.
+
+**Forward references**: common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)).
 
 #### 3.1.5 Operators
 
+###### Syntax
+
+<a name="operator"></a>
+*operator*: <sub>one of</sub>
+
+**\[** **\]** **(** **)** **.** **->**
+
+**++** **--** **&** **\*** **+** **-** **~** **!** **sizeof**
+
+**/** **%** **<<** **>>** **<** **>** **<=** **>=** **==** **!=** **^** **|** **&&** **||** **?** **:**
+
+**=** **\*=** **/=** **%=** **+=** **-=** **<<=** **>>=** **&=** **^=** **|=** **,** **#** **##**
+
+###### Constraints
+
+The operators `[ ]`, `( )`, and `? :` shall occur in pairs, possibly separated by expressions. The operators `#` and `##` shall occur in macro-defining preprocessing directives only.
+
+###### Semantics
+
+An operator specifies an operation to be performed \(an evaluation\) that yields a value, or yields a designator, or produces a side effect, or a combination thereof. An operand is an entity on which an operator acts.
+
+**Forward references**: expressions ([3.3](#33-expressions)), macro replacement ([3.8.3](#383-macro-replacement)).
+
+
 #### 3.1.6 Punctuators
+
+###### Syntax
+
+<a name="punctuator"></a>
+*punctuator*: <sub>one of</sub>
+
+**\[** **\]** **(** **)** **{** **}** **\*** **,** **:** **=** **;** **...** **#**
+
+###### Constraints
+
+The punctuators `[ ]`, `( )`, and `{ }` shall occur in pairs, possibly separated by expressions, declarations, or statements. The punctuator `#` shall occur in preprocessing directives only.
+
+###### Semantics
+
+A punctuator is a symbol that has independent syntactic and semantic significance but does not specify an operation to be performed that yields a value. Depending on context, the same symbol may also represent an operator or part of an operator.
+
+**Forward references**: expressions ([3.3](#33-expressions)), declarations ([3.5](#35-declarations)), preprocessing directives ([3.8](#38-preprocessing-directives)), statements ([3.6](#36-statements)).
 
 #### 3.1.7 Header names
 
+###### Syntax
+
+<a name="header-name"></a>
+*header-name*:
+
+**<** [*h-char-sequence*](#h-char-sequence) **>**
+
+**"** [*q-char-sequence*](#q-char-sequence) **"**
+
+<a name="h-char-sequence"></a>
+*h-char-sequence*:
+
+[*h-char*](#h-char)
+
+[*h-char-sequence*](#h-char-sequence) [*h-char*](#h-char)
+
+<a name="h-char"></a>
+*h-char*:
+
+<sub>**any member of the source character set except the new-line character and >**</sub>
+
+<a name="q-char-sequence"></a>
+*q-char-sequence*:
+
+[*q-char*](#q-char)
+
+[*q-char-sequence*](#q-char-sequence) [*q-char*](#q-char)
+
+<a name="q-char"></a>
+*q-char*:
+
+<sub>**any member of the source character set except the new-line character and "**</sub>
+
+###### Constraints
+
+Header name preprocessing tokens shall only appear within a `#include` preprocessing directive.
+
+###### Semantics
+
+The sequences in both forms of header names are mapped in an implementation-defined manner to headers or external source file names as specified in [3.8.2](#382-source-file-inclusion)
+
+If the characters `'`, `\`, `"`, or `/*` occur in the sequence between the `<` and `>` delimiters, the behavior is undefined. Similarly, if the characters `'`, `\`, or `/*` occur in the sequence between the `"` delimiters, the behavior is undefined.[^20]
+
+###### Example
+
+The following sequence of characters:
+
+```c
+         0x3<1/a.h>1e2
+         #include <1/a.h>
+         #define const.member@$
+```
+
+forms the following sequence of preprocessing tokens (with each individual preprocessing token delimited by a { on the left and a } on the right).
+
+```
+         {0x3}{<}{1}{/}{a}{.}{h}{>}{1e2}
+         {#}{include} {<1/a.h>}
+         {#}{define} {const}{.}{member}{@}{$}
+```
+
+**Forward references**: source file inclusion ([3.8.2](#382-source-file-inclusion)).
+
 #### 3.1.8 Preprocessing numbers
 
+###### Syntax
+
+<a name="pp-number"></a>
+*pp-number*:
+
+[*digit*](#digit)
+
+**.** [*digit*](#digit)
+
+[*pp-number*](#pp-number) [*digit*](#digit)
+
+[*pp-number*](#pp-number) [*nondigit*](#nondigit)
+
+[*pp-number*](#pp-number) **e** [*sign*](#sign)
+
+[*pp-number*](#pp-number) **E** [*sign*](#sign)
+
+[*pp-number*](#pp-number) **.**
+
+###### Description
+
+A preprocessing number begins with a digit optionally preceded by a period (`.`) and may be followed by letters, underscores, digits, periods, and `e+`, `e-`, `E+`, or `E-` character sequences.
+
+Preprocessing number tokens lexically include all floating and integer constant tokens.
+
+###### Semantics
+
+A preprocessing number does not have type or a value; it acquires both after a successful conversion (as part of translation phase 7) to a floating constant token or an integer constant token.
+
 #### 3.1.9 Comments
+
+Except within a character constant, a string literal, or a comment, the characters `/*` introduce a comment. The contents of a comment are examined only to identify multibyte characters and to find the characters `*/` that terminate it.[^21]
 
 ### 3.2 CONVERSIONS
 
@@ -2599,3 +3049,9 @@ The resulting composite type for the function is:
 [^15]: There are three distinct combinations of qualified types.
 
 [^16]: Two types need not be identical to be compatible.
+
+[^17]: The semantics of these characters were discussed in [2.2.2](#222-character-display-semantics)
+
+[^18]: See ``future language directions'' ([3.9.2](#392-character-escape-sequences)).
+
+[^19]: A character string literal need not be a string (see [4.1.1](#411-definitions-of-terms)), because a null character may be embedded in it by a \0 escape sequence.
