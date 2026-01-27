@@ -1,3 +1,6 @@
+#ifndef MINIC89_VM_H   
+#define MINIC89_VM_H  
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -94,3 +97,5 @@ typedef struct {
     TrapReason trap;
     u16 current_source_line; // 디버깅용
 } VM;
+
+#endif
