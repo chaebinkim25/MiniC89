@@ -1,4 +1,4 @@
-# MiniC89 Abstract Machine ISA (v0.1)
+# MiniC89 Abstract Machine ISA (v0.11)
 
 본 문서는 MiniC89 프로그램을 브라우저에서 실행/시각화하기 위한
 **교육용 추상 머신(Educational Abstract Machine)** 과 그 바이트코드 ISA를 정의한다.
@@ -12,345 +12,165 @@
 
 ---
 
-## 1. 값(Value)과 타입(Type)
+## 1. 데이터 타입 (Data Types)
 
-VM은 런타임 값에 대해 아래 두 타입만을 가진다.
+이 머신은 단 두 가지의 기본 타입만을 다룬다.
 
-### 1.1 I16 (16-bit signed integer)
-- 표현: 16-bit 2의 보수
-- 값 범위: -32768 .. 32767
-
-### 1.2 FUN (function reference; 함수 참조/함수 포인터 값)
-- 의미: 함수 테이블의 항목을 가리키는 참조값
-- 표현: 0 이상의 정수 ID로 표현할 수 있다.
-  - `0`은 **null function reference** 를 의미한다.
-  - `1..N`은 유효한 함수 ID.
-
-> MiniC89 언어에서 `int`는 I8에 해당하며,
-> “함수 포인터” 변수/표현식은 FUN에 해당한다.
+| 타입 | 설명 | 비트/범위 | 비고 |
+| :--- | :--- | :--- | :--- |
+| **I16** | 16-bit Signed Integer | -32,768 ~ 32,767 | C 언어의 `int`에 대응 (교육용 축소 모델) |
+| **FUN** | Function Reference | 0 (NULL), 1..N | 함수 테이블 인덱스. 함수 포인터 역할 |
 
 ---
 
-## 2. 머신 상태(Machine State)
+## 2. 아키텍처 및 상태 (Machine Architecture)
 
-머신 상태는 다음 구성요소로 정의한다.
+이 가상 머신은 전형적인 **스택 머신** 구조를 따르며, 시각화를 위해 **Call Stack**과 **Operand Stack**을 명시적으로 분리한다.
 
-### 2.1 프로그램 카운터(PC)
-- PC는 `(func_id, ip)` 쌍이다.
-  - `func_id`: 현재 실행 중인 함수 ID
-  - `ip`: 해당 함수의 **명령어 인덱스**(0부터)
+### 2.1 레지스터 (Registers)
+* **PC (Program Counter):** `(func_id, ip)` 쌍. 현재 실행 중인 명령어 위치.
+* **SP (Stack Pointer):** 구현 레벨에서 Operand Stack의 최상단을 가리킴.
+* **FP (Frame Pointer):** 구현 레벨에서 현재 Call Stack Frame을 가리킴.
 
-### 2.2 Operand Stack
-- 값(Value)들의 스택.
-- 대부분의 명령은 스택에서 값을 pop/push 하여 계산한다.
+### 2.2 메모리 구조 (Memory Structure)
+1. **Code Area:** 읽기 전용. `functions[1..N]` 테이블과 각 함수의 바이트코드.
+2. **Operand Stack:** 연산의 중간 결과값이 저장되는 공간. (Push/Pop 방식)
+3. **Call Stack (Frame Stack):** 함수 호출 시마다 생성되는 Frame들의 스택.
+    * **Frame 구조:**
+        * `return_pc`: 복귀 주소
+        * `locals[]`: 지역 변수 저장소 (Parameter 포함)
+            * 각 슬롯은 값과 함께 **상태(INIT/UNINIT)** 플래그를 가짐.
 
-### 2.3 Call Stack (프레임 스택)
-각 프레임(Frame)은 다음을 가진다.
-
-- `return_pc`: 호출자 복귀 위치 `(func_id, ip)`
-- `locals[]`: 로컬 슬롯 배열
-- `func_id`: 현재 프레임이 속한 함수 ID
-
-#### locals의 초기 상태
-- 함수 호출 시, 해당 함수의 `local_count`만큼 locals 슬롯이 생성된다.
-- **모든 locals는 UNINIT 상태로 초기화**된다.
-- 단, 매개변수(parameter)에 해당하는 슬롯은 호출 인자로 즉시 채워진다.
-
-> UNINIT는 “미초기화” 상태를 의미하며, LOAD 시 UB(trap)의 근거가 된다.
-
-### 2.4 실행 상태(Status)
-- `RUNNING`
-- `HALTED` (정상 종료)
-- `TRAPPED` (오류/UB 감지로 중단)
-
-### 2.5 디버그 상태(시각화용)
-- `current_source_line` (정수, 선택)
-- 구현은 바이트코드에 삽입된 `DBG_LINE` 명령을 통해 이를 갱신할 수 있다.
+### 2.3 실행 상태 (Lifecycle Status)
+* **RUNNING:** 정상 실행 중.
+* **HALTED:** `main` 함수 리턴으로 인한 정상 종료.
+* **TRAPPED:** 런타임 오류 또는 UB 감지로 인한 비정상 종료.
 
 ---
 
-## 3. 모듈/함수 단위(Program Representation)
+## 3. 명령어 집합 (Instruction Set)
 
-### 3.1 Module
-- Module은 함수 테이블 `functions[1..N]`을 가진다.
-- 함수 ID 1..N은 고정된 순서로 할당된다(컴파일러가 결정).
+모든 명령어는 1바이트의 **Opcode**와 0개 이상의 **Operand**를 가진다.
 
-### 3.2 Function Metadata
-각 함수는 최소 다음 메타데이터를 가진다.
+### 3.1 스택 및 상수 조작 (Stack & Constants)
 
-- `name`: 함수 이름(디버깅/표시용)
-- `param_count`: 매개변수 개수 (0..255)
-- `local_count`: locals 슬롯 개수 (param 포함; 0..255)
-- `code[]`: 명령어 배열
-- (선택) `locals_debug[]`: 각 locals 슬롯의 변수명/스코프 정보(시각화용)
+| 명령어 | Operand | 스택 변화 (Before -> After) | 설명/TRAP |
+| :--- | :--- | :--- | :--- |
+| **PUSH_I16** | `val` (i16) | `[...]` -> `[..., val]` | 상수 정수 푸시 |
+| **PUSH_FUN** | `fid` (u16) | `[...]` -> `[..., fun]` | 함수 참조 푸시 (`TRAP_BAD_FUNID`) |
+| **PUSH_NULL**| - | `[...]` -> `[..., null]` | NULL 함수 포인터 푸시 |
+| **POP** | - | `[..., v]` -> `[...]` | 스택 최상단 값 제거 (문장 끝 처리용) |
+| **DUP** | - | `[..., v]` -> `[..., v, v]` | 최상단 값 복제 |
 
-#### locals 슬롯 배치 규칙(권장; 컴파일러 규칙)
-- `locals[0 .. param_count-1]`  : 매개변수
-- `locals[param_count .. local_count-1]`: 지역변수
+### 3.2 로컬 변수 접근 (Locals)
 
----
+| 명령어 | Operand | 스택 변화 | 설명/TRAP |
+| :--- | :--- | :--- | :--- |
+| **LOAD** | `idx` (u8) | `[...]` -> `[..., val]` | `locals[idx]` 로드.<br>**TRAP:** `UNINIT_READ` (미초기화 읽기) |
+| **STORE** | `idx` (u8) | `[..., val]` -> `[..., val]` | `locals[idx]`에 저장.<br>**주의:** 값은 스택에 남음 (C의 대입 표현식 특성) |
 
-## 4. UB(Undefined Behavior) 처리 정책 (추상 머신 관점)
+### 3.3 산술 연산 (Arithmetic - I16)
 
-MiniC89 언어에서 UB는 “정의되지 않은 동작”이다.
-이 추상 머신은 교육/시각화를 위해 다음 정책을 채택한다.
+모든 산술 연산은 오버플로우 발생 시 C 언어의 UB 정책에 따라 **TRAP**을 발생시킨다.
 
-- VM이 UB를 **감지한 경우 즉시 TRAPPED로 전환**할 수 있다.
-- TRAPPED 전환 시, 가능한 경우 원인을 함께 기록할 수 있다
-  (예: `TRAP_INT_OVERFLOW`, `TRAP_DIV_ZERO`, `TRAP_UNINIT_READ`, ...).
+| 명령어 | 스택 변화 (`a, b` -> `res`) | TRAP 조건 (Undefined Behavior) |
+| :--- | :--- | :--- |
+| **ADD** | `[..., a, b]` -> `[..., a+b]` | `TRAP_INT_OVERFLOW` |
+| **SUB** | `[..., a, b]` -> `[..., a-b]` | `TRAP_INT_OVERFLOW` |
+| **MUL** | `[..., a, b]` -> `[..., a*b]` | `TRAP_INT_OVERFLOW` |
+| **DIV** | `[..., a, b]` -> `[..., a/b]` | `TRAP_DIV_ZERO`, `TRAP_INT_OVERFLOW` (MIN/-1) |
+| **MOD** | `[..., a, b]` -> `[..., a%b]` | `TRAP_DIV_ZERO`, `TRAP_INT_OVERFLOW` |
+| **NEG** | `[..., a]` -> `[..., -a]` | `TRAP_INT_OVERFLOW` (MIN값 반전 시) |
 
-이 정책은 “UB를 숨기지 않고 드러내는 교육”에 부합한다.
+### 3.4 비교 및 논리 (Comparison & Logic)
 
----
+결과값은 참일 때 `1`, 거짓일 때 `0` (I16 타입)이다.
 
-## 5. 명령어(Instruction) 형식
+| 명령어 | 스택 변화 | 설명 |
+| :--- | :--- | :--- |
+| **EQ / NE** | `[..., a, b]` -> `[..., 0/1]` | 동등 비교 (I16, FUN 타입 허용) |
+| **LT / LE** | `[..., a, b]` -> `[..., 0/1]` | 크기 비교 (I16만 허용) |
+| **GT / GE** | `[..., a, b]` -> `[..., 0/1]` | 크기 비교 (I16만 허용) |
+| **LNOT** | `[..., a]` -> `[..., 0/1]` | 논리 부정 (`!a`) |
 
-### 5.1 기본 규칙
-- `ip`는 “명령어 인덱스” 단위로 증가한다.
-- 점프 명령은 **현재 함수 내부의 ip**를 대상으로 한다.
-- 한 step은 기본적으로 **명령어 1개 실행**이다.
+### 3.5 제어 흐름 (Control Flow)
 
-### 5.2 표기법
-- 스택 효과를 다음처럼 표기한다.
-  - Before: `[..., a, b]`
-  - After:  `[..., result]`
+| 명령어 | Operand | 스택 변화 | 동작/설명 |
+| :--- | :--- | :--- | :--- |
+| **JMP** | `offset` | - | 무조건 점프 (`ip = target`) |
+| **JZ** | `offset` | `[..., cond]` -> `[...]` | `cond == 0` 이면 점프 |
+| **JNZ** | `offset` | `[..., cond]` -> `[...]` | `cond != 0` 이면 점프 |
 
----
+### 3.6 함수 호출 (Function Call)
 
-## 6. ISA: 명령어 집합
+| 명령어 | Operand | 스택 변화 | 동작/설명 |
+| :--- | :--- | :--- | :--- |
+| **CALL** | `fid` (u16) | `[..., args]` -> `[..., ret]` | **Direct Call.**<br>인자 개수/타입 검사 후 새 프레임 생성 |
+| **CALL_IND**| `argc` (u8) | `[..., args, fun]` -> `[..., ret]` | **Indirect Call.**<br>`fun` 포인터 검증(`NULL` 체크), 서명 검사 후 호출 |
+| **RET** | - | `[..., ret]` -> `[...]` | 현재 프레임 제거, `ret` 값을 호출자 스택으로 이동 |
 
-아래 명령어들은 v0.1에서 “필수(core)”로 정의한다.
+### 3.7 디버그 및 기타 (Debug)
 
----
-
-### 6.1 디버그/무효 명령
-
-#### `NOP`
-- 효과: 아무 것도 하지 않는다.
-
-#### `DBG_LINE line`
-- 효과: `current_source_line = line` 로 갱신한다.
-- 실행 의미는 없으며 시각화 목적이다.
-
----
-
-### 6.2 상수/스택 조작
-
-#### `PUSH_I16 k`
-- 입력: `k`는 -32768 .. 32767 범위의 정수 상수
-- 스택: `[...] -> [..., I16(k)]`
-
-#### `PUSH_FUN fid`
-- 스택: `[...] -> [..., FUN(fid)]`
-- 제약: `fid`는 1..N의 유효한 함수 ID여야 한다.
-  - 아니면 TRAP(`TRAP_BAD_FUNID`)
-
-#### `PUSH_NULLFUN`
-- 스택: `[...] -> [..., FUN(0)]`
-
-#### `POP`
-- 스택: `[..., x] -> [...]`
-
-#### `DUP`
-- 스택: `[..., x] -> [..., x, x]`
+| 명령어 | Operand | 동작 |
+| :--- | :--- | :--- |
+| **NOP** | - | 아무 동작 안 함 |
+| **DBG_LINE**| `line` (u16)| `current_line = line` 갱신 (소스코드 하이라이팅용) |
 
 ---
 
-### 6.3 로컬 접근
+## 4. 시각화 및 교육적 특징 (Educational Features)
 
-#### `LOAD_LOCAL slot`
-- 스택: `[...] -> [..., v]`
-- 동작:
-  - locals[slot] 값을 스택에 push
-- TRAP:
-  - slot 범위 밖: `TRAP_BAD_LOCAL`
-  - locals[slot]이 UNINIT: `TRAP_UNINIT_READ`
+이 ISA는 브라우저 상의 시각화를 위해 다음과 같은 메타데이터 활용을 권장한다.
 
-#### `STORE_LOCAL slot`
-- 스택: `[..., v] -> [..., v]`   *(C의 “대입식이 값으로 평가됨”을 반영)*
-- 동작:
-  - 스택에서 v pop
-  - locals[slot] = v 로 저장
-  - 동일한 v를 다시 push (대입식 결과)
-- TRAP:
-  - slot 범위 밖: `TRAP_BAD_LOCAL`
-
-> 주: “대입문”(`x = expr;`)에서는 컴파일러가 마지막에 `POP`을 추가하여 결과를 버린다.
-
+1. **변수 수명(Scope) 시각화:**
+    * `locals_debug` 테이블을 이용해 현재 IP에서 유효하지 않은(Scope 밖인) 로컬 변수는 UI에서 "비활성화(dimmed)" 처리한다.
+2. **Call Stack 애니메이션:**
+    * `CALL` 명령 시 새 프레임이 쌓이는 과정과 `RET` 시 사라지는 과정을 애니메이션으로 보여준다.
+3. **UB 강조:**
+    * `TRAP` 발생 시, 단순히 멈추는 것이 아니라 **"왜 멈췄는지"** (예: `TRAP_UNINIT_READ`)를 팝업하고, 해당 메모리 슬롯을 붉게 표시한다.
 ---
 
-### 6.4 정수 연산 (I8)
+## 5. 매우 작은 예시(참고)
 
-#### 공통 타입 규칙
-- 아래 연산은 스택에서 I16 두 개(또는 한 개)를 요구한다.
-- 타입이 I16이 아니면 TRAP(`TRAP_TYPE`)
-
-#### `ADD`
-- 스택: `[..., a, b] -> [..., (a+b)]`
-- TRAP(UB 감지):
-  - 결과가 [-32768, 32767] 범위 밖이면 `TRAP_INT_OVERFLOW`
-
-#### `SUB`
-- 스택: `[..., a, b] -> [..., (a-b)]`
-- TRAP:
-  - overflow면 `TRAP_INT_OVERFLOW`
-
-#### `MUL`
-- 스택: `[..., a, b] -> [..., (a*b)]`
-- TRAP:
-  - overflow면 `TRAP_INT_OVERFLOW`
-
-#### `NEG`
-- 스택: `[..., a] -> [..., (-a)]`
-- TRAP:
-  - a == -32768 이면 overflow → `TRAP_INT_OVERFLOW`
-
-#### `DIV`
-- 스택: `[..., a, b] -> [..., (a/b)]`
-- TRAP(UB 감지):
-  - b == 0 → `TRAP_DIV_ZERO`
-  - a == -32768 && b == -1 → `TRAP_INT_OVERFLOW`
-
-#### `MOD`
-- 스택: `[..., a, b] -> [..., (a%b)]`
-- TRAP(UB 감지):
-  - b == 0 → `TRAP_DIV_ZERO`
-  - a == -32768 && b == -1 → `TRAP_INT_OVERFLOW`
-
----
-
-### 6.5 비교/논리 (결과는 I8 0/1)
-
-#### `EQ`
-- 스택: `[..., x, y] -> [..., I16(x==y ? 1 : 0)]`
-- 허용:
-  - I16 vs I16
-  - FUN vs FUN
-- TRAP:
-  - 타입이 섞이면 `TRAP_TYPE`
-
-#### `NE`
-- 스택: `[..., x, y] -> [..., I16(x!=y ? 1 : 0)]`
-- 허용/TRAP는 EQ와 동일
-
-#### `LT`, `LE`, `GT`, `GE`
-- 스택: `[..., a, b] -> [..., I16(a<b ? 1 : 0)]` 등
-- 허용: I16 vs I16만
-- TRAP:
-  - FUN 포함 시 `TRAP_TYPE`
-
-#### `LNOT`
-- 스택: `[..., a] -> [..., I16(a==0 ? 1 : 0)]`
-- 허용: I16만
-- TRAP: 타입 불일치 시 `TRAP_TYPE`
-
-> `&&`/`||`의 short-circuit은 별도 명령이 아니라
-> `JZ/JNZ/JMP` 조합으로 컴파일한다.
-
----
-
-### 6.6 제어 흐름
-
-#### `JMP target_ip`
-- 동작: `ip = target_ip`
-- TRAP:
-  - target_ip가 코드 범위 밖이면 `TRAP_BAD_JUMP`
-
-#### `JZ target_ip`
-- 스택: `[..., cond] -> [...]`
-- 동작:
-  - cond는 I6이어야 함
-  - cond == 0 이면 `ip = target_ip`, 아니면 다음 명령으로 진행
-- TRAP:
-  - cond 타입 불일치: `TRAP_TYPE`
-  - target_ip 범위 밖: `TRAP_BAD_JUMP`
-
-#### `JNZ target_ip`
-- 스택: `[..., cond] -> [...]`
-- 동작:
-  - cond != 0 이면 점프
-- TRAP는 JZ와 동일
-
----
-
-### 6.7 함수 호출/반환
-
-#### `CALL_DIRECT fid`
-- 스택: `[..., arg1, arg2, ..., argN] -> [..., ret]`
-- 동작:
-  - N은 `functions[fid].param_count`
-  - 스택에서 args를 pop하여 새 프레임 locals[0..N-1]에 채운다
-  - 새 프레임으로 전환하고 `(func_id=fid, ip=0)`부터 실행
-  - return 시 ret(I16)이 호출자 스택에 push된다
-- TRAP:
-  - fid가 유효하지 않으면 `TRAP_BAD_FUNID`
-  - args 개수 부족/스택 언더플로는 `TRAP_STACK`
-  - 인자 타입이 I16이 아니면 `TRAP_TYPE` (MiniC89의 함수 인자는 int만 허용)
-
-#### `CALL_IND expected_param_count`
-- 스택: `[..., arg1, arg2, ..., argN, fun] -> [..., ret]`
-  - 여기서 N == expected_param_count
-- 동작:
-  - fun은 FUN이어야 함
-  - fun == 0 이면 TRAP(UB): `TRAP_CALL_NULLFUN`
-  - fid = fun의 함수 ID
-  - `functions[fid].param_count == expected_param_count` 를 검사
-    - 불일치면 TRAP: `TRAP_BAD_SIGNATURE`
-  - args를 pop하여 새 프레임 locals에 채우고 진입
-- TRAP:
-  - fun 타입 불일치: `TRAP_TYPE`
-  - 기타는 CALL_DIRECT와 동일
-
-#### `RET`
-- 스택: `[..., ret] -> [...]`
-- 동작:
-  - ret은 I16이어야 함
-  - 현재 프레임을 pop하고 return_pc로 복귀
-  - 호출자 스택에 ret을 push
-- TRAP:
-  - ret 타입 불일치: `TRAP_TYPE`
-  - call stack 언더플로(엔트리에서 RET 등): `TRAP_CALLSTACK`
-
----
-
-## 7. 프로그램 시작/종료 규칙(호스트 규약)
-
-- 호스트는 엔트리 함수 ID(`entry_fid`)를 지정한다.
-- VM은 `CALL_DIRECT entry_fid`와 동일한 방식으로 시작한다(인자 없음 권장).
-- 엔트리 함수가 `RET`하면 VM은 `HALTED`로 전환하며,
-  그 반환값(I16)이 프로그램 결과가 된다.
-
-> 일반적인 모드는 `int main(void)`를 entry로 삼는다.
-> (단, 이 문서는 online judge 규약을 포함하지 않는다.)
-
----
-
-## 8. 시각화에 필요한 최소 디버그 메타데이터(권장)
-
-ISA 자체와 별개로, 시각화(UI)를 위해 아래 메타데이터를 권장한다.
-
-- 각 함수의 locals 슬롯에 대해:
-  - `name` (변수명)
-  - `slot`
-  - `scope_begin_ip`, `scope_end_ip` (스코프 표시용)
-- `DBG_LINE` 삽입 또는 (ip -> line) 매핑 테이블
-
----
-
-## 9. 매우 작은 예시(참고)
-
+### 5.1 표현식 즉시 반환
 ### 소스
 ```c
-int add1(int x) {
-    return x + 1;
+int add1(int a) {
+    return a + 1;
+}
+```
+
+### 바이트 코드
+```
+func_id: 2, name: "add1", params: 1, locals: 1 (a)
+
+0: DBG_LINE 2        ; return a + 1;
+1: LOAD 0            ; Load a
+2: PUSH_I16 1        ; Push constant 1
+3: ADD               ; a + 1
+4: RET               ; Return top of stack
+```
+
+### 5.2 지역 변수 사용
+### 소스
+```c
+int add(int a, int b) {
+    int sum = a + b;
+    return sum;
 }
 ```
 
 ### 바이트코드(예시)
 ```
-0: DBG_LINE 1
-1: LOAD_LOCAL 0
-2: PUSH_I16 1
-3: ADD
-4: RET
+func_id: 1, name: "add", params: 2, locals: 3 (a, b, sum)
+
+0: DBG_LINE 2        ; 소스 2번째 줄
+1: LOAD 0            ; Load a (UNINIT 체크 -> OK)
+2: LOAD 1            ; Load b
+3: ADD               ; a + b (Overflow 체크)
+4: STORE 2           ; sum = result (값은 스택에 남음)
+5: POP               ; 대입식의 결과값 버림 (문장 종료)
+6: DBG_LINE 3        ; 소스 3번째 줄
+7: LOAD 2            ; return sum (Load sum)
+8: RET               ; 함수 종료
 ```
