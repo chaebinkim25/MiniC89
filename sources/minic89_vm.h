@@ -13,6 +13,7 @@
 // --- 타입 정의 ---
 typedef int16_t  i16;
 typedef uint16_t u16;
+typedef uint8_t  u8;
 
 // 값의 타입 (런타임 타입 체크용)
 typedef enum {
