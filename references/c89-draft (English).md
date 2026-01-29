@@ -3053,3 +3053,7 @@ Except within a character constant, a string literal, or a comment, the characte
 [^18]: See ``future language directions'' ([3.9.2](#392-character-escape-sequences)).
 
 [^19]: A character string literal need not be a string (see [4.1.1](#411-definitions-of-terms)), because a null character may be embedded in it by a \0 escape sequence.
+
+[^20]: Thus, sequences of characters that resemble escape sequences cause undefined behavior.
+
+[^21]: Thus comments do not nest.
