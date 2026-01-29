@@ -1155,24 +1155,27 @@ Two sets of characters and their associated collating sequences shall be defined
 In a character constant or string literal, members of the execution character set shall be represented by corresponding members of the source character set or by escape sequences consisting of the backslash `\` followed by one or more characters. A byte with all bits set to 0, called the null character, shall exist in the basic execution character set; it is used to terminate a character string literal.
 
 Both the basic source and basic execution character sets shall have at least the following members: the 26 upper-case letters of the English alphabet
-
-         A  B  C  D  E  F  G  H  I  J  K  L  M
-         N  O  P  Q  R  S  T  U  V  W  X  Y  Z
-
+>
+> **A** **B** **C** **D** **E** **F** **G** **H** **I** **J** **K** **L** **M**
+>
+> **N** **O** **P** **Q** **R** **S** **T** **U** **V** **W** **X** **Y** **Z**
+>
 the 26 lower-case letters of the English alphabet
-
-         a  b  c  d  e  f  g  h  i  j  k  l  m
-         n  o  p  q  r  s  t  u  v  w  x  y  z
-
+>
+> **a** **b** **c** **d** **e** **f** **g** **h** **i** **j** **k** **l** **m**
+>
+> **n** **o** **p** **q** **r** **s** **t** **u** **v** **w** **x** **y** **z**
+>
 the 10 decimal digits
-
-         0  1  2  3  4  5  6  7  8  9
-
+>
+> **0** **1** **2** **3** **4** **5** **6** **7** **8** **9**
+>
 the following 29 graphic characters
-
-         !  "  #  %  &  '  (  )  *  +  ,  -  .  /  :
-         ;  <  =  >  ?  [  \  ]  ^  _  {  |  }  ~
-
+>
+>**\!** **\"** **\#** **\%** **\&** **\'** **\(** **\)** **\*** **\+** **\,** **\-** **\.** **\/** **\:**
+>
+> **\;** **\<** **\=** **\>** **\?** **\[** **\\** **\]** **\^** **\_** **\{** **\|** **\}** **\~**
+>
 the space character, and control characters representing horizontal tab, vertical tab, and form feed. In both the source and execution basic character sets, the value of each character after 0 in the above list of decimal digits shall be one greater than the value of the previous. In source files, there shall be some way of indicating the end of each line of text; this Standard treats such an end-of-line indicator as if it were a single new-line character. In the execution character set, there shall be control characters representing alert, backspace, carriage return, and new line. If any other characters are encountered in a source file (except in a preprocessing token that is never converted to a token, a character constant, a string literal, or a comment), the behavior is undefined.
 
 **Forward references**: character constants ([3.1.3.4](#3134-character-constants)), preprocessing directives ([3.8](#38-preprocessing-directives)), string literals ([3.1.4](#314-string-literals)), comments ([3.1.9](#319-comments)).
@@ -1181,17 +1184,17 @@ the space character, and control characters representing horizontal tab, vertica
 
 All occurrences in a source file of the following sequences of three characters (called trigraph sequences[^5]) are replaced with the corresponding single character.
 
-```
-         ??=      #
-         ??(      [
-         ??/      \
-         ??)      ]
-         ??'      ^
-         ??<      {
-         ??!      |
-         ??>      }
-         ??-      ~
-```
+|   |   |
+| :--- | :--- |
+| `??=` | `#` |
+| `??(` | `[` |
+| `??/` | `\` |
+| `??)` | `]` |
+| `??'` | `^` |
+| `??<` | `{` |
+| `??!` | <code>\|</code> |
+| `??>` | `}` |
+| `??-` | `~` |
 
 No other trigraph sequences exist. Each `?` that does not begin one of the trigraphs listed above is not changed.
 
@@ -1450,19 +1453,20 @@ The following describes an artificial floating-point representation that meets t
 ```math
 x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \le +32
 ```
+<br/>
 
-```c
-         FLT_RADIX                       16
-         FLT_MANT_DIG                     6
-         FLT_EPSILON        9.53674316E-07F
-         FLT_DIG                          6
-         FLT_MIN_EXP                    -31
-         FLT_MIN            2.93873588E-39F
-         FLT_MIN_10_EXP                 -38
-         FLT_MAX_EXP                    +32
-         FLT_MAX            3.40282347E+38F
-         FLT_MAX_10_EXP                 +38
-```
+|   |   |
+| :--- | :--- |
+| `FLT_RADIX` | `16` |
+| `FLT_MANT_DIG` | `6` |
+| `FLT_EPSILON` | `9.53674316E-07F` |
+| `FLT_DIG` | `6` |
+| `FLT_MIN_EXP` | `-31` |
+| `FLT_MIN` | `2.93873588E-39F` |
+| `FLT_MIN_10_EXP` | `-38` |
+| `FLT_MAX_EXP` | `+32` |
+| `FLT_MAX` | `3.40282347E+38F` |
+| `FLT_MAX_10_EXP` | `+38` |
 
 The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] b and the appropriate values in a <float.h> header for types `float` and `double`: 
 
@@ -1473,28 +1477,20 @@ x_f = s \times 2^{e} \times \sum_{k=1}^{24} f_k \times 2^{-k}, \qquad -125 \le e
 ```math
 x_d = s \times 2^{e} \times \sum_{k=1}^{53} f_k \times 2^{-k}, \qquad -1021 \le e \le +1024
 ```
+<br/>
 
-```c
-         FLT_RADIX                        2
-         FLT_MANT_DIG                    24
-         FLT_EPSILON        1.19209290E-07F
-         FLT_DIG                          6
-         FLT_MIN_EXP                   -125
-         FLT_MIN            1.17549435E-38F
-         FLT_MIN_10_EXP                 -37
-         FLT_MAX_EXP                   +128
-         FLT_MAX            3.40282347E+38F
-         FLT_MAX_10_EXP                 +38
-         DBL_MANT_DIG                    53
-         DBL_EPSILON 2.2204460492503131E-16
-         DBL_DIG                         15
-         DBL_MIN_EXP                  -1021
-         DBL_MIN    2.2250738585072016E-308
-         DBL_MIN_10_EXP                -307
-         DBL_MAX_EXP                  +1024
-         DBL_MAX    1.7976931348623157E+308
-         DBL_MAX_10_EXP                +308
-```
+|   |   |   |   |
+| :--- | :--- | :--- | :--- |
+| `FLT_RADIX` | `2` |   |   |
+| `FLT_MANT_DIG` | `24` | `DBL_MANT_DIG` | `53` |
+| `FLT_EPSILON` | `1.19209290E-07F` | `DBL_EPSILON` | `2.2204460492503131E-16` |
+| `FLT_DIG` | `6` | `DBL_DIG` | `15` |
+| `FLT_MIN_EXP` | `-125` | `DBL_MIN_EXP` | `-1021` |
+| `FLT_MIN` | `1.17549435E-38F` | `DBL_MIN` | `2.2250738585072016E-308` |
+| `FLT_MIN_10_EXP` | `-37` | `DBL_MIN_10_EXP` | `-307` |
+| `FLT_MAX_EXP` | `+128` | `DBL_MAX_EXP` | `+1024` |
+| `FLT_MAX` | `3.40282347E+38F` | `DBL_MAX` | `1.7976931348623157E+308` |
+| `FLT_MAX_10_EXP` | `+38` | `DBL_MAX_10_EXP` | `+308` |
 
 The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for the ANSI/IEEE Std 754-1985 default rounding mode (to nearest). Their values may differ for other rounding modes.
 
@@ -1504,7 +1500,7 @@ The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for t
 
 In the syntax notation used in the language section ([3.](#3-language)), syntactic categories (nonterminals) are indicated by italic type, and literal words and character set members (terminals) by bold type. A colon (:) following a nonterminal introduces its definition. Alternative definitions are listed on separate lines, except when prefaced by the words "one of." An optional symbol is indicated by the so that
 
-**{** *expression<sub>opt</sub>* **}**
+> **{** &nbsp; *expression<sub>opt</sub>* &nbsp; **}**
 
 indicates an optional expression enclosed in braces.
 
@@ -1513,36 +1509,37 @@ indicates an optional expression enclosed in braces.
 ###### Syntax
 
 *token:*
-
-[*keyword*](#311-keywords)
-
-[*identifier*](#312-identifiers)
-
-[*constant*](#313-constants)
-
-[*string-literal*](#314-string-literals)
-
-[*operator*](#315-operators)
-
-[*punctuator*](#316-punctuators)
-
+> 
+> [*keyword*](#311-keywords)
+> 
+> [*identifier*](#312-identifiers)
+> 
+> [*constant*](#313-constants)
+> 
+> [*string-literal*](#314-string-literals)
+> 
+> [*operator*](#315-operators)
+> 
+> [*punctuator*](#316-punctuators)
+> 
 *preprocessing-token:*
-
-[*header-name*](#317-header-names)
-
-[*identifier*](#312-identifiers)
-
-[*pp-number*](#318-preprocessing-numbers)
-
-[*character-constant*](#3134-character-constants)
-
-[*string-literal*](#314-string-literals)
-
-[*operator*](#315-operators)
-
-[*punctuator*](#316-punctuators)
-
-**<sub>each non-white-space character that cannot be one of the above</sub>**
+> 
+> [*header-name*](#317-header-names)
+> 
+> [*identifier*](#312-identifiers)
+> 
+> [*pp-number*](#318-preprocessing-numbers)
+> 
+> [*character-constant*](#3134-character-constants)
+> 
+> [*string-literal*](#314-string-literals)
+> 
+> [*operator*](#315-operators)
+> 
+> [*punctuator*](#316-punctuators)
+> 
+> **<sub>each non-white-space character that cannot be one of the above</sub>**
+>
 
 ###### Constraints
 
@@ -1566,24 +1563,24 @@ The program fragment `x+++++y` is parsed as `x ++ ++ + y`, which violates a cons
 
 ###### Syntax
 
-*keyword*: <sub>one of</sub>
-
-**auto** **double** **int** **struct**
-
-**break** **else** **long** **switch**
-
-**case** **enum** **register** **typedef**
-
-**char** **extern** **return** **union**
-
-**const** **float** **short** **unsigned**
-
-**continue** **for** **signed** **void**
-
-**default** **goto** **sizeof** **volatile**
-
-**do** **if** **static** **while**
-
+*keyword:* <sub>one of</sub>
+> 
+> **auto**  **double** **int** **struct**
+> 
+> **break** **else** **long** **switch**
+> 
+> **case** **enum** **register** **typedef**
+> 
+> **char** **extern** **return** **union**
+> 
+> **const** **float** **short** **unsigned**
+> 
+> **continue** **for** **signed** **void**
+> 
+> **default** **goto** **sizeof** **volatile**
+> 
+> **do** **if** **static** **while**
+> 
 ###### Semantics
 
 The above tokens (entirely in lower-case) are reserved (in translation phases 7 and 8) for use as keywords, and shall not be used otherwise.
@@ -1594,29 +1591,29 @@ The above tokens (entirely in lower-case) are reserved (in translation phases 7 
 
 <a name="identifier"></a>
 *identifier:*
-
-[*nondigit*](#nondigit)
-
-[*identifier*](#identifier) [*nondigit*](#nondigit)
-
-[*identifier*](#identifier) [*digit*](#digit)
-
+> 
+> [*nondigit*](#nondigit)
+> 
+> [*identifier*](#identifier) &nbsp; [*nondigit*](#nondigit)
+> 
+> [*identifier*](#identifier) &nbsp; [*digit*](#digit)
+> 
 <a name="nondigit"></a>
-*nondigit*: <sub>one of</sub>
-
-**_** **a** **b** **c** **d** **e** **f** **g** **h** **i** **j** **k** **l** **m**
-
-**n** **o** **p** **q** **r** **s** **t** **u** **v** **w** **x** **y** **z**
-
-**A** **B** **C** **D** **E** **F** **G** **H** **I** **J** **K** **L** **M**
-
-**N** **O** **P** **Q** **R** **S** **T** **U** **V** **W** **X** **Y** **Z**
-
+*nondigit:* <sub>one of</sub>
+> 
+> **_** **a** **b** **c** **d** **e** **f** **g** **h** **i** **j** **k** **l** **m**
+> 
+> **n** **o** **p** **q** **r** **s** **t** **u** **v** **w** **x** **y** **z**
+> 
+> **A** **B** **C** **D** **E** **F** **G** **H** **I** **J** **K** **L** **M**
+> 
+> **N** **O** **P** **Q** **R** **S** **T** **U** **V** **W** **X** **Y** **Z**
+> 
 <a name="digit"></a>
-*digit*: <sub>one of</sub>
-
-**0** **1** **2** **3** **4** **5** **6** **7** **8** **9**
-
+*digit:* <sub>one of</sub>
+> 
+> **0** **1** **2** **3** **4** **5** **6** **7** **8** **9**
+> 
 ###### Description
 
 An identifier is a sequence of nondigit characters (including the underscore `_` and the lower-case and upper-case letters) and digits. The first character shall be a nondigit character.
@@ -1792,15 +1789,15 @@ The resulting composite type for the function is:
 
 <a name="constant"></a>
 *constant:*
-
-[*floating-constant*](#floating-constant)
-
-[*integer-constant*](#integer-constant)
-
-[*enumeration-constant*](#enumeration-constant)
-
-[*character-constant*](#character-constant)
-
+> 
+> [*floating-constant*](#floating-constant)
+> 
+> [*integer-constant*](#integer-constant)
+> 
+> [*enumeration-constant*](#enumeration-constant)
+> 
+> [*character-constant*](#character-constant)
+> 
 ###### Constraints
 
 The value of a constant shall be in the range of representable values for its type.
@@ -1815,42 +1812,42 @@ Each constant has a type, determined by its form and value, as detailed later.
 
 <a name="floating-constant"></a>
 *floating-constant:*
-
-[*fractional-constant*](#fractional-constant) [*exponent-part*](#exponent-part)<sub>opt</sub> [*floating-suffix*](#floating-suffix)<sub>opt</sub>
-
-[*digit-sequence*](#digit-sequence) [*exponent-part*](#exponent-part) [*floating-suffix*](#floating-suffix)<sub>opt</sub>
-
+> 
+> [*fractional-constant*](#fractional-constant) &nbsp; *[exponent-part](#exponent-part)<sub>opt</sub>* &nbsp; *[floating-suffix*](#floating-suffix)<sub>opt</sub>*
+> 
+> [*digit-sequence*](#digit-sequence) &nbsp; [*exponent-part*](#exponent-part) &nbsp; *[floating-suffix](#floating-suffix)<sub>opt</sub>*
+> 
 <a name="fractional-constant"></a>
 *fractional-constant:*
-
-[*digit-sequence*](#digit-sequence)<sub>opt</sub> **.** [*digit-sequence*](#digit-sequence)
-
-[*digit-sequence*](#digit-sequence) **.**
-
+> 
+> *[digit-sequence](#digit-sequence)<sub>opt</sub>* &nbsp; **.** &nbsp; [*digit-sequence*](#digit-sequence)
+> 
+> [*digit-sequence*](#digit-sequence) &nbsp; **.**
+> 
 <a name="exponent-part"></a>
 *exponent-part:*
-
-**e** [*sign*](#sign)<sub>opt</sub> [*digit-sequence*](#digit-sequence)
-
-**E** [*sign*](#sign)<sub>opt</sub> [*digit-sequence*](#digit-sequence)
-
+> 
+> **e** &nbsp; *[sign](#sign)<sub>opt</sub>* &nbsp; [*digit-sequence*](#digit-sequence)
+> 
+> **E** &nbsp; *[sign](#sign)<sub>opt</sub>* &nbsp; [*digit-sequence*](#digit-sequence)
+> 
 <a name="sign"></a>
-*sign*: <sub>one of</sub>
-
-**+** **-**
-
+*sign:* <sub>one of</sub>
+> 
+> **+** **-**
+> 
 <a name="digit-sequence"></a>
 *digit-sequence:*
-
-[*digit](#digit)
-
-[*digit-sequence*](#digit-sequence) [*digit](#digit)
-
+> 
+> [*digit*](#digit)
+> 
+> [*digit-sequence*](#digit-sequence) &nbsp; [*digit*](#digit)
+> 
 <a name="floating-suffix"></a>
-*floating-suffix*: <sub>one of</sub>
-
-**f** **l** **F** **L**
-
+*floating-suffix:* <sub>one of</sub>
+> 
+> **f** **l** **F** **L**
+> 
 ###### Description
 
 A floating constant has a value part that may be followed by an exponent part and a suffix that specifies its type. The components of the value part may include a digit sequence representing the whole-number part, followed by a period (`.`), followed by a digit sequence representing the fraction part. The components of the exponent part are an `e` or `E` followed by an exponent consisting of an optionally signed digit sequence. Either the whole-number part or the fraction part shall be present; either the period or the exponent part shall be present.
@@ -1867,72 +1864,72 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 
 <a name="integer-constant"></a>
 *integer-constant:*
-
-[*decimal-constant*](#decimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
-
-[*octal-constant*](#octal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
-
-[*hexadecimal-constant*](#hexadecimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
-
+> 
+> [*decimal-constant*](#decimal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> 
+> [*octal-constant*](#octal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> 
+> [*hexadecimal-constant*](#hexadecimal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> 
 <a name="decimal-constant"></a>
 *decimal-constant:*
-
-[*nonzero-digit*](#nonzero-digit)
-
-[*decimal-constant*](#decimal-constant) [*digit*](#digit)
-
+> 
+> [*nonzero-digit*](#nonzero-digit)
+> 
+> [*decimal-constant*](#decimal-constant) &nbsp; [*digit*](#digit)
+> 
 <a name="octal-constant"></a>
 *octal-constant:*
-
-**0**
-
-[*octal-constant*](#octal-constant) [*octal-digit*](#octal-digit)
- 
+> 
+> **0**
+> 
+> [*octal-constant*](#octal-constant) &nbsp; [*octal-digit*](#octal-digit)
+>  
 <a name="hexadecimal-constant"></a>
 *hexadecimal-constant:*
-
-**0x** [*hexadecimal-digit*](#hexadecimal-digit)
-
-**0X** [*hexadecimal-digit*](#hexadecimal-digit)
-
-[*hexadecimal-constant*](#hexadecimal-constant) [*hexadecimal-digit*](#hexadecimal-digit)
-
+> 
+> **0x** &nbsp; [*hexadecimal-digit*](#hexadecimal-digit)
+> 
+> **0X** &nbsp; [*hexadecimal-digit*](#hexadecimal-digit)
+> 
+> [*hexadecimal-constant*](#hexadecimal-constant) &nbsp; [*hexadecimal-digit*](#hexadecimal-digit)
+> 
 <a name="nonzero-digit"></a>
-*nonzero-digit*: <sub>one of</sub>
-
-**1** **2** **3** **4** **5** **6** **7** **8** **9** 
-
+*nonzero-digit:* <sub>one of</sub>
+> 
+> **1** **2** **3** **4** **5** **6** **7** **8** **9** 
+> 
 <a name="octal-digit"></a>
-*octal-digit*: <sub>one of</sub>
-
-**0** **1** **2** **3** **4** **5** **6** **7**
-
+*octal-digit:* <sub>one of</sub>
+> 
+> **0** **1** **2** **3** **4** **5** **6** **7**
+> 
 <a name="hexadecimal-digit"></a>
-*hexadecimal-digit*: <sub>one of</sub>
-
-**0** **1** **2** **3** **4** **5** **6** **7** **8** **9** 
-
-**a** **b** **c** **d** **e** **f**
-
-**A** **B** **C** **D** **E** **F**
-
+*hexadecimal-digit:* <sub>one of</sub>
+> 
+> **0** **1** **2** **3** **4** **5** **6** **7** **8** **9** 
+> 
+> **a** **b** **c** **d** **e** **f**
+> 
+> **A** **B** **C** **D** **E** **F**
+> 
 <a name="integer-suffix"></a>
 *integer-suffix:*
-
-[*unsigned-suffix*](#unsigned-suffix) [*long-suffix*](#long-suffix)<sub>opt</sub>
-
-[*long-suffix*](#long-suffix) [*unsigned-suffix*](#unsigned-suffix)<sub>opt</sub>
-
+> 
+> [*unsigned-suffix*](#unsigned-suffix) &nbsp; [*long-suffix*](#long-suffix)<sub>opt</sub>
+> 
+> [*long-suffix*](#long-suffix) &nbsp; [*unsigned-suffix*](#unsigned-suffix)<sub>opt</sub>
+> 
 <a name="unsigned-suffix"></a>
-*unsigned-suffix*: <sub>one of</sub>
-
-**u** **U**
-
+*unsigned-suffix:* <sub>one of</sub>
+> 
+> **u** **U**
+> 
 <a name="long-suffix"></a>
-*long-suffix*: <sub>one of</sub>
-
-**l** **L**
-
+*long-suffix:* <sub>one of</sub>
+> 
+> **l** **L**
+> 
 ###### Description
 
 An integer constant begins with a digit, but has no period or exponent part. It may have a prefix that specifies its base and a suffix that specifies its type.
@@ -1951,9 +1948,9 @@ The type of an integer constant is the first of the corresponding list in which 
 
 <a name="enumeration-constant"></a>
 *enumeration-constant:*
-
-[*identifier*](#identifier)
-
+> 
+> [*identifier*](#identifier)
+> 
 ###### Semantics
 
 An identifier declared as an enumeration constant has type int.
@@ -1966,71 +1963,71 @@ An identifier declared as an enumeration constant has type int.
 
 <a name="character-constant"></a>
 *character-constant:*
-
-**'** [*c-char-sequence*](#c-char-sequence) **'**
-
-**L** **'** [*c-char-sequence*](#c-char-sequence) **'**
-
+> 
+> **'** &nbsp; [*c-char-sequence*](#c-char-sequence) &nbsp; **'**
+> 
+> **L** &nbsp; **'** &nbsp; [*c-char-sequence*](#c-char-sequence) &nbsp; **'**
+> 
 <a name="c-char-sequence"></a>
 *c-char-sequence:*
-
-[*c-char*](#c-char)
-
-[*c-char-sequence*](#c-char-sequence) [*c-char*](#c-char)
-
+> 
+> [*c-char*](#c-char)
+> 
+> [*c-char-sequence*](#c-char-sequence) &nbsp; [*c-char*](#c-char)
+> 
 <a name="c-char"></a>
 *c-char:*
-
-<sub>**any member of the source character set except the single-quote ', backslash \, or new-line character**</sub>
-
-[*escape-sequence*](#escape-sequence)
-
+> 
+> <sub>**any member of the source character set except the single-quote ', backslash \, or new-line character**</sub>
+> 
+> [*escape-sequence*](#escape-sequence)
+> 
 <a name="escape-sequence"></a>
 *escape-sequence:*
-
-[*simple-escape-sequence*](#simple-escape-sequence)
-
-[*octal-escape-sequence*](#octal-escape-sequence)
-
-[*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence)
-
+> 
+> [*simple-escape-sequence*](#simple-escape-sequence)
+> 
+> [*octal-escape-sequence*](#octal-escape-sequence)
+> 
+> [*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence)
+> 
 <a name="simple-escape-sequence"></a>
-*simple-escape-sequence*: <sub>one of</sub>
-
-**\'** **\"** **\?** **\\**
-
-**\a** **\b** **\f** **\n** **\r** **\t** **\v**
-
+*simple-escape-sequence:* <sub>one of</sub>
+> 
+> **\\'** &nbsp; **\\"** &nbsp; **\\?** &nbsp; **\\\\**
+> 
+> **\\a** &nbsp; **\\b** &nbsp; **\\f** &nbsp; **\\n** &nbsp; **\\r** &nbsp; **\\t** &nbsp; **\\v**
+> 
 <a name="octal-escape-sequence"></a>
 *octal-escape-sequence*: 
-
-**\** [*octal-digit*](#octal-digit)
-
-**\** [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit)
-
-**\** [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit) [*octal-digit*](#octal-digit)
-
+> 
+> **\\** &nbsp; [*octal-digit*](#octal-digit)
+> 
+> **\\** &nbsp; [*octal-digit*](#octal-digit) &nbsp; [*octal-digit*](#octal-digit)
+> 
+> **\\** &nbsp; [*octal-digit*](#octal-digit) &nbsp; [*octal-digit*](#octal-digit) &nbsp; [*octal-digit*](#octal-digit)
+> 
 <a name="hexadecimal-escape-sequence"></a>
 *hexadecimal-escape-sequence*: 
-
-**\x** [*hexadecimal-digit*](#hexadecimal-digit)
-
-[*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence) [*hexadecimal-digit*](#hexadecimal-digit)
-
+> 
+> **\\x** &nbsp; [*hexadecimal-digit*](#hexadecimal-digit)
+> 
+> [*hexadecimal-escape-sequence*](#hexadecimal-escape-sequence) &nbsp; [*hexadecimal-digit*](#hexadecimal-digit)
+> 
 ###### Description
 
 An integer character constant is a sequence of one or more multibyte characters enclosed in single-quotes, as in `'x'` or `'ab'`. A wide character constant is the same, except prefixed by the letter `L`. With a few exceptions detailed later, the elements of the sequence are any members of the source character set; they are mapped in an implementation-defined manner to members of the execution character set.
 
 The single-quote `'`, the double-quote `"`, the question-mark `?`, the backslash `\`, and arbitrary integral values, are representable according to the following table of escape sequences:
 
-```
-         single-quote '       \'
-         double-quote "       \"
-         question-mark ?      \?
-         backslash \          \\
-         octal integer        \ octal digits
-         hexadecimal integer  \x hexadecimal digits
-```
+|   |   |   |
+| :--- | :----- | :----- |
+| single-quote | \' | `\'` |
+| double-quote | \" | `\"` |
+| question-mark | \? | `\?` |
+| backslash | \\ | `\\` |
+| octal integer |   | `\` octal digits |
+| hexadecimal integer |   | `\x` hexadecimal digits |
 
 The double-quote `"` and question-mark `?` are representable either by themselves or by the escape sequences `\"` and `\?` respectively, but the single-quote `'` and the backslash `\` shall be represented, respectively, by the escape sequences `\'` and `\\`.
 
@@ -2070,25 +2067,25 @@ Even if 12 or more bits are used for objects that have type `wchar_t`, the const
 
 <a name="string-literal"></a>
 *string-literal:*
-
-**"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
-
-**L** **"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
-
+> 
+> **"** &nbsp; [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> &nbsp; **"**
+> 
+> **L** &nbsp; **"** &nbsp; [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> &nbsp; **"**
+> 
 <a name="s-char-sequence"></a>
 *s-char-sequence:*
-
-[*s-char*](#s-char)
-
-[*s-char-sequence*](#s-char-sequence) [*s-char*](#s-char)
-
+> 
+> [*s-char*](#s-char)
+> 
+> [*s-char-sequence*](#s-char-sequence) &nbsp; [*s-char*](#s-char)
+> 
 <a name="s-char"></a>
 *s-char:*
-
-<sub>**any member of the source character set except the double-quote ", backslash \, or new-line character**</sub>
-
-[*escape-sequence*](#escape-sequence)
-
+> 
+> <sub>**any member of the source character set except the double-quote ", backslash \, or new-line character**</sub>
+> 
+> [*escape-sequence*](#escape-sequence)
+> 
 ###### Description
 
 A character string literal is a sequence of zero or more multibyte characters enclosed in double-quotes, as in `"xyz"`. A wide string literal is the same, except prefixed by the letter `L`.
@@ -2105,7 +2102,7 @@ Identical string literals of either form need not be distinct. If the program at
 
 This pair of adjacent character string literals
 
-```
+```c
          "\x12" "3"
 ```
 
@@ -2118,16 +2115,16 @@ produces a single character string literal containing the two characters whose v
 ###### Syntax
 
 <a name="operator"></a>
-*operator*: <sub>one of</sub>
-
-**\[** **\]** **(** **)** **.** **->**
-
-**++** **--** **&** **\*** **+** **-** **~** **!** **sizeof**
-
-**/** **%** **<<** **>>** **<** **>** **<=** **>=** **==** **!=** **^** **|** **&&** **||** **?** **:**
-
-**=** **\*=** **/=** **%=** **+=** **-=** **<<=** **>>=** **&=** **^=** **|=** **,** **#** **##**
-
+*operator:* <sub>one of</sub>
+> 
+> **\[** &nbsp; **\]** &nbsp; **(** &nbsp; **)** &nbsp; **.** &nbsp; **->**
+> 
+> **++** &nbsp; **--** &nbsp; **&** &nbsp; **\*** &nbsp; **+** &nbsp; **-** &nbsp; **~** &nbsp; **!** &nbsp; **sizeof**
+> 
+> **/** &nbsp; **%** &nbsp; **<<** &nbsp; **>>** &nbsp; **<** &nbsp; **>** &nbsp; **<=** &nbsp; **>=** &nbsp; **==** &nbsp; **!=** &nbsp; **^** &nbsp; **|** &nbsp; **&&** &nbsp; **||** &nbsp; **?** &nbsp; **:**
+> 
+> **=** &nbsp; **\*=** &nbsp; **/=** &nbsp; **%=** &nbsp; **+=** &nbsp; **-=** &nbsp; **<<=** &nbsp; **>>=** &nbsp; **&=** &nbsp; **^=** &nbsp; **|=** &nbsp; **,** &nbsp; **#** &nbsp; **##**
+> 
 ###### Constraints
 
 The operators `[ ]`, `( )`, and `? :` shall occur in pairs, possibly separated by expressions. The operators `#` and `##` shall occur in macro-defining preprocessing directives only.
@@ -2144,10 +2141,11 @@ An operator specifies an operation to be performed \(an evaluation\) that yields
 ###### Syntax
 
 <a name="punctuator"></a>
-*punctuator*: <sub>one of</sub>
+*punctuator:* <sub>one of</sub>
 
-**\[** **\]** **(** **)** **{** **}** **\*** **,** **:** **=** **;** **...** **#**
-
+> 
+> **\[** &nbsp; **\]** &nbsp; **(** &nbsp; **)** &nbsp; **{** &nbsp; **}** &nbsp; **\*** &nbsp; **,** &nbsp; **:** &nbsp; **=** &nbsp; **;** &nbsp; **...** &nbsp; **#**
+>
 ###### Constraints
 
 The punctuators `[ ]`, `( )`, and `{ }` shall occur in pairs, possibly separated by expressions, declarations, or statements. The punctuator `#` shall occur in preprocessing directives only.
@@ -2164,35 +2162,35 @@ A punctuator is a symbol that has independent syntactic and semantic significanc
 
 <a name="header-name"></a>
 *header-name:*
-
-**<** [*h-char-sequence*](#h-char-sequence) **>**
-
-**"** [*q-char-sequence*](#q-char-sequence) **"**
-
+> 
+> **<** &nbsp; [*h-char-sequence*](#h-char-sequence) &nbsp; **>**
+> 
+> **"** &nbsp; [*q-char-sequence*](#q-char-sequence) &nbsp; **"**
+> 
 <a name="h-char-sequence"></a>
 *h-char-sequence:*
-
-[*h-char*](#h-char)
-
-[*h-char-sequence*](#h-char-sequence) [*h-char*](#h-char)
-
+> 
+> [*h-char*](#h-char)
+> 
+> [*h-char-sequence*](#h-char-sequence) &nbsp; [*h-char*](#h-char)
+> 
 <a name="h-char"></a>
 *h-char:*
-
-<sub>**any member of the source character set except the new-line character and >**</sub>
-
+>
+> <sub>**any member of the source character set except the new-line character and >**</sub>
+>
 <a name="q-char-sequence"></a>
 *q-char-sequence:*
-
-[*q-char*](#q-char)
-
-[*q-char-sequence*](#q-char-sequence) [*q-char*](#q-char)
-
+> 
+> [*q-char*](#q-char)
+> 
+> [*q-char-sequence*](#q-char-sequence) &nbsp; [*q-char*](#q-char)
+>
 <a name="q-char"></a>
 *q-char:*
-
-<sub>**any member of the source character set except the new-line character and "**</sub>
-
+> 
+> <sub>**any member of the source character set except the new-line character and "**</sub>
+> 
 ###### Constraints
 
 Header name preprocessing tokens shall only appear within a `#include` preprocessing directive.
@@ -2229,21 +2227,21 @@ forms the following sequence of preprocessing tokens (with each individual prepr
 
 <a name="pp-number"></a>
 *pp-number:*
-
-[*digit*](#digit)
-
-**.** [*digit*](#digit)
-
-[*pp-number*](#pp-number) [*digit*](#digit)
-
-[*pp-number*](#pp-number) [*nondigit*](#nondigit)
-
-[*pp-number*](#pp-number) **e** [*sign*](#sign)
-
-[*pp-number*](#pp-number) **E** [*sign*](#sign)
-
-[*pp-number*](#pp-number) **.**
-
+> 
+> [*digit*](#digit)
+> 
+> **.** &nbsp; [*digit*](#digit)
+> 
+> [*pp-number*](#pp-number) &nbsp; [*digit*](#digit)
+> 
+> [*pp-number*](#pp-number) &nbsp; [*nondigit*](#nondigit)
+> 
+> [*pp-number*](#pp-number) &nbsp; **e** &nbsp; [*sign*](#sign)
+> 
+> [*pp-number*](#pp-number) &nbsp; **E** &nbsp; [*sign*](#sign)
+> 
+> [*pp-number*](#pp-number) &nbsp; **.**
+> 
 ###### Description
 
 A preprocessing number begins with a digit optionally preceded by a period (`.`) and may be followed by letters, underscores, digits, periods, and `e+`, `e-`, `E+`, or `E-` character sequences.
