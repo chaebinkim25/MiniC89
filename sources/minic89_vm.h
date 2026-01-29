@@ -1,3 +1,5 @@
+/* minic89_vm.h */
+
 #ifndef MINIC89_VM_H
 #define MINIC89_VM_H
 
@@ -59,11 +61,11 @@ static Value vm_value_fun(u16 fid) {
 static Value vm_value_uninit(void) {
     Value v;
     v.tag = VAL_UNINIT;
-    v.as.fun_id = 0;
+    v.as.num = -1;
     return v;
 }
 
-/* PC / Frame / Operand Stack / Call Stack */
+/* PC, Frame */
 
 typedef struct {
     u16 fid;
@@ -73,9 +75,11 @@ typedef struct {
 typedef struct Frame {
     u16 fid;
     u16 local_count;
-    PC return_pc;
-    Value locals[1];    /* local_count==0 허용, malloc시 sizeof(Frame) 이상 */
+    PC ret_pc;
+    Value locals[1];   /* local_count==0 허용, malloc >= sizeof(Frame) */
 } Frame;
+
+/* Operand Stack, Call Stack */
 
 typedef struct {
     Value *data;
@@ -89,7 +93,7 @@ typedef struct {
     u16     cap;
 } FrameStack;
 
-/* VM Status / Trap / Halt */
+/* VM Status, Trap, Halt */
 
 typedef enum {
     VM_RUNNING = 0,
@@ -130,9 +134,9 @@ typedef union {
     HaltInfo halt;
 } ExitInfo;
 
-
 /* JSON writer */
 
+#define MAX_JSON_DEPTH 32
 typedef struct JsonWriter JsonWriter;
 
 /* VM */
@@ -146,10 +150,6 @@ typedef struct {
     ExitInfo exit;
     JsonWriter *jw;
 } VM;
-
-/* Snapshot API */
-
-const char *vm_build_snapshot_json(VM *vm, size_t *out_len);
 
 /* Helpers for VM runtime (스택/프레임) */
 
@@ -165,5 +165,10 @@ int  framestack_pop(FrameStack *s, Frame **out);
 
 Frame *frame_new(u16 fid, u16 local_count, const PC *ret_pc_or_null);
 void   frame_free(Frame *fr);
+
+/* Snapshot API */
+
+#define VM_SNAPSHOT_BUF_SIZE  4096
+const char *vm_build_snapshot_json(VM *vm, size_t *out_len);
 
 #endif /* MINIC89_VM_H */
