@@ -1512,7 +1512,7 @@ indicates an optional expression enclosed in braces.
 
 ###### Syntax
 
-*token*:
+*token:*
 
 [*keyword*](#311-keywords)
 
@@ -1526,7 +1526,7 @@ indicates an optional expression enclosed in braces.
 
 [*punctuator*](#316-punctuators)
 
-*preprocessing-token*:
+*preprocessing-token:*
 
 [*header-name*](#317-header-names)
 
@@ -1593,7 +1593,7 @@ The above tokens (entirely in lower-case) are reserved (in translation phases 7 
 ###### Syntax
 
 <a name="identifier"></a>
-*identifier*:
+*identifier:*
 
 [*nondigit*](#nondigit)
 
@@ -1791,7 +1791,7 @@ The resulting composite type for the function is:
 ###### Syntax
 
 <a name="constant"></a>
-*constant*:
+*constant:*
 
 [*floating-constant*](#floating-constant)
 
@@ -1814,21 +1814,21 @@ Each constant has a type, determined by its form and value, as detailed later.
 ###### Syntax
 
 <a name="floating-constant"></a>
-*floating-constant*:
+*floating-constant:*
 
 [*fractional-constant*](#fractional-constant) [*exponent-part*](#exponent-part)<sub>opt</sub> [*floating-suffix*](#floating-suffix)<sub>opt</sub>
 
 [*digit-sequence*](#digit-sequence) [*exponent-part*](#exponent-part) [*floating-suffix*](#floating-suffix)<sub>opt</sub>
 
 <a name="fractional-constant"></a>
-*fractional-constant*:
+*fractional-constant:*
 
 [*digit-sequence*](#digit-sequence)<sub>opt</sub> **.** [*digit-sequence*](#digit-sequence)
 
 [*digit-sequence*](#digit-sequence) **.**
 
 <a name="exponent-part"></a>
-*exponent-part*:
+*exponent-part:*
 
 **e** [*sign*](#sign)<sub>opt</sub> [*digit-sequence*](#digit-sequence)
 
@@ -1840,7 +1840,7 @@ Each constant has a type, determined by its form and value, as detailed later.
 **+** **-**
 
 <a name="digit-sequence"></a>
-*digit-sequence*:
+*digit-sequence:*
 
 [*digit](#digit)
 
@@ -1866,7 +1866,7 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 ###### Syntax
 
 <a name="integer-constant"></a>
-*integer-constant*:
+*integer-constant:*
 
 [*decimal-constant*](#decimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
 
@@ -1875,21 +1875,21 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 [*hexadecimal-constant*](#hexadecimal-constant) [*integer-suffix*](#integer-suffix)<sub>opt</sub>
 
 <a name="decimal-constant"></a>
-*decimal-constant*:
+*decimal-constant:*
 
 [*nonzero-digit*](#nonzero-digit)
 
 [*decimal-constant*](#decimal-constant) [*digit*](#digit)
 
 <a name="octal-constant"></a>
-*octal-constant*:
+*octal-constant:*
 
 **0**
 
 [*octal-constant*](#octal-constant) [*octal-digit*](#octal-digit)
  
 <a name="hexadecimal-constant"></a>
-*hexadecimal-constant*:
+*hexadecimal-constant:*
 
 **0x** [*hexadecimal-digit*](#hexadecimal-digit)
 
@@ -1917,7 +1917,7 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 **A** **B** **C** **D** **E** **F**
 
 <a name="integer-suffix"></a>
-*integer-suffix*:
+*integer-suffix:*
 
 [*unsigned-suffix*](#unsigned-suffix) [*long-suffix*](#long-suffix)<sub>opt</sub>
 
@@ -1950,7 +1950,7 @@ The type of an integer constant is the first of the corresponding list in which 
 ###### Syntax
 
 <a name="enumeration-constant"></a>
-*enumeration-constant*:
+*enumeration-constant:*
 
 [*identifier*](#identifier)
 
@@ -1965,28 +1965,28 @@ An identifier declared as an enumeration constant has type int.
 ###### Syntax
 
 <a name="character-constant"></a>
-*character-constant*:
+*character-constant:*
 
 **'** [*c-char-sequence*](#c-char-sequence) **'**
 
 **L** **'** [*c-char-sequence*](#c-char-sequence) **'**
 
 <a name="c-char-sequence"></a>
-*c-char-sequence*:
+*c-char-sequence:*
 
 [*c-char*](#c-char)
 
 [*c-char-sequence*](#c-char-sequence) [*c-char*](#c-char)
 
 <a name="c-char"></a>
-*c-char*:
+*c-char:*
 
 <sub>**any member of the source character set except the single-quote ', backslash \, or new-line character**</sub>
 
 [*escape-sequence*](#escape-sequence)
 
 <a name="escape-sequence"></a>
-*escape-sequence*:
+*escape-sequence:*
 
 [*simple-escape-sequence*](#simple-escape-sequence)
 
@@ -2069,21 +2069,21 @@ Even if 12 or more bits are used for objects that have type `wchar_t`, the const
 ###### Syntax
 
 <a name="string-literal"></a>
-*string-literal*:
+*string-literal:*
 
 **"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
 
 **L** **"** [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> **"**
 
 <a name="s-char-sequence"></a>
-*s-char-sequence*:
+*s-char-sequence:*
 
 [*s-char*](#s-char)
 
 [*s-char-sequence*](#s-char-sequence) [*s-char*](#s-char)
 
 <a name="s-char"></a>
-*s-char*:
+*s-char:*
 
 <sub>**any member of the source character set except the double-quote ", backslash \, or new-line character**</sub>
 
@@ -2163,33 +2163,33 @@ A punctuator is a symbol that has independent syntactic and semantic significanc
 ###### Syntax
 
 <a name="header-name"></a>
-*header-name*:
+*header-name:*
 
 **<** [*h-char-sequence*](#h-char-sequence) **>**
 
 **"** [*q-char-sequence*](#q-char-sequence) **"**
 
 <a name="h-char-sequence"></a>
-*h-char-sequence*:
+*h-char-sequence:*
 
 [*h-char*](#h-char)
 
 [*h-char-sequence*](#h-char-sequence) [*h-char*](#h-char)
 
 <a name="h-char"></a>
-*h-char*:
+*h-char:*
 
 <sub>**any member of the source character set except the new-line character and >**</sub>
 
 <a name="q-char-sequence"></a>
-*q-char-sequence*:
+*q-char-sequence:*
 
 [*q-char*](#q-char)
 
 [*q-char-sequence*](#q-char-sequence) [*q-char*](#q-char)
 
 <a name="q-char"></a>
-*q-char*:
+*q-char:*
 
 <sub>**any member of the source character set except the new-line character and "**</sub>
 
@@ -2228,7 +2228,7 @@ forms the following sequence of preprocessing tokens (with each individual prepr
 ###### Syntax
 
 <a name="pp-number"></a>
-*pp-number*:
+*pp-number:*
 
 [*digit*](#digit)
 
