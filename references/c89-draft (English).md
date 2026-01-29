@@ -1865,11 +1865,11 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 <a name="integer-constant"></a>
 *integer-constant:*
 > 
-> [*decimal-constant*](#decimal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> [*decimal-constant*](#decimal-constant) &nbsp; *[integer-suffix](#integer-suffix)<sub>opt</sub>*
 > 
-> [*octal-constant*](#octal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> [*octal-constant*](#octal-constant) &nbsp; *[integer-suffix](#integer-suffix)<sub>opt</sub>*
 > 
-> [*hexadecimal-constant*](#hexadecimal-constant) &nbsp; [*integer-suffix*](#integer-suffix)<sub>opt</sub>
+> [*hexadecimal-constant*](#hexadecimal-constant) &nbsp; *[integer-suffix](#integer-suffix)<sub>opt</sub>*
 > 
 <a name="decimal-constant"></a>
 *decimal-constant:*
@@ -1916,9 +1916,9 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 <a name="integer-suffix"></a>
 *integer-suffix:*
 > 
-> [*unsigned-suffix*](#unsigned-suffix) &nbsp; [*long-suffix*](#long-suffix)<sub>opt</sub>
+> [*unsigned-suffix*](#unsigned-suffix) &nbsp; *[long-suffix](#long-suffix)<sub>opt</sub>*
 > 
-> [*long-suffix*](#long-suffix) &nbsp; [*unsigned-suffix*](#unsigned-suffix)<sub>opt</sub>
+> [*long-suffix*](#long-suffix) &nbsp; *[unsigned-suffix](#unsigned-suffix)<sub>opt</sub>*
 > 
 <a name="unsigned-suffix"></a>
 *unsigned-suffix:* <sub>one of</sub>
@@ -2068,9 +2068,9 @@ Even if 12 or more bits are used for objects that have type `wchar_t`, the const
 <a name="string-literal"></a>
 *string-literal:*
 > 
-> **"** &nbsp; [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> &nbsp; **"**
+> **"** &nbsp; *[s-char-sequence](#s-char-sequence)<sub>opt</sub>* &nbsp; **"**
 > 
-> **L** &nbsp; **"** &nbsp; [*s-char-sequence*](#s-char-sequence)<sub>opt</sub> &nbsp; **"**
+> **L** &nbsp; **"** &nbsp; *[s-char-sequence](#s-char-sequence)<sub>opt</sub>* &nbsp; **"**
 > 
 <a name="s-char-sequence"></a>
 *s-char-sequence:*
