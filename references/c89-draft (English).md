@@ -1813,7 +1813,7 @@ Each constant has a type, determined by its form and value, as detailed later.
 <a name="floating-constant"></a>
 *floating-constant:*
 > 
-> [*fractional-constant*](#fractional-constant) &nbsp; *[exponent-part](#exponent-part)<sub>opt</sub>* &nbsp; *[floating-suffix*](#floating-suffix)<sub>opt</sub>*
+> [*fractional-constant*](#fractional-constant) &nbsp; *[exponent-part](#exponent-part)<sub>opt</sub>* &nbsp; *[floating-suffix](#floating-suffix)<sub>opt</sub>*
 > 
 > [*digit-sequence*](#digit-sequence) &nbsp; [*exponent-part*](#exponent-part) &nbsp; *[floating-suffix](#floating-suffix)<sub>opt</sub>*
 > 
