@@ -2258,25 +2258,77 @@ Except within a character constant, a string literal, or a comment, the characte
 
 ### 3.2 CONVERSIONS
 
+Several operators convert operand values from one type to another automatically. This section specifies the result required from such an implicit conversion, as well as those that result from a cast operation (an explicit conversion). The list in [3.2.1.5](#3215-usual-arithmetic-conversions) summarizes the conversions performed by most ordinary operators; it is supplemented as required by the discussion of each operator in [3.3](#33-expressions)
+
+Conversion of an operand value to a compatible type causes no change.
+
+**Forward references**: cast operators ([3.3.4](#334-cast-operators)).
+
 #### 3.2.1 Arithmetic operands
 
 ##### 3.2.1.1 Characters and integers
 
+A `char`, a `short int`, or an `int` bit-field, or their signed or unsigned varieties, or an object that has enumeration type, may be used in an expression wherever an `int` or `unsigned int` may be used. If an `int` can represent all values of the original type, the value is converted to an `int`; otherwise it is converted to an `unsigned int`. These are called the integral promotions.
+
+The integral promotions preserve value including sign. As discussed earlier, whether a "plain" `char` is treated as signed is implementation-defined.
+
+**Forward references**: enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)).
+
 ##### 3.2.1.2 Signed and unsigned integers
+
+When an unsigned integer is converted to another integral type, if the value can be represented by the new type, its value is unchanged.
+
+When a signed integer is converted to an unsigned integer with equal or greater size, if the value of the signed integer is nonnegative, its value is unchanged. Otherwise: if the unsigned integer has greater size, the signed integer is first promoted to the signed integer corresponding to the unsigned integer; the value is converted to unsigned by adding to it one greater than the largest number that can be represented in the unsigned integer type.[^22]
+
+When an integer is demoted to an unsigned integer with smaller size, the result is the nonnegative remainder on division by the number one greater than the largest unsigned number that can be represented in the type with smaller size. When an integer is demoted to a signed integer with smaller size, or an unsigned integer is converted to its corresponding signed integer, if the value cannot be represented the result is implementation-defined.
 
 ##### 3.2.1.3 Floating and integral
 
+When a value of floating type is converted to integral type, the fractional part is discarded. If the value of the integral part cannot be represented by the integral type, the behavior is undefined.[^23]
+
+When a value of integral type is converted to floating type, if the value being converted is in the range of values that can be represented but cannot be represented exactly, the result is either the nearest higher or nearest lower value, chosen in an implementation-defined manner.
+
 ##### 3.2.1.4 Floating types
 
+When a `float` is promoted to `double` or `long double`, or a `double` is promoted to `long double`, its value is unchanged.
+
+When a `double` is demoted to `float` or a `long double` to `double` or `float`, if the value being converted is outside the range of values that can be represented, the behavior is undefined. If the value being converted is in the range of values that can be represented but cannot be represented exactly, the result is either the nearest higher or nearest lower value, chosen in an implementation-defined manner.
+
 ##### 3.2.1.5 Usual arithmetic conversions
+
+Many binary operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to yield a common type, which is also the type of the result. This pattern is called the usual arithmetic conversions: First, if either operand has type `long double`, the other operand is converted to `long double`. Otherwise, if either operand has type `double`, the other operand is converted to `double`. Otherwise, if either operand has type `float`, the other operand is converted to `float`. Otherwise, the integral promotions are performed on both operands. Then the following rules are applied: If either operand has type `unsigned long int`, the other operand is converted to `unsigned long int`. Otherwise, if one operand has type `long int` and the other has type `unsigned int`, if a `long int` can represent all values of an `unsigned int`, the operand of type `unsigned int` is converted to `long int`; if a `long int` cannot represent all the values of an `unsigned int`, both operands are converted to `unsigned long int`. Otherwise, if either operand has type `long int`, the other operand is converted to `long int`. Otherwise, if either operand has type `unsigned int`, the other operand is converted to `unsigned int`. Otherwise, both operands have type `int`.
+
+The values of operands and of the results of expressions may be represented in greater precision and range than that required by the type; the types are not changed thereby.
 
 #### 3.2.2 Other operands
 
 ##### 3.2.2.1 Lvalues and function designators
 
+An lvalue is an expression (with an object type or an incomplete type other than `void`) that designates an object.[^24] When an object is said to have a particular type, the type is specified by the lvalue used to designate the object. A modifiable lvalue is an lvalue that does not have array type, does not have an incomplete type, does not have a const-qualified type, and if it is a structure or union, does not have any member (including, recursively, any member of all contained structures or unions) with a const-qualified type.
+
+Except when it is the operand of the `sizeof` operator, the unary `&` operator, the `++` operator, the `--` operator, or the left operand of the `.` operator or an assignment operator, an lvalue that does not have array type is converted to the value stored in the designated object (and is no longer an lvalue). If the lvalue has qualified type, the value has the unqualified version of the type of the lvalue; otherwise the value has the type of the lvalue. If the lvalue has an incomplete type and does not have array type, the behavior is undefined.
+
+Except when it is the operand of the `sizeof` operator or the unary `&` operator, or is a character string literal used to initialize an array of character type, or is a wide string literal used to initialize an array with element type compatible with `wchar_t`, an lvalue that has type "array of type" is converted to an expression that has type "pointer to type" that points to the initial member of the array object and is not an lvalue.
+
+A function designator is an expression that has function type. Except when it is the operand of the `sizeof` operator[^25] or the unary `&` operator, a function designator with type "function returning type" is converted to an expression that has type "pointer to function returning type."
+
+**Forward references**: address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), assignment operators ([3.3.16](#3316-assignment-operators)), common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)), initialization ([3.5.7](#357-initialization)), postfix increment and decrement operators ([3.3.2.4](#3324-postfix-increment-and-decrement-operators)), prefix increment and decrement operators ([3.3.3.1](#3331-prefix-increment-and-decrement-operators)), the sizeof operator ([3.3.3.4](#3334-the-sizeof-operator)), structure and union members ([3.3.2.3](#3323-structure-and-union-members)).
+
 ##### 3.2.2.2 void
 
+The (nonexistent) value of a `void` expression (an expression that has type `void`) shall not be used in any way, and implicit or explicit conversions (except to `void`) shall not be applied to such an expression. If an expression of any other type occurs in a context where a `void` expression is required, its value or designator is discarded. (A `void` expression is evaluated for its side effects.)
+
 ##### 3.2.2.3 Pointers
+
+A pointer to `void` may be converted to or from a pointer to any incomplete or object type. A pointer to any incomplete or object type may be converted to a pointer to `void` and back again; the result shall compare equal to the original pointer.
+
+A pointer to a non-q-qualified type may be converted to a pointer to the q-qualified version of the type; the values stored in the original and converted pointers shall compare equal.
+
+An integral constant expression with the value `0`, or such an expression cast to type `void *`, is called a null pointer constant. If a null pointer constant is assigned to or compared for equality to a pointer, the constant is converted to a pointer of that type. Such a pointer, called a null pointer, is guaranteed to compare unequal to a pointer to any object or function.
+
+Two null pointers, converted through possibly different sequences of casts to pointer types, shall compare equal.
+
+Forward references: cast operators ([3.3.4](#334-cast-operators)), equality operators ([3.3.9](#339-equality-operators)), simple assignment ([3.3.16.1](#33161-simple-assignment)).
 
 ### 3.3 EXPRESSIONS
 
