@@ -2328,7 +2328,7 @@ An integral constant expression with the value `0`, or such an expression cast t
 
 Two null pointers, converted through possibly different sequences of casts to pointer types, shall compare equal.
 
-Forward references: cast operators ([3.3.4](#334-cast-operators)), equality operators ([3.3.9](#339-equality-operators)), simple assignment ([3.3.16.1](#33161-simple-assignment)).
+**Forward references**: cast operators ([3.3.4](#334-cast-operators)), equality operators ([3.3.9](#339-equality-operators)), simple assignment ([3.3.16.1](#33161-simple-assignment)).
 
 ### 3.3 EXPRESSIONS
 
