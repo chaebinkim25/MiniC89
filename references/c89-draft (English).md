@@ -2268,9 +2268,9 @@ Conversion of an operand value to a compatible type causes no change.
 
 ##### 3.2.1.1 Characters and integers
 
-A `char`, a `short int`, or an `int` bit-field, or their signed or unsigned varieties, or an object that has enumeration type, may be used in an expression wherever an `int` or `unsigned int` may be used. If an `int` can represent all values of the original type, the value is converted to an `int`; otherwise it is converted to an `unsigned int`. These are called the integral promotions.
+A `char`, a `short int`, or an `int` bit-field, or their `signed` or `unsigned` varieties, or an object that has enumeration type, may be used in an expression wherever an `int` or `unsigned int` may be used. If an `int` can represent all values of the original type, the value is converted to an `int`; otherwise it is converted to an `unsigned int`. These are called the integral promotions.
 
-The integral promotions preserve value including sign. As discussed earlier, whether a "plain" `char` is treated as signed is implementation-defined.
+The integral promotions preserve value including sign. As discussed earlier, whether a "plain" `char` is treated as `signed` is implementation-defined.
 
 **Forward references**: enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)).
 
@@ -2278,7 +2278,7 @@ The integral promotions preserve value including sign. As discussed earlier, whe
 
 When an unsigned integer is converted to another integral type, if the value can be represented by the new type, its value is unchanged.
 
-When a signed integer is converted to an unsigned integer with equal or greater size, if the value of the signed integer is nonnegative, its value is unchanged. Otherwise: if the unsigned integer has greater size, the signed integer is first promoted to the signed integer corresponding to the unsigned integer; the value is converted to unsigned by adding to it one greater than the largest number that can be represented in the unsigned integer type.[^22]
+When a signed integer is converted to an unsigned integer with equal or greater size, if the value of the signed integer is nonnegative, its value is unchanged. Otherwise: if the unsigned integer has greater size, the signed integer is first promoted to the signed integer corresponding to the unsigned integer; the value is converted to `unsigned` by adding to it one greater than the largest number that can be represented in the unsigned integer type.[^22]
 
 When an integer is demoted to an unsigned integer with smaller size, the result is the nonnegative remainder on division by the number one greater than the largest unsigned number that can be represented in the type with smaller size. When an integer is demoted to a signed integer with smaller size, or an unsigned integer is converted to its corresponding signed integer, if the value cannot be represented the result is implementation-defined.
 
@@ -2304,7 +2304,7 @@ The values of operands and of the results of expressions may be represented in g
 
 ##### 3.2.2.1 Lvalues and function designators
 
-An lvalue is an expression (with an object type or an incomplete type other than `void`) that designates an object.[^24] When an object is said to have a particular type, the type is specified by the lvalue used to designate the object. A modifiable lvalue is an lvalue that does not have array type, does not have an incomplete type, does not have a const-qualified type, and if it is a structure or union, does not have any member (including, recursively, any member of all contained structures or unions) with a const-qualified type.
+An lvalue is an expression (with an object type or an incomplete type other than `void`) that designates an object.[^24] When an object is said to have a particular type, the type is specified by the lvalue used to designate the object. A modifiable lvalue is an lvalue that does not have array type, does not have an incomplete type, does not have a `const`-qualified type, and if it is a structure or union, does not have any member (including, recursively, any member of all contained structures or unions) with a `const`-qualified type.
 
 Except when it is the operand of the `sizeof` operator, the unary `&` operator, the `++` operator, the `--` operator, or the left operand of the `.` operator or an assignment operator, an lvalue that does not have array type is converted to the value stored in the designated object (and is no longer an lvalue). If the lvalue has qualified type, the value has the unqualified version of the type of the lvalue; otherwise the value has the type of the lvalue. If the lvalue has an incomplete type and does not have array type, the behavior is undefined.
 
@@ -3112,8 +3112,8 @@ Two null pointers, converted through possibly different sequences of casts to po
 
 [^22]: In a two's-complement representation, there is no actual change in the bit pattern except filling the high-order bits with copies of the sign bit if the unsigned integer has greater size.
 
-[^23]: The remaindering operation done when a value of integral type is converted to unsigned type need not be done when a value of floating type is converted to unsigned type. Thus the range of portable values is [0, U type _MAX +1).
+[^23]: The remaindering operation done when a value of integral type is converted to `unsigned` type need not be done when a value of floating type is converted to `unsigned` type. Thus the range of portable values is [0, U type _MAX +1).
 
 [^24]: The name "lvalue" comes originally from the assignment expression `E1 = E2`, in which the left operand `E1` must be a (modifiable) lvalue. It is perhaps better considered as representing an object "locator value." What is sometimes called "rvalue" is in this Standard described as the "value of an expression." An obvious example of an lvalue is an identifier of an object. As a further example, if `E` is a unary expression that is a pointer to an object, `*E` is an lvalue that designates the object to which `E` points.
 
-[^25]: Because this conversion does not occur, the operand of the sizeof operator remains a function designator and violates the constraint in [3.3.3.4](#3334-the-sizeof-operator)
+[^25]: Because this conversion does not occur, the operand of the `sizeof` operator remains a function designator and violates the constraint in [3.3.3.4](#3334-the-sizeof-operator)
