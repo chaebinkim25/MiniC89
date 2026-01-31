@@ -1345,7 +1345,7 @@ If the value of an object of type char sign-extends when used in an expression, 
 
 The characteristics of floating types are defined in terms of a model that describes a representation of floating-point numbers and values that provide information about an implementation's floating-point arithmetic. The following parameters are used to define the model for each floating-point type:
 
-A normalized floating-point number $x$ ($f_1 > 0$ if $x$ is defined by the following model):[^8] 
+A *normalized floating-point number* $x$ ($f_1 > 0$ if $x$ is defined by the following model):[^8] 
 
 ```math
 x = s \times b^e \times \sum_{k=1}^{p} (f_k \times b^{-k}), \quad e_{min} \le e \le e_{max}
@@ -1357,13 +1357,13 @@ The rounding mode for floating-point addition is characterized by the value of `
 
 The values given in the following list shall be replaced by implementation-defined expressions that shall be equal or greater in magnitude (absolute value) to those shown, with the same sign.
 
-* radix of exponent representation, b
+* radix of exponent representation, *b*
 
 |   |   |
 | :--- | :--- |
 | `FLT_RADIX` | `2` |
 
-* number of base-`FLT_RADIX` digits in the floating-point mantissa, p
+* number of base-`FLT_RADIX` digits in the floating-point mantissa, *p*
 
 |   |   |
 | :--- | :----- |
@@ -1386,7 +1386,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_DIG` | `10` |
 | `LDBL_DIG` |  `10` |
 
-* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, $e_{min}$
+* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, *$e_{min}$*
 
 |   |   |
 | :--- | :----- |
@@ -1402,7 +1402,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_MIN_10_EXP` | `-37` |
 | `LDBL_MIN_10_EXP` | `-37` |
 
-* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, $e_{max}$
+* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, *$e_{max}$*
 
 |   |   |
 | :--- | :----- |
@@ -1547,7 +1547,7 @@ Each preprocessing token that is converted to a token shall have the lexical for
 
 ###### Semantics
 
-A token is the minimal lexical element of the language in translation phases 7 and 8. The categories of tokens are: keywords, identifiers, constants, string literals, operators, and punctuators. A preprocessing token is the minimal lexical element of the language in translation phases 3 through 6. The categories of preprocessing token are: header names, identifiers, preprocessing numbers, character constants, string literals, operators, punctuators, and single non-white-space characters that do not lexically match the other preprocessing token categories. If a `'` or a `"` character matches the last category, the behavior is undefined. Comments (described later) and the characters space, horizontal tab, new-line, vertical tab, and form-feed --- collectively called white space --- can separate preprocessing tokens. As described in [3.8](#38-preprocessing-directives), in certain circumstances during translation phase 4, white space (or the absence thereof) serves as more than preprocessing token separation. White space may appear within a preprocessing token only as part of a header name or between the quotation characters in a character constant or string literal.
+A *token* is the minimal lexical element of the language in translation phases 7 and 8. The categories of tokens are: keywords, identifiers, constants, string literals, operators, and punctuators. A *preprocessing token* is the minimal lexical element of the language in translation phases 3 through 6. The categories of preprocessing token are: header names, identifiers, preprocessing numbers, character constants, string literals, operators, punctuators, and single non-white-space characters that do not lexically match the other preprocessing token categories. If a `'` or a `"` character matches the last category, the behavior is undefined. Comments (described later) and the characters space, horizontal tab, new-line, vertical tab, and form-feed --- collectively called *white space* --- can separate preprocessing tokens. As described in [3.8](#38-preprocessing-directives), in certain circumstances during translation phase 4, white space (or the absence thereof) serves as more than preprocessing token separation. White space may appear within a preprocessing token only as part of a header name or between the quotation characters in a character constant or string literal.
 
 If the input stream has been parsed into preprocessing tokens up to a given character, the next preprocessing token is the longest sequence of characters that could constitute a preprocessing token.
 
@@ -1624,13 +1624,13 @@ In translation phases 7 and 8, an identifier shall not consist of the same seque
 
 ###### Semantics
 
-An identifier denotes an object, a function, or one of the following entities that will be described later: a tag or a member of a structure, union, or enumeration; a typedef name; a label name; a macro name; or a macro parameter. A member of an enumeration is called an enumeration constant. Macro names and macro parameters are not considered further here, because prior to the semantic phase of program translation any occurrences of macro names in the source file are replaced by the preprocessing token sequences that constitute their macro definitions.
+An identifier denotes an object, a function, or one of the following entities that will be described later: a tag or a member of a structure, union, or enumeration; a typedef name; a label name; a macro name; or a macro parameter. A member of an enumeration is called an *enumeration constant*. Macro names and macro parameters are not considered further here, because prior to the semantic phase of program translation any occurrences of macro names in the source file are replaced by the preprocessing token sequences that constitute their macro definitions.
 
 There is no specific limit on the maximum length of an identifier.
 
 "Implementation limits"
 
-The implementation shall treat at least the first 31 characters of an internal name (a macro name or an identifier that does not have external linkage) as significant. Corresponding lower-case and upper-case letters are different. The implementation may further restrict the significance of an external name (an identifier that has external linkage) to six characters and may ignore distinctions of alphabetical case for such names.[^10] These limitations on identifiers are all implementation-defined.
+The implementation shall treat at least the first 31 characters of an *internal name* (a macro name or an identifier that does not have external linkage) as significant. Corresponding lower-case and upper-case letters are different. The implementation may further restrict the significance of an *external name* (an identifier that has external linkage) to six characters and may ignore distinctions of alphabetical case for such names.[^10] These limitations on identifiers are all implementation-defined.
 
 Any identifiers that differ in a significant character are different identifiers. If two identifiers differ in a non-significant character, the behavior is undefined.
 
