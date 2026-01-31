@@ -955,7 +955,7 @@ If a "shall" or "shall not" requirement that appears outside of a constraint is 
 
 * Forward references --- references to later sections of the Standard that contain additional information relevant to this section.
 
-Other terms are defined at their first appearance, indicated by italic type. Terms explicitly defined in this Standard are not to be presumed to refer implicitly to similar terms defined elsewhere.
+Other terms are defined at their first appearance, indicated by *italic type*. Terms explicitly defined in this Standard are not to be presumed to refer implicitly to similar terms defined elsewhere.
 
 Terms not defined in this Standard are to be interpreted according to the American National Dictionary for Information Processing Systems, Information Processing Systems Technical Report ANSI X3/TR-1-82 (1982).
 
@@ -975,11 +975,11 @@ An example of locale-specific behavior is whether the `islower` function returns
 
 ### 1.7 COMPLIANCE
 
-A strictly conforming program shall use only those features of the language and library specified in this Standard. It shall not produce output dependent on any unspecified, undefined, or implementation-defined behavior, and shall not exceed any minimum implementation limit.
+A *strictly conforming program* shall use only those features of the language and library specified in this Standard. It shall not produce output dependent on any unspecified, undefined, or implementation-defined behavior, and shall not exceed any minimum implementation limit.
 
-The two forms of conforming implementation are hosted and freestanding. A conforming hosted implementation shall accept any strictly conforming program. A conforming freestanding implementation shall accept any strictly conforming program in which the use of the features specified in the library section ([4.](#4-library)) is confined to the contents of the standard headers `<float.h>`, `<limits.h>`, `<stdarg.h>`, and `<stddef.h>`. A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
+The two forms of conforming implementation are hosted and freestanding. A *conforming hosted implementation* shall accept any strictly conforming program. A *conforming freestanding implementation* shall accept any strictly conforming program in which the use of the features specified in the library section ([4.](#4-library)) is confined to the contents of the standard headers `<float.h>`, `<limits.h>`, `<stdarg.h>`, and `<stddef.h>`. A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
 
-A conforming program is one that is acceptable to a conforming implementation. [^2]
+A *conforming program* is one that is acceptable to a conforming implementation. [^2]
 
 An implementation shall be accompanied by a document that defines all implementation-defined characteristics and all extensions.
 
@@ -989,7 +989,7 @@ An implementation shall be accompanied by a document that defines all implementa
 
 With the introduction of new devices and extended character sets, new features may be added to the Standard. Subsections in the language and library sections warn implementors and programmers of usages which, though valid in themselves, may conflict with future additions.
 
-Certain features are obsolescent, which means that they may be considered for withdrawal in future revisions of the Standard. They are retained in the Standard because of their widespread use, but their use in new implementations (for implementation features) or new programs (for language or library features) is discouraged.
+Certain features are *obsolescent*, which means that they may be considered for withdrawal in future revisions of the Standard. They are retained in the Standard because of their widespread use, but their use in new implementations (for implementation features) or new programs (for language or library features) is discouraged.
 
 **Forward references**: future language directions ([3.9.9](#39-future-language-directions)), future library directions ([4.13](#413-future-library-directions)).
 
@@ -1001,7 +1001,7 @@ This section and the difference marks themselves will not appear in the publishe
 
 ## 2. ENVIRONMENT
 
-An implementation translates C source files and executes C programs in two data-processing-system environments, which will be called the translation environment and the execution environment in this Standard. Their characteristics define and constrain the results of executing conforming C programs constructed according to the syntactic and semantic rules for conforming implementations.
+An implementation translates C source files and executes C programs in two data-processing-system environments, which will be called the *translation environment* and the *execution environment* in this Standard. Their characteristics define and constrain the results of executing conforming C programs constructed according to the syntactic and semantic rules for conforming implementations.
 
 **Forward references**: In the environment section [2.](#2-environment), only a few of many possible forward references have been noted.
 
@@ -1011,9 +1011,9 @@ An implementation translates C source files and executes C programs in two data-
 
 ##### 2.1.1.1 Program structure
 
-A C program need not all be translated at the same time. The text of the program is kept in units called source files in this Standard. A source file together with all the headers and source files included via the preprocessing directive #include , less any source lines skipped by any of the conditional inclusion preprocessing directives, is called a translation unit. Previously translated translation units may be preserved individually or in libraries. The separate translation units of a program communicate by (for example) calls to functions whose identifiers have external linkage, by manipulation of objects whose identifiers have external linkage, and by manipulation of data files. Translation units may be separately translated and then later linked to produce an executable program.
+A C program need not all be translated at the same time. The text of the program is kept in units called *source files* in this Standard. A source file together with all the headers and source files included via the preprocessing directive `#include`, less any source lines skipped by any of the conditional inclusion preprocessing directives, is called a *translation unit*. Previously translated translation units may be preserved individually or in libraries. The separate translation units of a program communicate by (for example) calls to functions whose identifiers have external linkage, by manipulation of objects whose identifiers have external linkage, and by manipulation of data files. Translation units may be separately translated and then later linked to produce an *executable program*.
 
-Forward references: conditional inclusion ([3.8.1](#381-conditional-inclusion)), linkages of identifiers ([3.1.2.2](#3122-linkages-of-identifiers)), source file inclusion ([3.8.2](#382-source-file-inclusion)).
+**Forward references**: conditional inclusion ([3.8.1](#381-conditional-inclusion)), linkages of identifiers ([3.1.2.2](#3122-linkages-of-identifiers)), source file inclusion ([3.8.2](#382-source-file-inclusion)).
 
 ##### 2.1.1.2 Translation phases
 
@@ -1021,11 +1021,11 @@ The precedence among the syntax rules of translation is specified by the followi
 
 1. Physical source file characters are mapped to the source character set (introducing new-line characters for end-of-line indicators) if necessary. Trigraph sequences are replaced by corresponding single-character internal representations.
 
-2. Each instance of a new-line character and an immediately preceding backslash character is deleted, splicing physical source lines to form logical source lines. A source file that is not empty shall end in a new-line character, which shall not be immediately preceded by a backslash character.
+2. Each instance of a new-line character and an immediately preceding backslash character is deleted, splicing physical source lines to form *logical source lines*. A source file that is not empty shall end in a new-line character, which shall not be immediately preceded by a backslash character.
 
 3. The source file is decomposed into preprocessing tokens[^4] and sequences of white-space characters (including comments). A source file shall not end in a partial preprocessing token or comment. Each comment is replaced by one space character. New-line characters are retained. Whether each nonempty sequence of other white-space characters is retained or replaced by one space character is implementation-defined.
 
-4. Preprocessing directives are executed and macro invocations are expanded. A #include preprocessing directive causes the named header or source file to be processed from phase 1 through phase 4, recursively.
+4. Preprocessing directives are executed and macro invocations are expanded. A `#include` preprocessing directive causes the named header or source file to be processed from phase 1 through phase 4, recursively.
 
 5. Each escape sequence in character constants and string literals is converted to a member of the execution character set.
 
@@ -1033,7 +1033,7 @@ The precedence among the syntax rules of translation is specified by the followi
 
 7. White-space characters separating tokens are no longer significant. Preprocessing tokens are converted into tokens. The resulting tokens are syntactically and semantically analyzed and translated.
 
-8. All external object and function references are resolved. Library components are linked to satisfy external references to functions and objects not defined in the current translation. All such translator output is collected into a program image which contains information needed for execution in its execution environment.
+8. All external object and function references are resolved. Library components are linked to satisfy external references to functions and objects not defined in the current translation. All such translator output is collected into a *program image* which contains information needed for execution in its execution environment.
 
 **Forward references**: lexical elements ([3.1](#31-lexical-elements)), preprocessing directives ([3.8](#38-preprocessing-directives)), trigraph sequences ([2.2.1.1](#2211-trigraph-sequences)).
 
@@ -1043,7 +1043,7 @@ A conforming implementation shall produce at least one diagnostic message (ident
 
 #### 2.1.2 Execution environments
 
-Two execution environments are defined: freestanding and hosted. In both cases, program startup occurs when a designated C function is called by the execution environment. All objects in static storage shall be initialized (set to their initial values) before program startup. The manner and timing of such initialization are otherwise unspecified. Program termination returns control to the execution environment.
+Two execution environments are defined: *freestanding* and *hosted*. In both cases, *program startup* occurs when a designated C function is called by the execution environment. All objects in static storage shall be initialized (set to their initial values) before program startup. The manner and timing of such initialization are otherwise unspecified. *Program termination* returns control to the execution environment.
 
 **Forward references**: initialization ([3.5.7](#357-initialization)).
 
@@ -1089,15 +1089,15 @@ In a hosted environment, a program may use all the functions, macros, type defin
 
 "Program termination"
 
-A return from the initial call to the main function is equivalent to calling the exit function with the value returned by the main function as its argument. If the main function executes a return that specifies no value, the termination status returned to the host environment is undefined.
+A return from the initial call to the `main` function is equivalent to calling the exit function with the value returned by the `main` function as its argument. If the `main` function executes a return that specifies no value, the termination status returned to the host environment is undefined.
 
 **Forward references**: definition of terms ([4.1.1](#411-definitions-of-terms)), the exit function ([4.10.4.3](#41043-the-exit-function)).
 
 ##### 2.1.2.3 Program execution
 
-The semantic descriptions in this Standard describe the behavior of an abstract machine in which issues of optimization are irrelevant.
+The semantic descriptions in this Standard describe the behavior of an *abstract machine* in which issues of optimization are irrelevant.
 
-Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.
+Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all *side effects*, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called `sequence points`, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.
 
 In the abstract machine, all expressions are evaluated as specified by the semantics. An actual implementation need not evaluate part of an expression if it can deduce that its value is not used and that no needed side effects are produced (including any caused by calling a function or accessing a volatile object).
 
@@ -1113,7 +1113,7 @@ The least requirements on a conforming implementation are:
 
 * The input and output dynamics of interactive devices shall take place as specified in [4.9.3](#493-files). The intent of these requirements is that unbuffered or line-buffered output appear as soon as possible, to ensure that prompting messages actually appear prior to a program waiting for input.
 
-What constitutes an interactive device is implementation-defined.
+What constitutes an `interactive device` is implementation-defined.
 
 More stringent correspondences between abstract and actual semantics may be defined by each implementation.
 
@@ -1150,9 +1150,9 @@ the multiplication may be executed using single-precision arithmetic if the impl
 
 #### 2.2.1 Character sets
 
-Two sets of characters and their associated collating sequences shall be defined: the set in which source files are written, and the set interpreted in the execution environment. The values of the members of the execution character set are implementation-defined; any additional members beyond those required by this section are locale-specific.
+Two sets of characters and their associated collating sequences shall be defined: the set in which source files are written, and the set interpreted in the execution environment. The values of the members of the *execution character set* are implementation-defined; any additional members beyond those required by this section are locale-specific.
 
-In a character constant or string literal, members of the execution character set shall be represented by corresponding members of the source character set or by escape sequences consisting of the backslash `\` followed by one or more characters. A byte with all bits set to 0, called the null character, shall exist in the basic execution character set; it is used to terminate a character string literal.
+In a character constant or string literal, members of the execution character set shall be represented by corresponding members of the *source character set* or by escape sequences consisting of the backslash `\` followed by one or more characters. A byte with all bits set to 0, called the *null character*, shall exist in the basic execution character set; it is used to terminate a character string literal.
 
 Both the basic source and basic execution character sets shall have at least the following members: the 26 upper-case letters of the English alphabet
 >
@@ -1176,13 +1176,13 @@ the following 29 graphic characters
 >
 > **\;** **\<** **\=** **\>** **\?** **\[** **\\** **\]** **\^** **\_** **\{** **\|** **\}** **\~**
 >
-the space character, and control characters representing horizontal tab, vertical tab, and form feed. In both the source and execution basic character sets, the value of each character after 0 in the above list of decimal digits shall be one greater than the value of the previous. In source files, there shall be some way of indicating the end of each line of text; this Standard treats such an end-of-line indicator as if it were a single new-line character. In the execution character set, there shall be control characters representing alert, backspace, carriage return, and new line. If any other characters are encountered in a source file (except in a preprocessing token that is never converted to a token, a character constant, a string literal, or a comment), the behavior is undefined.
+the space character, and control characters representing horizontal tab, vertical tab, and form feed. In both the source and execution basic character sets, the value of each character after `0` in the above list of decimal digits shall be one greater than the value of the previous. In source files, there shall be some way of indicating the end of each line of text; this Standard treats such an end-of-line indicator as if it were a single new-line character. In the execution character set, there shall be control characters representing alert, backspace, carriage return, and new line. If any other characters are encountered in a source file (except in a preprocessing token that is never converted to a token, a character constant, a string literal, or a comment), the behavior is undefined.
 
 **Forward references**: character constants ([3.1.3.4](#3134-character-constants)), preprocessing directives ([3.8](#38-preprocessing-directives)), string literals ([3.1.4](#314-string-literals)), comments ([3.1.9](#319-comments)).
 
 ##### 2.2.1.1 Trigraph sequences
 
-All occurrences in a source file of the following sequences of three characters (called trigraph sequences[^5]) are replaced with the corresponding single character.
+All occurrences in a source file of the following sequences of three characters (called *trigraph sequences*[^5]) are replaced with the corresponding single character.
 
 |   |   |
 | :--- | :--- |
@@ -1219,7 +1219,7 @@ The source character set may contain multibyte characters, used to represent mem
 
 * The presence, meaning, and representation of any additional members is locale-specific.
 
-* A multibyte character may have a state-dependent encoding, wherein each sequence of multibyte characters begins in an initial shift state and enters other implementation-defined shift states when specific multibyte characters are encountered in the sequence. While in the initial shift state, all single-byte characters retain their usual interpretation and do not alter the shift state. The interpretation for subsequent bytes in the sequence is a function of the current shift state.
+* A multibyte character may have a *state-dependent encoding*, wherein each sequence of multibyte characters begins in an initial shift state and enters other implementation-defined *shift states* when specific multibyte characters are encountered in the sequence. While in the *initial shift state*, all single-byte characters retain their usual interpretation and do not alter the shift state. The interpretation for subsequent bytes in the sequence is a function of the current shift state.
 
 * A byte with all bits zero shall be interpreted as a null character independent of shift state.
 
@@ -1233,9 +1233,9 @@ For the source character set, the following shall hold:
 
 #### 2.2.2 Character display semantics
 
-The active position is that location on a display device where the next character output by the fputc function would appear. The intent of writing a printable character (as defined by the `isprint` function) to a display device is to display a graphic representation of that character at the active position and then advance the active position to the next position on the current line. The direction of printing is locale-specific. If the active position is at the final position of a line (if there is one), the behavior is unspecified.
+The *active position* is that location on a display device where the next character output by the fputc function would appear. The intent of writing a printable character (as defined by the `isprint` function) to a display device is to display a graphic representation of that character at the active position and then advance the active position to the next position on the current line. The direction of printing is locale-specific. If the active position is at the final position of a line (if there is one), the behavior is unspecified.
 
-Alphabetic escape sequences representing nongraphic characters in the execution character set are intended to produce actions on display devices as follows: ( alert ) Produces an audible or visible alert. The active position shall not be changed. ( backspace ) Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior is unspecified. ( "form feed" ) Moves the active position to the initial position at the start of the next logical page. ( "new line" ) Moves the active position to the initial position of the next line. ( "carriage return" ) Moves the active position to the initial position of the current line. ( "horizontal tab" ) Moves the active position to the next horizontal tabulation position on the current line. If the active position is at or past the last defined horizontal tabulation position, the behavior is unspecified. ( "vertical tab" ) Moves the active position to the initial position of the next vertical tabulation position. If the active position is at or past the last defined vertical tabulation position, the behavior is unspecified.
+Alphabetic escape sequences representing nongraphic characters in the execution character set are intended to produce actions on display devices as follows: (*alert*) Produces an audible or visible alert. The active position shall not be changed. (*backspace*) Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior is unspecified. (*form feed*) Moves the active position to the initial position at the start of the next logical page. (*new line*) Moves the active position to the initial position of the next line. (*carriage return*) Moves the active position to the initial position of the current line. (*horizontal tab*) Moves the active position to the next horizontal tabulation position on the current line. If the active position is at or past the last defined horizontal tabulation position, the behavior is unspecified. (*vertical tab*) Moves the active position to the initial position of the next vertical tabulation position. If the active position is at or past the last defined vertical tabulation position, the behavior is unspecified.
 
 Each of these escape sequences shall produce a unique implementation-defined value which can be stored in a single char object. The external representations in a text file need not be identical to the internal representations, and are outside the scope of this Standard.
 
@@ -1243,7 +1243,7 @@ Each of these escape sequences shall produce a unique implementation-defined val
 
 #### 2.2.3 Signals and interrupts
 
-Functions shall be implemented such that they may be interrupted at any time by a signal, or may be called by a signal handler, or both, with no alteration to earlier, but still active, invocations' control flow (after the interruption), function return values, or objects with automatic storage duration. All such objects shall be maintained outside the function image (the instructions that comprise the executable representation of a function) on a per-invocation basis.
+Functions shall be implemented such that they may be interrupted at any time by a signal, or may be called by a signal handler, or both, with no alteration to earlier, but still active, invocations' control flow (after the interruption), function return values, or objects with automatic storage duration. All such objects shall be maintained outside the *function image* (the instructions that comprise the executable representation of a function) on a per-invocation basis.
 
 The functions in the standard library are not guaranteed to be reentrant and may modify objects with static storage duration.
 
