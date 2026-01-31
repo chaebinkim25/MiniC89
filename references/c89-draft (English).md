@@ -3109,3 +3109,11 @@ Forward references: cast operators ([3.3.4](#334-cast-operators)), equality oper
 [^20]: Thus, sequences of characters that resemble escape sequences cause undefined behavior.
 
 [^21]: Thus comments do not nest.
+
+[^22]: In a two's-complement representation, there is no actual change in the bit pattern except filling the high-order bits with copies of the sign bit if the unsigned integer has greater size.
+
+[^23]: The remaindering operation done when a value of integral type is converted to unsigned type need not be done when a value of floating type is converted to unsigned type. Thus the range of portable values is [0, U type _MAX +1).
+
+[^24]: The name "lvalue" comes originally from the assignment expression `E1 = E2`, in which the left operand `E1` must be a (modifiable) lvalue. It is perhaps better considered as representing an object "locator value." What is sometimes called "rvalue" is in this Standard described as the "value of an expression." An obvious example of an lvalue is an identifier of an object. As a further example, if `E` is a unary expression that is a pointer to an object, `*E` is an lvalue that designates the object to which `E` points.
+
+[^25]: Because this conversion does not occur, the operand of the sizeof operator remains a function designator and violates the constraint in [3.3.3.4](#3334-the-sizeof-operator)
