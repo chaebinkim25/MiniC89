@@ -1750,11 +1750,11 @@ Finally, the type designated as "`struct tag (*[5])(float)`" is called "array of
 
 ##### 3.1.2.6 Compatible type and composite type
 
-Two types have compatible type if their types are the same. Additional rules for determining whether two types are compatible are described in [3.5.2](#352-type-specifiers) for type specifiers, in [3.5.3](#353-type-qualifiers) for type qualifiers, and in [3.5.4](#354-declarators) for declarators.[^16] Moreover, two structure, union, or enumeration types declared in separate translation units are compatible if they have the same number of members, the same member names, and compatible member types; for two structures, the members shall be in the same order; for two enumerations, the members shall have the same values.
+Two types have *compatible type* if their types are the same. Additional rules for determining whether two types are compatible are described in [3.5.2](#352-type-specifiers) for type specifiers, in [3.5.3](#353-type-qualifiers) for type qualifiers, and in [3.5.4](#354-declarators) for declarators.[^16] Moreover, two structure, union, or enumeration types declared in separate translation units are compatible if they have the same number of members, the same member names, and compatible member types; for two structures, the members shall be in the same order; for two enumerations, the members shall have the same values.
 
 All declarations that refer to the same object or function shall have compatible type; otherwise the behavior is undefined.
 
-A composite type can be constructed from two types that are compatible; it is a type that is compatible with both of the two types and has the following additions:
+A *composite type* can be constructed from two types that are compatible; it is a type that is compatible with both of the two types and has the following additions:
 
 * If one type is an array of known size, the composite type is an array of that size.
 
@@ -2016,7 +2016,7 @@ An identifier declared as an enumeration constant has type int.
 > 
 ###### Description
 
-An integer character constant is a sequence of one or more multibyte characters enclosed in single-quotes, as in `'x'` or `'ab'`. A wide character constant is the same, except prefixed by the letter `L`. With a few exceptions detailed later, the elements of the sequence are any members of the source character set; they are mapped in an implementation-defined manner to members of the execution character set.
+An *integer character constant* is a sequence of one or more multibyte characters enclosed in single-quotes, as in `'x'` or `'ab'`. A *wide character constant* is the same, except prefixed by the letter `L`. With a few exceptions detailed later, the elements of the sequence are any members of the source character set; they are mapped in an implementation-defined manner to members of the execution character set.
 
 The single-quote `'`, the double-quote `"`, the question-mark `?`, the backslash `\`, and arbitrary integral values, are representable according to the following table of escape sequences:
 
@@ -2088,7 +2088,7 @@ Even if 12 or more bits are used for objects that have type `wchar_t`, the const
 > 
 ###### Description
 
-A character string literal is a sequence of zero or more multibyte characters enclosed in double-quotes, as in `"xyz"`. A wide string literal is the same, except prefixed by the letter `L`.
+A *character string literal* is a sequence of zero or more multibyte characters enclosed in double-quotes, as in `"xyz"`. A *wide string literal* is the same, except prefixed by the letter `L`.
 
 The same considerations apply to each element of the sequence in a character string literal or a wide string literal as if it were in an integer character constant or a wide character constant, except that the single-quote `'` is representable either by itself or by the escape sequence `\'`, but the double-quote shall be represented by the escape sequence `\"`.
 
@@ -2131,7 +2131,7 @@ The operators `[ ]`, `( )`, and `? :` shall occur in pairs, possibly separated b
 
 ###### Semantics
 
-An operator specifies an operation to be performed \(an evaluation\) that yields a value, or yields a designator, or produces a side effect, or a combination thereof. An operand is an entity on which an operator acts.
+An operator specifies an operation to be performed \(an *evaluation*\) that yields a value, or yields a designator, or produces a side effect, or a combination thereof. An *operand* is an entity on which an operator acts.
 
 **Forward references**: expressions ([3.3](#33-expressions)), macro replacement ([3.8.3](#383-macro-replacement)).
 
@@ -2258,7 +2258,7 @@ Except within a character constant, a string literal, or a comment, the characte
 
 ### 3.2 CONVERSIONS
 
-Several operators convert operand values from one type to another automatically. This section specifies the result required from such an implicit conversion, as well as those that result from a cast operation (an explicit conversion). The list in [3.2.1.5](#3215-usual-arithmetic-conversions) summarizes the conversions performed by most ordinary operators; it is supplemented as required by the discussion of each operator in [3.3](#33-expressions)
+Several operators convert operand values from one type to another automatically. This section specifies the result required from such an *implicit conversion*, as well as those that result from a cast operation (an *explicit conversion*). The list in [3.2.1.5](#3215-usual-arithmetic-conversions) summarizes the conversions performed by most ordinary operators; it is supplemented as required by the discussion of each operator in [3.3](#33-expressions)
 
 Conversion of an operand value to a compatible type causes no change.
 
@@ -2268,7 +2268,7 @@ Conversion of an operand value to a compatible type causes no change.
 
 ##### 3.2.1.1 Characters and integers
 
-A `char`, a `short int`, or an `int` bit-field, or their `signed` or `unsigned` varieties, or an object that has enumeration type, may be used in an expression wherever an `int` or `unsigned int` may be used. If an `int` can represent all values of the original type, the value is converted to an `int`; otherwise it is converted to an `unsigned int`. These are called the integral promotions.
+A `char`, a `short int`, or an `int` bit-field, or their `signed` or `unsigned` varieties, or an object that has enumeration type, may be used in an expression wherever an `int` or `unsigned int` may be used. If an `int` can represent all values of the original type, the value is converted to an `int`; otherwise it is converted to an `unsigned int`. These are called the *integral promotions*.
 
 The integral promotions preserve value including sign. As discussed earlier, whether a "plain" `char` is treated as `signed` is implementation-defined.
 
@@ -2296,7 +2296,7 @@ When a `double` is demoted to `float` or a `long double` to `double` or `float`,
 
 ##### 3.2.1.5 Usual arithmetic conversions
 
-Many binary operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to yield a common type, which is also the type of the result. This pattern is called the usual arithmetic conversions: First, if either operand has type `long double`, the other operand is converted to `long double`. Otherwise, if either operand has type `double`, the other operand is converted to `double`. Otherwise, if either operand has type `float`, the other operand is converted to `float`. Otherwise, the integral promotions are performed on both operands. Then the following rules are applied: If either operand has type `unsigned long int`, the other operand is converted to `unsigned long int`. Otherwise, if one operand has type `long int` and the other has type `unsigned int`, if a `long int` can represent all values of an `unsigned int`, the operand of type `unsigned int` is converted to `long int`; if a `long int` cannot represent all the values of an `unsigned int`, both operands are converted to `unsigned long int`. Otherwise, if either operand has type `long int`, the other operand is converted to `long int`. Otherwise, if either operand has type `unsigned int`, the other operand is converted to `unsigned int`. Otherwise, both operands have type `int`.
+Many binary operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to yield a common type, which is also the type of the result. This pattern is called the *usual arithmetic conversions*: First, if either operand has type `long double`, the other operand is converted to `long double`. Otherwise, if either operand has type `double`, the other operand is converted to `double`. Otherwise, if either operand has type `float`, the other operand is converted to `float`. Otherwise, the integral promotions are performed on both operands. Then the following rules are applied: If either operand has type `unsigned long int`, the other operand is converted to `unsigned long int`. Otherwise, if one operand has type `long int` and the other has type `unsigned int`, if a `long int` can represent all values of an `unsigned int`, the operand of type `unsigned int` is converted to `long int`; if a `long int` cannot represent all the values of an `unsigned int`, both operands are converted to `unsigned long int`. Otherwise, if either operand has type `long int`, the other operand is converted to `long int`. Otherwise, if either operand has type `unsigned int`, the other operand is converted to `unsigned int`. Otherwise, both operands have type `int`.
 
 The values of operands and of the results of expressions may be represented in greater precision and range than that required by the type; the types are not changed thereby.
 
@@ -2304,19 +2304,19 @@ The values of operands and of the results of expressions may be represented in g
 
 ##### 3.2.2.1 Lvalues and function designators
 
-An lvalue is an expression (with an object type or an incomplete type other than `void`) that designates an object.[^24] When an object is said to have a particular type, the type is specified by the lvalue used to designate the object. A modifiable lvalue is an lvalue that does not have array type, does not have an incomplete type, does not have a `const`-qualified type, and if it is a structure or union, does not have any member (including, recursively, any member of all contained structures or unions) with a `const`-qualified type.
+An *lvalue* is an expression (with an object type or an incomplete type other than `void`) that designates an object.[^24] When an object is said to have a particular type, the type is specified by the lvalue used to designate the object. A *modifiable lvalue* is an lvalue that does not have array type, does not have an incomplete type, does not have a `const`-qualified type, and if it is a structure or union, does not have any member (including, recursively, any member of all contained structures or unions) with a `const`-qualified type.
 
 Except when it is the operand of the `sizeof` operator, the unary `&` operator, the `++` operator, the `--` operator, or the left operand of the `.` operator or an assignment operator, an lvalue that does not have array type is converted to the value stored in the designated object (and is no longer an lvalue). If the lvalue has qualified type, the value has the unqualified version of the type of the lvalue; otherwise the value has the type of the lvalue. If the lvalue has an incomplete type and does not have array type, the behavior is undefined.
 
 Except when it is the operand of the `sizeof` operator or the unary `&` operator, or is a character string literal used to initialize an array of character type, or is a wide string literal used to initialize an array with element type compatible with `wchar_t`, an lvalue that has type "array of type" is converted to an expression that has type "pointer to type" that points to the initial member of the array object and is not an lvalue.
 
-A function designator is an expression that has function type. Except when it is the operand of the `sizeof` operator[^25] or the unary `&` operator, a function designator with type "function returning type" is converted to an expression that has type "pointer to function returning type."
+A *function designator* is an expression that has function type. Except when it is the operand of the `sizeof` operator[^25] or the unary `&` operator, a function designator with type "function returning type" is converted to an expression that has type "pointer to function returning type."
 
 **Forward references**: address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), assignment operators ([3.3.16](#3316-assignment-operators)), common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)), initialization ([3.5.7](#357-initialization)), postfix increment and decrement operators ([3.3.2.4](#3324-postfix-increment-and-decrement-operators)), prefix increment and decrement operators ([3.3.3.1](#3331-prefix-increment-and-decrement-operators)), the sizeof operator ([3.3.3.4](#3334-the-sizeof-operator)), structure and union members ([3.3.2.3](#3323-structure-and-union-members)).
 
 ##### 3.2.2.2 void
 
-The (nonexistent) value of a `void` expression (an expression that has type `void`) shall not be used in any way, and implicit or explicit conversions (except to `void`) shall not be applied to such an expression. If an expression of any other type occurs in a context where a `void` expression is required, its value or designator is discarded. (A `void` expression is evaluated for its side effects.)
+The (nonexistent) value of a *void expression* (an expression that has type `void`) shall not be used in any way, and implicit or explicit conversions (except to `void`) shall not be applied to such an expression. If an expression of any other type occurs in a context where a void expression is required, its value or designator is discarded. (A void expression is evaluated for its side effects.)
 
 ##### 3.2.2.3 Pointers
 
@@ -2324,7 +2324,7 @@ A pointer to `void` may be converted to or from a pointer to any incomplete or o
 
 A pointer to a non-q-qualified type may be converted to a pointer to the q-qualified version of the type; the values stored in the original and converted pointers shall compare equal.
 
-An integral constant expression with the value `0`, or such an expression cast to type `void *`, is called a null pointer constant. If a null pointer constant is assigned to or compared for equality to a pointer, the constant is converted to a pointer of that type. Such a pointer, called a null pointer, is guaranteed to compare unequal to a pointer to any object or function.
+An integral constant expression with the value `0`, or such an expression cast to type `void *`, is called a *null pointer constant*. If a null pointer constant is assigned to or compared for equality to a pointer, the constant is converted to a pointer of that type. Such a pointer, called a *null pointer*, is guaranteed to compare unequal to a pointer to any object or function.
 
 Two null pointers, converted through possibly different sequences of casts to pointer types, shall compare equal.
 
