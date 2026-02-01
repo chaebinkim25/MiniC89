@@ -1638,11 +1638,11 @@ Any identifiers that differ in a significant character are different identifiers
 
 ##### 3.1.2.1 Scopes of identifiers
 
-An identifier is visible (i.e., can be used) only within a region of program text called its scope. There are four kinds of scopes: function, file, block, and function prototype. (A function prototype is a declaration of a function that declares the types of its parameters.)
+An identifier is visible (i.e., can be used) only within a region of program text called its *scope*. There are four kinds of scopes: function, file, block, and function prototype. (A *function prototype* is a declaration of a function that declares the types of its parameters.)
 
-A label name is the only kind of identifier that has function scope. It can be used (in a `goto` statement) anywhere in the function in which it appears, and is declared implicitly by its syntactic appearance (followed by a `:` and a statement). Label names shall be unique within a function.
+A label name is the only kind of identifier that has *function scope*. It can be used (in a `goto` statement) anywhere in the function in which it appears, and is declared implicitly by its syntactic appearance (followed by a `:` and a statement). Label names shall be unique within a function.
 
-Every other identifier has scope determined by the placement of its declaration (in a declarator or type specifier). If the declarator or type specifier that declares the identifier appears outside of any block or list of parameters, the identifier has file scope, which terminates at the end of the translation unit. If the declarator or type specifier that declares the identifier appears inside a block or within the list of parameter declarations in a function definition, the identifier has block scope, which terminates at the `}` that closes the associated block. If the declarator or type specifier that declares the identifier appears within the list of parameter declarations in a function prototype (not part of a function definition), the identifier has function prototype scope, which terminates at the end of the function declarator. If an outer declaration of a lexically identical identifier exists in the same name space, it is hidden until the current scope terminates, after which it again becomes visible.
+Every other identifier has scope determined by the placement of its declaration (in a declarator or type specifier). If the declarator or type specifier that declares the identifier appears outside of any block or list of parameters, the identifier has *file scope*, which terminates at the end of the translation unit. If the declarator or type specifier that declares the identifier appears inside a block or within the list of parameter declarations in a function definition, the identifier has *block scope*, which terminates at the `}` that closes the associated block. If the declarator or type specifier that declares the identifier appears within the list of parameter declarations in a function prototype (not part of a function definition), the identifier has *function prototype scope*, which terminates at the end of the function declarator. If an outer declaration of a lexically identical identifier exists in the same name space, it is hidden until the current scope terminates, after which it again becomes visible.
 
 Structure, union, and enumeration tags have scope that begins just after the appearance of the tag in a type specifier that declares the tag. Each enumeration constant has scope that begins just after the appearance of its defining enumerator in an enumerator list. Any other identifier has scope that begins just after the completion of its declarator.
 
@@ -1650,9 +1650,9 @@ Structure, union, and enumeration tags have scope that begins just after the app
 
 ##### 3.1.2.2 Linkages of identifiers
 
-An identifier declared in different scopes or in the same scope more than once can be made to refer to the same object or function by a process called linkage. There are three kinds of linkage: external, internal, and none.
+An identifier declared in different scopes or in the same scope more than once can be made to refer to the same object or function by a process called *linkage*. There are three kinds of linkage: external, internal, and none.
 
-In the set of translation units and libraries that constitutes an entire program, each instance of a particular identifier with external linkage denotes the same object or function. Within one translation unit, each instance of an identifier with internal linkage denotes the same object or function. Identifiers with no linkage denote unique entities.
+In the set of translation units and libraries that constitutes an entire program, each instance of a particular identifier with *external linkage* denotes the same object or function. Within one translation unit, each instance of an identifier with *internal linkage* denotes the same object or function. Identifiers with *no linkage* denote unique entities.
 
 If the declaration of an identifier for an object or a function has file scope and contains the storage-class specifier `static`, the identifier has internal linkage.
 
@@ -1668,7 +1668,7 @@ If, within a translation unit, the same identifier appears with both internal an
 
 ##### 3.1.2.3 Name spaces of identifiers
 
-If more than one declaration of a particular identifier is visible at any point in a translation unit, the syntactic context disambiguates uses that refer to different entities. Thus, there are separate name spaces for various categories of identifiers, as follows:
+If more than one declaration of a particular identifier is visible at any point in a translation unit, the syntactic context disambiguates uses that refer to different entities. Thus, there are separate *name spaces* for various categories of identifiers, as follows:
 
 * label names (disambiguated by the syntax of the label declaration and use);
 
@@ -1676,25 +1676,25 @@ If more than one declaration of a particular identifier is visible at any point 
 
 * the members of structures or unions; each structure or union has a separate name space for its members (disambiguated by the type of the expression used to access the member via the `.` or `->` operator);
 
-* all other identifiers, called ordinary identifiers (declared in ordinary declarators or as enumeration constants).
+* all other identifiers, called *ordinary identifiers* (declared in ordinary declarators or as enumeration constants).
 
 **Forward references**: declarators ([3.5.4](#354-declarators)), enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)), labeled statements ([3.6.1](#361-labeled-statements)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)), structure and union members ([3.3.2.3](#3323-structure-and-union-members)), tags ([3.5.2.3](#3523-tags)).
 
 ##### 3.1.2.4 Storage durations of objects
 
-An object has a storage duration that determines its lifetime. There are two storage durations: static and automatic.
+An object has a *storage duration* that determines its lifetime. There are two storage durations: static and automatic.
 
-An object declared with external or internal linkage, or with the storage-class specifier `static` has static storage duration. For such an object, storage is reserved and its stored value is initialized only once, prior to program startup. The object exists and retains its last-stored value throughout the execution of the entire program.[^12]
+An object declared with external or internal linkage, or with the storage-class specifier `static` has *static storage duration*. For such an object, storage is reserved and its stored value is initialized only once, prior to program startup. The object exists and retains its last-stored value throughout the execution of the entire program.[^12]
 
-An object declared with no linkage and without the storage-class specifier `static` has automatic storage duration. Storage is guaranteed to be reserved for a new instance of such an object on each normal entry into the block in which it is declared, or on a jump from outside the block to a label in the block or in an enclosed block. If an initialization is specified for the value stored in the object, it is performed on each normal entry, but not if the block is entered by a jump to a label. Storage for the object is no longer guaranteed to be reserved when execution of the block ends in any way. (Entering an enclosed block suspends but does not end execution of the enclosing block. Calling a function that returns suspends but does not end execution of the block containing the call.) The value of a pointer that referred to an object with automatic storage duration that is no longer guaranteed to be reserved is indeterminate.
+An object declared with no linkage and without the storage-class specifier `static` has *automatic storage duration*. Storage is guaranteed to be reserved for a new instance of such an object on each normal entry into the block in which it is declared, or on a jump from outside the block to a label in the block or in an enclosed block. If an initialization is specified for the value stored in the object, it is performed on each normal entry, but not if the block is entered by a jump to a label. Storage for the object is no longer guaranteed to be reserved when execution of the block ends in any way. (Entering an enclosed block suspends but does not end execution of the enclosing block. Calling a function that returns suspends but does not end execution of the block containing the call.) The value of a pointer that referred to an object with automatic storage duration that is no longer guaranteed to be reserved is indeterminate.
 
 **Forward references**: compound statement, or block ([3.6.2](#362-compound-statement-or-block)), function calls ([3.3.2.2](#3322-function-calls)), initialization ([3.5.7](#357-initialization)).
 
 ##### 3.1.2.5 Types
 
-The meaning of a value stored in an object or returned by a function is determined by the type of the expression used to access it. (An identifier declared to be an object is the simplest such expression; the type is specified in the declaration of the identifier.) Types are partitioned into object types (types that describe objects), function types (types that describe functions), and incomplete types (types that describe objects but lack information needed to determine their sizes).
+The meaning of a value stored in an object or returned by a function is determined by the *type* of the expression used to access it. (An identifier declared to be an object is the simplest such expression; the type is specified in the declaration of the identifier.) Types are partitioned into *object types* (types that describe objects), *function types* (types that describe functions), and *incomplete types* (types that describe objects but lack information needed to determine their sizes).
 
-An object declared as type char is large enough to store any member of the basic execution character set. If a member of the required source character set enumerated in [2.2.1](#221-character-sets) is stored in a char object, its value is guaranteed to be positive. If other quantities are stored in a char object, the behavior is implementation-defined: the values are treated as either signed or nonnegative integers.
+An object declared as type `char` is large enough to store any member of the basic execution character set. If a member of the required source character set enumerated in [2.2.1](#221-character-sets) is stored in a `char` object, its value is guaranteed to be positive. If other quantities are stored in a `char` object, the behavior is implementation-defined: the values are treated as either signed or nonnegative integers.
 
 There are four signed integer types, designated as `signed char`, `short int`, `int`, and `long int`. (The signed integer and other types may be designated in several additional ways, as described in [3.5.2](#352-type-specifiers))
 
@@ -1704,41 +1704,41 @@ For each of the signed integer types, there is a corresponding (but different) u
 
 There are three floating types, designated as `float`, `double`, and `long double`. The set of values of the type `float` is a subset of the set of values of the type `double`; the set of values of the type `double` is a subset of the set of values of the type `long double`.
 
-The type `char`, the signed and unsigned integer types, and the floating types are collectively called the basic types. Even if the implementation defines two or more basic types to have the same representation, they are nevertheless different types.
+The type `char`, the signed and unsigned integer types, and the floating types are collectively called the *basic types*. Even if the implementation defines two or more basic types to have the same representation, they are nevertheless different types.
 
 There are three character types, designated as `char`, `signed char`, and `unsigned char`.
 
-An enumeration comprises a set of named integer constant values. Each distinct enumeration constitutes a different enumerated type.
+An enumeration comprises a set of named integer constant values. Each distinct enumeration constitutes a different *enumerated type*.
 
 The `void` type comprises an empty set of values; it is an incomplete type that cannot be completed.
 
-Any number of derived types can be constructed from the basic, enumerated, and incomplete types, as follows:
+Any number of *derived types* can be constructed from the basic, enumerated, and incomplete types, as follows:
 
-* An array type describes a contiguously allocated set of objects with a particular member object type, called the element type. Array types are characterized by their element type and by the number of members of the array. An array type is said to be derived from its element type, and if its element type is `T`, the array type is sometimes called "array of `T`." The construction of an array type from an element type is called "array type derivation."
+* An *array type* describes a contiguously allocated set of objects with a particular member object type, called the *element type*. Array types are characterized by their element type and by the number of members of the array. An array type is said to be derived from its element type, and if its element type is T, the array type is sometimes called "array of T." The construction of an array type from an element type is called "array type derivation."
 
-* A structure type describes a sequentially allocated set of member objects, each of which has an optionally specified name and possibly distinct type.
+* A *structure type* describes a sequentially allocated set of member objects, each of which has an optionally specified name and possibly distinct type.
 
-* A union type describes an overlapping set of member objects, each of which has an optionally specified name and possibly distinct type.
+* A *union type* describes an overlapping set of member objects, each of which has an optionally specified name and possibly distinct type.
 
-* A function type describes a function with specified return type. A function type is characterized by its return type and the number and types of its parameters. A function type is said to be derived from its return type, and if its return type is `T`, the function type is sometimes called "function returning `T`." The construction of a function type from a return type is called "function type derivation."
+* A *function type* describes a function with specified return type. A function type is characterized by its return type and the number and types of its parameters. A function type is said to be derived from its return type, and if its return type is T, the function type is sometimes called "function returning T." The construction of a function type from a return type is called "function type derivation."
 
-* A pointer type may be derived from a function type, an object type, or an incomplete type, called the referenced type. A pointer type describes an object whose value provides a reference to an entity of the referenced type. A pointer type derived from the referenced type `T` is sometimes called "pointer to `T`." The construction of a pointer type from a referenced type is called "pointer type derivation."
+* A *pointer type* may be derived from a function type, an object type, or an incomplete type, called the *referenced type*. A pointer type describes an object whose value provides a reference to an entity of the referenced type. A pointer type derived from the referenced type T is sometimes called "pointer to T." The construction of a pointer type from a referenced type is called "pointer type derivation."
 
 These methods of constructing derived types can be applied recursively.
 
-The type `char`, the signed and unsigned integer types, and the enumerated types are collectively called integral types. The representations of integral types shall define values by use of a pure binary numeration system. ([^13] American National Dictionary for Information Processing Systems.) The representations of floating types are unspecified.
+The type `char`, the signed and unsigned integer types, and the enumerated types are collectively called *integral types*. The representations of integral types shall define values by use of a *pure binary numeration system*. ([^13] American National Dictionary for Information Processing Systems.) The representations of floating types are unspecified.
 
-Integral and floating types are collectively called arithmetic types. Arithmetic types and pointer types are collectively called scalar types. Array and structure types are collectively called aggregate types.[^14]
+Integral and floating types are collectively called *arithmetic types*. Arithmetic types and pointer types are collectively called *scalar types*. Array and structure types are collectively called *aggregate types*.[^14]
 
 A pointer to `void` shall have the same representation and alignment requirements as a pointer to a character type. Other pointer types need not have the same representation or alignment requirements.
 
 An array type of unknown size is an incomplete type. It is completed, for an identifier of that type, by specifying the size in a later declaration (with internal or external linkage). A structure or union type of unknown content (as described in [3.5.2.3](#3523-tags)) is an incomplete type. It is completed, for all declarations of that type, by declaring the same structure or union tag with its defining content later in the same scope.
 
-Array, function, and pointer types are collectively called derived declarator types. A declarator type derivation from a type `T` is the construction of a derived declarator type from `T` by the application of an array, a function, or a pointer type derivation to `T`.
+Array, function, and pointer types are collectively called *derived declarator types*. A declarator type derivation from a type T is the construction of a derived declarator type from T by the application of an array, a function, or a pointer type derivation to T.
 
-A type is characterized by its top type, which is either the first type named in describing a derived type (as noted above in the construction of derived types), or the type itself if the type consists of no derived types.
+A type is characterized by its *top type*, which is either the first type named in describing a derived type (as noted above in the construction of derived types), or the type itself if the type consists of no derived types.
 
-A type has qualified type if its top type is specified with a type qualifier; otherwise it has unqualified type. The type qualifiers `const` and `volatile` respectively designate const-qualified type and volatile-qualified type.[^15] For each qualified type there is an unqualified type that is specified the same way as the qualified type, but without any type qualifiers in its top type. This type is known as the unqualified version of the qualified type. Similarly, there are appropriately qualified versions of types (such as a const-qualified version of a type), just as there are appropriately non-qualified versions of types (such as a non-const-qualified version of a type).
+A type has *qualified type* if its top type is specified with a type qualifier; otherwise it has *unqualified type*. The type qualifiers `const` and `volatile` respectively designate *const-qualified type* and *volatile-qualified type*.[^15] For each qualified type there is an unqualified type that is specified the same way as the qualified type, but without any type qualifiers in its top type. This type is known as the *unqualified version of the qualified type*. Similarly, there are appropriately *qualified versions of types* (such as a const-qualified version of a type), just as there are appropriately *non-qualified versions of types* (such as a non-const-qualified version of a type).
 
 ###### Examples
 
