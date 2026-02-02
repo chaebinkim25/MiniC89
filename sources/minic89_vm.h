@@ -32,6 +32,8 @@
 #endif
 
 #define MC89_U16_MAX_U32        ((u32)0xFFFFu)
+#define MC89_I16_MIN            (-32768)
+#define MC89_I16_MAX            (32767)
 
 /* Value */
 
