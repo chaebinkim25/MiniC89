@@ -166,7 +166,7 @@ typedef struct {
     JsonWriter *jw;
 } VM;
 
-/* Helpers for VM runtime (스택/프레임) */
+/* Helpers for VM runtime - stack */
 
 int  valuestack_init(ValueStack *s, u16 cap);
 void valuestack_free(ValueStack *s);
@@ -178,8 +178,24 @@ void framestack_free(FrameStack *s);
 int  framestack_push(FrameStack *s, Frame *fr);
 int  framestack_pop(FrameStack *s, Frame **out);
 
+/* Helpers for VM runtime - frame */
+
 Frame *frame_new(u16 fid, u16 local_count, const PC *ret_pc_or_null);
 void   frame_free(Frame *fr);
+
+/* Helpers for VM runtime - trap and halt */
+
+void vm_trap(VM *vm, TrapCode code, int info1, int info2);
+void vm_halt(VM *vm, Value result);
+
+/* Helpers for VM runtime - 16-bit int */
+
+int      mc89_i16_checked_add(i16 a, i16 b, i16 *out);
+int      mc89_i16_checked_sub(i16 a, i16 b, i16 *out);
+int      mc89_i16_checked_mul(i16 a, i16 b, i16 *out);
+int      mc89_i16_checked_neg(i16 a, i16 *out);
+TrapCode mc89_i16_checked_div(i16 a, i16 b, i16 *out);
+TrapCode mc89_i16_checked_mod(i16 a, i16 b, i16 *out);
 
 /* Snapshot API */
 
