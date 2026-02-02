@@ -6,6 +6,9 @@
 #include <stddef.h>
 #include <limits.h>
 
+/* size_t */
+#define MC89_SIZE_T_MAX         ((size_t)-1)
+
 /* i16, u16, i32, u32 */
 
 #if USHRT_MAX == 0xFFFF
@@ -27,6 +30,8 @@
 #else
     #error "Cannot find 32-bit integer type on this platform."
 #endif
+
+#define MC89_U16_MAX_U32        ((u32)0xFFFFu)
 
 /* Value */
 
@@ -79,7 +84,17 @@ typedef struct Frame {
     Value locals[1];   /* local_count==0 허용, malloc >= sizeof(Frame) */
 } Frame;
 
+/* Return codes */
+
+#define MC89_RET_OK             0
+#define MC89_RET_ERR_BADARG     -1
+#define MC89_RET_ERR_OOM        -2
+#define MC89_RET_ERR_LIMIT      -3
+#define MC89_RET_ERR_EMPTY      -4
+
 /* Operand Stack, Call Stack */
+
+#define MC89_STACK_DEFAULT_CAP  ((u32)16u)
 
 typedef struct {
     Value *data;
