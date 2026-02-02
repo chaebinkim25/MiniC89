@@ -137,9 +137,9 @@ typedef enum {
 
 typedef struct {
     TrapCode code;
-    u16 a;
-    u16 b;
-    i32 x;                 
+    i16 info1;
+    i16 info2;
+    u32 info3;
 } TrapInfo;
 
 typedef struct {
@@ -187,7 +187,7 @@ void   frame_free(Frame *fr);
 
 /* Helpers for VM runtime - trap and halt */
 
-void vm_trap(VM *vm, TrapCode code, int info1, int info2);
+void vm_trap(VM *vm, TrapCode code, i16 info1, i16 info2, u32 info3);
 void vm_halt(VM *vm, Value result);
 
 /* Helpers for VM runtime - 16-bit int */
