@@ -192,10 +192,10 @@ void vm_halt(VM *vm, Value result);
 
 /* Helpers for VM runtime - 16-bit int */
 
-int      mc89_i16_checked_add(i16 a, i16 b, i16 *out);
-int      mc89_i16_checked_sub(i16 a, i16 b, i16 *out);
-int      mc89_i16_checked_mul(i16 a, i16 b, i16 *out);
-int      mc89_i16_checked_neg(i16 a, i16 *out);
+TrapCode mc89_i16_checked_add(i16 a, i16 b, i16 *out);
+TrapCode mc89_i16_checked_sub(i16 a, i16 b, i16 *out);
+TrapCode mc89_i16_checked_mul(i16 a, i16 b, i16 *out);
+TrapCode mc89_i16_checked_neg(i16 a, i16 *out);
 TrapCode mc89_i16_checked_div(i16 a, i16 b, i16 *out);
 TrapCode mc89_i16_checked_mod(i16 a, i16 b, i16 *out);
 
