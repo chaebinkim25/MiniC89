@@ -4,18 +4,16 @@
 
 /* i16 range check */
 
-static int mc89_is_i16_in_range(i32 x) 
-{
-    if (x < (i32)MC89_I16_MIN) return 0;
-    if (x > (i32)MC89_I16_MAX) return 0;
-    return 1;
-}
-
 static int mc89_is_i16_overflow(i32 x) 
 {
     if (x > (i32)MC89_I16_MAX) return 1;
     if (x < (i32)MC89_I16_MIN) return 1;
     return 0;
+}
+
+static int mc89_is_i16_in_range(i32 x) 
+{
+    return !mc89_is_i16_overflow(x);
 }
 
 /* TRAP helper */
