@@ -168,6 +168,10 @@ typedef struct {
     JsonWriter *jw;
 } VM;
 
+struct Module; /* forward decl */
+int vm_start(VM *vm, const struct Module *m, u16 entry_fid);
+int vm_step(VM *vm, const struct Module *m);
+
 /* Helpers for VM runtime - stack */
 
 int  valuestack_init(ValueStack *s, u16 cap);
