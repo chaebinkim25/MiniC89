@@ -2527,9 +2527,9 @@ The operand of the postfix increment or decrement operator shall have qualified 
 
 ###### Semantics
 
-The result of the postfix `++` operator is the value of the operand. After the result is obtained, the value of the operand is incremented. (That is, the value 1 of the appropriate type is added to it.) See the discussions of additive operators and compound assignment for information on constraints, types and conversions and the effects of operations on pointers. The side effect of updating the stored value of the operand shall occur between the previous and the next sequence point.
+The result of the postfix `++` operator is the value of the operand. After the result is obtained, the value of the operand is incremented. (That is, the value `1` of the appropriate type is added to it.) See the discussions of additive operators and compound assignment for information on constraints, types and conversions and the effects of operations on pointers. The side effect of updating the stored value of the operand shall occur between the previous and the next sequence point.
 
-The postfix `--` operator is analogous to the postfix `++` operator, except that the value of the operand is decremented (that is, the value 1 of the appropriate type is subtracted from it).
+The postfix `--` operator is analogous to the postfix `++` operator, except that the value of the operand is decremented (that is, the value `1` of the appropriate type is subtracted from it).
 
 **Forward references:** additive operators ([3.3.6](#336-additive-operators)), compound assignment ([3.3.16.2](#33162-compound-assignment)).
 
