@@ -1410,7 +1410,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_MAX_EXP` |   |
 | `LDBL_MAX_EXP` |   |
 
-* maximum integer such that 10 raised to that power is in the range of representable finite floating-point numbers,
+* maximum integer such that $10$ raised to that power is in the range of representable finite floating-point numbers,
 
 |   |   |
 | :--- | :----- |
@@ -1854,7 +1854,7 @@ A floating constant has a value part that may be followed by an exponent part an
 
 ###### Semantics
 
-The value part is interpreted as a decimal rational number; the digit sequence in the exponent part is interpreted as a decimal integer. The exponent indicates the power of 10 by which the value part is to be scaled. If the scaled value is in the range of representable values (for its type) but cannot be represented exactly, the result is either the nearest higher or nearest lower value, chosen in an implementation-defined manner.
+The value part is interpreted as a decimal rational number; the digit sequence in the exponent part is interpreted as a decimal integer. The exponent indicates the power of $10$ by which the value part is to be scaled. If the scaled value is in the range of representable values (for its type) but cannot be represented exactly, the result is either the nearest higher or nearest lower value, chosen in an implementation-defined manner.
 
 An unsuffixed floating constant has type `double`. If suffixed by the letter `f` or `F`, it has type `float`. If suffixed by the letter `l` or `L`, it has type `long double`.
 
@@ -1934,11 +1934,11 @@ An unsuffixed floating constant has type `double`. If suffixed by the letter `f`
 
 An integer constant begins with a digit, but has no period or exponent part. It may have a prefix that specifies its base and a suffix that specifies its type.
 
-A decimal constant begins with a nonzero digit and consists of a sequence of decimal digits. An octal constant consists of the prefix `0` optionally followed by a sequence of the digits `0` through `7` only. A hexadecimal constant consists of the prefix `0x` or `0X` followed by a sequence of the decimal digits and the letters `a` (or `A`) through `f` (or `F`) with values 10 through 15 respectively.
+A decimal constant begins with a nonzero digit and consists of a sequence of decimal digits. An octal constant consists of the prefix `0` optionally followed by a sequence of the digits `0` through `7` only. A hexadecimal constant consists of the prefix `0x` or `0X` followed by a sequence of the decimal digits and the letters `a` (or `A`) through `f` (or `F`) with values $10$ through $15$ respectively.
 
 ###### Semantics
 
-The value of a decimal constant is computed base 10; that of an octal constant, base 8; that of a hexadecimal constant, base 16. The lexically first digit is the most significant.
+The value of a decimal constant is computed base $10$; that of an octal constant, base $8$; that of a hexadecimal constant, base $16$. The lexically first digit is the most significant.
 
 The type of an integer constant is the first of the corresponding list in which its value can be represented. Unsuffixed decimal: `int`, `long int`, `unsigned long int`; unsuffixed octal or hexadecimal: `int`, `unsigned int`, `long int`, `unsigned long int`; suffixed by the letter `u` or `U`: `unsigned int`, `unsigned long int`; suffixed by the letter `l` or `L`: `long int`, `unsigned long int`; suffixed by both the letters `u` or `U` and `l` or `L`: `unsigned long int`.
 
@@ -1953,7 +1953,7 @@ The type of an integer constant is the first of the corresponding list in which 
 > 
 ###### Semantics
 
-An identifier declared as an enumeration constant has type int.
+An identifier declared as an enumeration constant has type `int`.
 
 **Forward references**: enumeration specifiers ([3.5.2.2](#3522-enumeration-specifiers)).
 
