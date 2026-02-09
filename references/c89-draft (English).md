@@ -1624,7 +1624,7 @@ In translation phases 7 and 8, an identifier shall not consist of the same seque
 
 ###### Semantics
 
-An identifier denotes an object, a function, or one of the following entities that will be described later: a tag or a member of a structure, union, or enumeration; a typedef name; a label name; a macro name; or a macro parameter. A member of an enumeration is called an *enumeration constant*. Macro names and macro parameters are not considered further here, because prior to the semantic phase of program translation any occurrences of macro names in the source file are replaced by the preprocessing token sequences that constitute their macro definitions.
+An *identifier* denotes an object, a function, or one of the following entities that will be described later: a tag or a member of a structure, union, or enumeration; a typedef name; a label name; a macro name; or a macro parameter. A member of an enumeration is called an *enumeration constant*. Macro names and macro parameters are not considered further here, because prior to the semantic phase of program translation any occurrences of macro names in the source file are replaced by the preprocessing token sequences that constitute their macro definitions.
 
 There is no specific limit on the maximum length of an identifier.
 
@@ -2131,7 +2131,7 @@ The operators `[ ]`, `( )`, and `? :` shall occur in pairs, possibly separated b
 
 ###### Semantics
 
-An operator specifies an operation to be performed \(an *evaluation*\) that yields a value, or yields a designator, or produces a side effect, or a combination thereof. An *operand* is an entity on which an operator acts.
+An *operator* specifies an operation to be performed \(an *evaluation*\) that yields a value, or yields a designator, or produces a side effect, or a combination thereof. An *operand* is an entity on which an operator acts.
 
 **Forward references**: expressions ([3.3](#33-expressions)), macro replacement ([3.8.3](#383-macro-replacement)).
 
@@ -2308,9 +2308,9 @@ An *lvalue* is an expression (with an object type or an incomplete type other th
 
 Except when it is the operand of the `sizeof` operator, the unary `&` operator, the `++` operator, the `--` operator, or the left operand of the `.` operator or an assignment operator, an lvalue that does not have array type is converted to the value stored in the designated object (and is no longer an lvalue). If the lvalue has qualified type, the value has the unqualified version of the type of the lvalue; otherwise the value has the type of the lvalue. If the lvalue has an incomplete type and does not have array type, the behavior is undefined.
 
-Except when it is the operand of the `sizeof` operator or the unary `&` operator, or is a character string literal used to initialize an array of character type, or is a wide string literal used to initialize an array with element type compatible with `wchar_t`, an lvalue that has type "array of type" is converted to an expression that has type "pointer to type" that points to the initial member of the array object and is not an lvalue.
+Except when it is the operand of the `sizeof` operator or the unary `&` operator, or is a character string literal used to initialize an array of character type, or is a wide string literal used to initialize an array with element type compatible with `wchar_t`, an lvalue that has type "array of $type$" is converted to an expression that has type "pointer to $type$" that points to the initial member of the array object and is not an lvalue.
 
-A *function designator* is an expression that has function type. Except when it is the operand of the `sizeof` operator[^25] or the unary `&` operator, a function designator with type "function returning type" is converted to an expression that has type "pointer to function returning type."
+A *function designator* is an expression that has function type. Except when it is the operand of the `sizeof` operator[^25] or the unary `&` operator, a function designator with type "function returning $type$" is converted to an expression that has type "pointer to function returning $type.$"
 
 **Forward references**: address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), assignment operators ([3.3.16](#3316-assignment-operators)), common definitions <stddef.h> ([4.1.5](#415-common-definitions-stddefh)), initialization ([3.5.7](#357-initialization)), postfix increment and decrement operators ([3.3.2.4](#3324-postfix-increment-and-decrement-operators)), prefix increment and decrement operators ([3.3.3.1](#3331-prefix-increment-and-decrement-operators)), the sizeof operator ([3.3.3.4](#3334-the-sizeof-operator)), structure and union members ([3.3.2.3](#3323-structure-and-union-members)).
 
@@ -2332,17 +2332,206 @@ Two null pointers, converted through possibly different sequences of casts to po
 
 ### 3.3 EXPRESSIONS
 
+An *expression* is a sequence of operators and operands that specifies computation of a value, or that designates an object or a function, or that generates side effects, or that performs a combination thereof.
+
+Between the previous and next sequence point an object shall have its stored value modified at most once by the evaluation of an expression. Furthermore, the prior value shall be accessed only to determine the value to be stored.[^26]
+
+Except as indicated by the syntax[^27] or otherwise specified later (for the function-call operator `()`, `&&`, `||`, `?:`, and comma operators), the order of evaluation of subexpressions and the order in which side effects take place are both unspecified.
+
+Some operators (the unary operator `~`, and the binary operators `<<`, `>>`, `&`, `^`, and `|`, collectively described as bitwise operators) shall have operands that have integral type. These operators return values that depend on the internal representations of integers, and thus have implementation-defined aspects for signed types.
+
+If an exception occurs during the evaluation of an expression (that is, if the result is not mathematically defined or not representable), the behavior is undefined.
+
+An object shall have its stored value accessed only by an lvalue that has one of the following types:[^28]
+
+* the declared type of the object,
+
+* a qualified version of the declared type of the object,
+
+* a type that is the signed or unsigned type corresponding to the declared type of the object,
+
+* a type that is the signed or unsigned type corresponding to a qualified version of the declared type of the object,
+
+* an aggregate or union type that includes one of the aforementioned types among its members (including, recursively, a member of a subaggregate or contained union), or
+
+* a character type.
+
 #### 3.3.1 Primary expressions
+
+###### Syntax
+
+<a name="primary-expression"></a>
+*primary-expression:*
+
+*[identifier](identifier)*
+
+*[constant](constant)*
+
+*[string-literal](string-literal)*
+
+**(** *[expression](expression)* **)**
+
+###### Semantics
+
+An identifier is a primary expression, provided it has been declared as designating an object (in which case it is an lvalue) or a function (in which case it is a function designator).
+
+A constant is a primary expression. Its type depends on its form, as detailed in [3.1.3](#313-constants)
+
+A string literal is a primary expression. It is an lvalue with type as detailed in [3.1.4](#314-string-literals)
+
+A parenthesized expression is a primary expression. Its type and value are identical to those of the unparenthesized expression. It is an lvalue, a function designator, or a void expression if the unparenthesized expression is, respectively, an lvalue, a function designator, or a void expression.
+
+**Forward references**: declarations ([3.5](#35-declarations)).
 
 #### 3.3.2 Postfix operators
 
+###### Syntax 
+<a name="postfix-expression"></a>
+*postfix-expression:*
+> 
+> *[primary-expression](primary-expression)*
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **\[** &nbsp; *[expression](expression)* &nbsp; **\]**
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **(** &nbsp; *[argument-expression-list](argument-expression-list)<sub>opt</sub>* &nbsp; **)**
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **.** &nbsp; *[identifier](identifier)*
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **->** &nbsp; *[identifier](identifier)*
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **++**
+> 
+> *[postfix-expression](postfix-expression)* &nbsp; **--**
+> 
+<a name="argument-expression-list"></a>
+*argument-expression-list:*
+> 
+> *[assignment-expression](assignment-expression)*
+> 
+> *[argument-expression-list](argument-expression-list)* &nbsp; **,** &nbsp; *[assignment-expression](assignment-expression)*
+> 
+
 ##### 3.3.2.1 Array subscripting
+
+###### Constraints
+
+One of the expressions shall have type "pointer to object $type,$" the other expression shall have integral type, and the result has type $"type."$
+
+###### Semantics
+
+A postfix expression followed by an expression in square brackets `[]` is a subscripted designation of a member of an array object. The definition of the subscript operator `[]` is that `E1[E2]` is identical to `(*(E1+(E2)))`. Because of the conversion rules that apply to the binary `+` operator, if `E1` is an array object (equivalently, a pointer to the initial member of an array object) and `E2` is an integer, `E1[E2]` designates the `E2`-th member of `E1` (counting from zero).
+
+Successive subscript operators designate a member of a multi-dimensional array object. If `E` is an $n$-dimensional array ($n \ge 2$) with dimensions $i \times j \times \cdots \times k$, then `E` (used as other than an lvalue) is converted to a pointer to an ($n - 1$)-dimensional array with dimensions $j \times \cdots \times k$. If the unary `*` operator is applied to this pointer explicitly, or implicitly as a result of subscripting, the result is the pointed-to ($n - 1$)-dimensional array, which itself is converted into a pointer if used as other than an lvalue. It follows from this that arrays are stored in *row-major order* (last subscript varies fastest).
+
+###### Example
+
+Consider the array object defined by the declaration
+
+```c
+         int x[3][5];
+```
+
+Here `x` is a $3 \times 5$ array of `int`s; more precisely, `x` is an array of three member objects, each of which is an array of five `int`s. In the expression `x[i]`, which is equivalent to `(*(x+(i)))`, `x` is first converted to a pointer to the initial array of five `int`s. Then `i` is adjusted according to the type of `x`, which conceptually entails multiplying `i` by the size of the object to which the pointer points, namely an array of five `int` objects. The results are added and indirection is applied to yield an array of five `int`s. When used in the expression `x[i][j]`, that in turn is converted to a pointer to the first of the `int`s, so `x[i][j]` yields an `int`.
+
+**Forward references:** additive operators ([3.3.6](#336-additive-operators)), address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), array declarators ([3.5.4.2](#3542-array-declarators)).
 
 ##### 3.3.2.2 Function calls
 
+###### Constraints
+
+The expression that denotes the called function[^29] shall have type pointer to function returning `void` or returning an object type other than array.
+
+If the expression that denotes the called function has a type that includes a prototype, the number of arguments shall agree with the number of parameters. Each argument shall have a type such that its value may be assigned to an object with the unqualified version of the type of its corresponding parameter.
+
+###### Semantics
+
+A postfix expression followed by parentheses `()` containing a possibly empty, comma-separated list of expressions is a *function call*. The postfix expression denotes the called function. The list of expressions specifies the arguments to the function.
+
+If the expression that precedes the parenthesized argument list in a function call consists solely of an identifier, and if no declaration is visible for this identifier, the identifier is implicitly declared exactly as if, in the innermost block containing the function call, the declaration
+```c
+         extern int  identifier();
+```
+appeared.[^30]
+
+An argument may be an expression of any object type. In preparing for the call to a function, the arguments are evaluated, and each parameter is assigned the value of the corresponding argument.[^31] The value of the function call expression is specified in [3.6.6.4](#3664-the-return-statement)
+
+If the expression that denotes the called function has a type that does not include a prototype, the integral promotions are performed on each argument and arguments that have type `float` are promoted to `double`. These are called the *default argument promotions*. If the number of arguments does not agree with the number of parameters, the behavior is undefined. If the function is defined with a type that does not include a prototype, and the types of the arguments after promotion are not compatible with those of the parameters after promotion, the behavior is undefined. If the function is defined with a type that includes a prototype, and the types of the arguments after promotion are not compatible with the types of the parameters, or if the prototype ends with an ellipsis ( "`, ...`" ), the behavior is undefined.
+
+If the expression that denotes the called function has a type that includes a prototype, the arguments are implicitly converted, as if by assignment, to the types of the corresponding parameters. The ellipsis notation in a function prototype declarator causes argument type conversion to stop after the last declared parameter. The default argument promotions are performed on trailing arguments. If the function is defined with a type that is not compatible with the type (of the expression) pointed to by the expression that denotes the called function, the behavior is undefined.
+
+No other conversions are performed implicitly; in particular, the number and types of arguments are not compared with those of the parameters in a function definition that does not include a function prototype declarator.
+
+The order of evaluation of the function designator, the arguments, and subexpressions within the arguments is unspecified, but there is a sequence point before the actual call.
+
+Recursive function calls shall be permitted, both directly and indirectly through any chain of other functions.
+
+###### Example
+
+In the function call
+```c
+         (*pf[f1()]) (f2(), f3() + f4())
+```
+the functions `f1`, `f2`, `f3`, and `f4` may be called in any order. All side effects shall be completed before the function pointed to by `pf[f1()]` is entered.
+
+**Forward references:** function declarators (including prototypes) ([3.5.4.3](#3543-function-declarators-including-prototypes)), function definitions ([3.7.1](#371-function-definitions)), the return statement ([3.6.6.4](#3664-the-return-statement)), simple assignment ([3.3.16.1](#33161-simple-assignment)).
+
 ##### 3.3.2.3 Structure and union members
 
+###### Constraints
+
+The first operand of the `.` operator shall have a qualified or unqualified structure or union type, and the second operand shall name a member of that type.
+
+The first operand of the `->` operator shall have type "pointer to qualified or unqualified structure" or "pointer to qualified or unqualified union," and the second operand shall name a member of the type pointed to.
+
+###### Semantics
+
+A postfix expression followed by a dot `.` and an identifier designates a member of a structure or union object. The value is that of the named member, and is an lvalue if the first expression is an lvalue. If the first expression has qualified type, the result has the so-qualified version of the type of the designated member.
+
+A postfix expression followed by an arrow `->` and an identifier designates a member of a structure or union object. The value is that of the named member of the object to which the first expression points, and is an lvalue.[^32] If the first expression is a pointer to a qualified type, the result has the so-qualified version of the type of the designated member.
+
+With one exception, if a member of a union object is accessed after a value has been stored in a different member of the object, the behavior is implementation-defined.[^33] One special guarantee is made in order to simplify the use of unions: If a union contains several structures that share a common initial sequence, and if the union object currently contains one of these structures, it is permitted to inspect the common initial part of any of them. Two structures share a *common initial sequence* if corresponding members have compatible types for a sequence of one or more initial members.
+
+###### Example
+
+If `f` is a function returning a structure or union, and `x` is a member of that structure or union, `f().x` is a valid postfix expression but is not an lvalue.
+
+The following is a valid fragment:
+```c
+         union {
+                  struct {
+                           int      alltypes;
+                  } n;
+                  struct {
+                           int      type;
+                           int      intnode;
+                  } ni;
+                  struct {
+                           int      type;
+                           double   doublenode;
+                  } nf;
+         } u;
+         /*...*/
+         u.nf.type = 1;
+         u.nf.doublenode = 3.14;
+         /*...*/
+         if (u.n.alltypes == 1)
+                  /*...*/ sin(u.nf.doublenode) /*...*/
+```
+**Forward references:** address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), structure and union specifiers ([3.5.2.1](#3521-structure-and-union-specifiers)).
+
 ##### 3.3.2.4 Postfix increment and decrement operators
+
+###### Constraints
+
+The operand of the postfix increment or decrement operator shall have qualified or unqualified scalar type and shall be a modifiable lvalue.
+
+###### Semantics
+
+The result of the postfix `++` operator is the value of the operand. After the result is obtained, the value of the operand is incremented. (That is, the value 1 of the appropriate type is added to it.) See the discussions of additive operators and compound assignment for information on constraints, types and conversions and the effects of operations on pointers. The side effect of updating the stored value of the operand shall occur between the previous and the next sequence point.
+
+The postfix `--` operator is analogous to the postfix `++` operator, except that the value of the operand is decremented (that is, the value 1 of the appropriate type is subtracted from it).
+
+**Forward references:** additive operators ([3.3.6](#336-additive-operators)), compound assignment ([3.3.16.2](#33162-compound-assignment)).
 
 #### 3.3.3 Unary operators
 
@@ -3117,3 +3306,9 @@ Two null pointers, converted through possibly different sequences of casts to po
 [^24]: The name "lvalue" comes originally from the assignment expression `E1 = E2`, in which the left operand `E1` must be a (modifiable) lvalue. It is perhaps better considered as representing an object "locator value." What is sometimes called "rvalue" is in this Standard described as the "value of an expression." An obvious example of an lvalue is an identifier of an object. As a further example, if `E` is a unary expression that is a pointer to an object, `*E` is an lvalue that designates the object to which `E` points.
 
 [^25]: Because this conversion does not occur, the operand of the `sizeof` operator remains a function designator and violates the constraint in [3.3.3.4](#3334-the-sizeof-operator)
+
+[^26]: This paragraph renders undefined statement expressions such as `i = ++i + 1`; while allowing `i = i + 1;`
+
+[^27]: The syntax specifies the precedence of operators in the evaluation of an expression, which is the same as the order of the major subsections of this section, highest precedence first. Thus, for example, the expressions allowed as the operands of the binary + operator ([3.3.6](#336-additive-operators)) shall be those expressions defined in [3.3.1](#331-primary-expressions) through [3.3.6](#336-additive-operators) The exceptions are cast expressions ([3.3.4](#334-cast-operators)) as operands of unary operators ([3.3.3](#333-unary-operators)), and an operand contained between any of the following pairs of operators: grouping parentheses `()` ([3.3.1](#331-primary-expressions)), subscripting brackets `[]` ([3.3.2.1](#3321-array-subscripting)), function-call parentheses `()` ([3.3.2.2](#3322-function-calls)), and the conditional operator `?:` ([3.3.15](#3315-conditional-operator)). Within each major subsection, the operators have the same precedence. Left- or right-associativity is indicated in each subsection by the syntax for the expressions discussed therein.
+
+[^28]: The intent of this list is to specify those circumstances in which an object may or may not be aliased.
