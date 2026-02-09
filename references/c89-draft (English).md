@@ -1938,7 +1938,7 @@ A decimal constant begins with a nonzero digit and consists of a sequence of dec
 
 ###### Semantics
 
-The value of a decimal constant is computed base $10$; that of an octal constant, base $8$; that of a hexadecimal constant, base $16$. The lexically first digit is the most significant.
+The value of a decimal constant is computed base $10;$ that of an octal constant, base $8;$ that of a hexadecimal constant, base $16.$ The lexically first digit is the most significant.
 
 The type of an integer constant is the first of the corresponding list in which its value can be represented. Unsuffixed decimal: `int`, `long int`, `unsigned long int`; unsuffixed octal or hexadecimal: `int`, `unsigned int`, `long int`, `unsigned long int`; suffixed by the letter `u` or `U`: `unsigned int`, `unsigned long int`; suffixed by the letter `l` or `L`: `long int`, `unsigned long int`; suffixed by both the letters `u` or `U` and `l` or `L`: `unsigned long int`.
 
