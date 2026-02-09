@@ -1339,7 +1339,7 @@ The values given below shall be replaced by constant expressions suitable for us
 
 * maximum value for an object of type unsigned long int `ULONG_MAX` `4294967295`
 
-If the value of an object of type char sign-extends when used in an expression, the value of `CHAR_MIN` shall be the same as that of `SCHAR_MIN` and the value of `CHAR_MAX` shall be the same as that of `SCHAR_MAX`. If the value of an object of type char does not sign-extend when used in an expression, the value of `CHAR_MIN` shall be 0 and the value of `CHAR_MAX` shall be the same as that of `UCHAR_MAX`. [^7]
+If the value of an object of type char sign-extends when used in an expression, the value of `CHAR_MIN` shall be the same as that of `SCHAR_MIN` and the value of `CHAR_MAX` shall be the same as that of `SCHAR_MAX`. If the value of an object of type char does not sign-extend when used in an expression, the value of `CHAR_MIN` shall be 0 and the value of `CHAR_MAX` shall be the same as that of `UCHAR_MAX`.[^7]
 
 "Characteristics of floating types `<float.h>`"
 
@@ -1386,7 +1386,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_DIG` | `10` |
 | `LDBL_DIG` |  `10` |
 
-* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, $e_{min}$
+* minimum negative integer such that `FLT_RADIX` raised to that power minus $1$ is a normalized floating-point number, $e_{min}$
 
 |   |   |
 | :--- | :----- |
@@ -1394,7 +1394,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_MIN_EXP` |   |
 | `LDBL_MIN_EXP` |   |
 
-* minimum negative integer such that 10 raised to that power is in the range of normalized floating-point numbers,
+* minimum negative integer such that $10$ raised to that power is in the range of normalized floating-point numbers,
 
 |   |   |
 | :--- | :----- |
@@ -1402,7 +1402,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_MIN_10_EXP` | `-37` |
 | `LDBL_MIN_10_EXP` | `-37` |
 
-* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, $e_{max}$
+* maximum integer such that `FLT_RADIX` raised to that power minus $1$ is a representable finite floating-point number, $e_{max}$
 
 |   |   |
 | :--- | :----- |
@@ -1468,7 +1468,7 @@ x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \
 | `FLT_MAX` | `3.40282347E+38F` |
 | `FLT_MAX_10_EXP` | `+38` |
 
-The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] b and the appropriate values in a <float.h> header for types `float` and `double`: 
+The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] $b$ and the appropriate values in a <float.h> header for types `float` and `double`: 
 
 ```math
 x_f = s \times 2^{e} \times \sum_{k=1}^{24} f_k \times 2^{-k}, \qquad -125 \le e \le +128
