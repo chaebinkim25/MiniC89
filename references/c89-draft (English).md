@@ -1357,13 +1357,13 @@ The rounding mode for floating-point addition is characterized by the value of `
 
 The values given in the following list shall be replaced by implementation-defined expressions that shall be equal or greater in magnitude (absolute value) to those shown, with the same sign.
 
-* radix of exponent representation, *b*
+* radix of exponent representation, $b$
 
 |   |   |
 | :--- | :--- |
 | `FLT_RADIX` | `2` |
 
-* number of base-`FLT_RADIX` digits in the floating-point mantissa, *p*
+* number of base-`FLT_RADIX` digits in the floating-point mantissa, $p$
 
 |   |   |
 | :--- | :----- |
@@ -1386,7 +1386,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_DIG` | `10` |
 | `LDBL_DIG` |  `10` |
 
-* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, *$e_{min}$*
+* minimum negative integer such that `FLT_RADIX` raised to that power minus 1 is a normalized floating-point number, $e_{min}$
 
 |   |   |
 | :--- | :----- |
@@ -1402,7 +1402,7 @@ The values given in the following list shall be replaced by implementation-defin
 | `DBL_MIN_10_EXP` | `-37` |
 | `LDBL_MIN_10_EXP` | `-37` |
 
-* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, *$e_{max}$*
+* maximum integer such that `FLT_RADIX` raised to that power minus 1 is a representable finite floating-point number, $e_{max}$
 
 |   |   |
 | :--- | :----- |
