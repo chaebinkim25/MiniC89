@@ -1448,7 +1448,7 @@ The values given in the following list shall be replaced by implementation-defin
 
 ###### Examples
 
-The following describes an artificial floating-point representation that meets the minimum requirements of the Standard, and the appropriate values in a <float.h> header for type `float`:
+The following describes an artificial floating-point representation that meets the minimum requirements of the Standard, and the appropriate values in a `<float.h>` header for type `float`:
 
 ```math
 x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \le +32
@@ -1468,7 +1468,7 @@ x = s \times 16^{e} \times \sum_{k=1}^{6} f_k \times 16^{-k}, \qquad -31 \le e \
 | `FLT_MAX` | `3.40282347E+38F` |
 | `FLT_MAX_10_EXP` | `+38` |
 
-The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] $b$ and the appropriate values in a <float.h> header for types `float` and `double`: 
+The following describes floating-point representations that also meet the requirements for single-precision and double-precision normalized numbers in the IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985),[^9] $b$ and the appropriate values in a `<float.h>` header for types `float` and `double`: 
 
 ```math
 x_f = s \times 2^{e} \times \sum_{k=1}^{24} f_k \times 2^{-k}, \qquad -125 \le e \le +128
