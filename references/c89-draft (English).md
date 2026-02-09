@@ -1498,7 +1498,7 @@ The values shown above for `FLT_EPSILON` and `DBL_EPSILON` are appropriate for t
 
 ## 3. LANGUAGE
 
-In the syntax notation used in the language section ([3.](#3-language)), syntactic categories (nonterminals) are indicated by italic type, and literal words and character set members (terminals) by bold type. A colon (:) following a nonterminal introduces its definition. Alternative definitions are listed on separate lines, except when prefaced by the words "one of." An optional symbol is indicated by the so that
+In the syntax notation used in the language section ([3.](#3-language)), syntactic categories (nonterminals) are indicated by *italic type*, and literal words and character set members (terminals) by **bold type**. A colon (:) following a nonterminal introduces its definition. Alternative definitions are listed on separate lines, except when prefaced by the words "one of." An optional symbol is indicated by the so that
 
 > **{** &nbsp; *expression<sub>opt</sub>* &nbsp; **}**
 
