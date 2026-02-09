@@ -2362,15 +2362,15 @@ An object shall have its stored value accessed only by an lvalue that has one of
 
 <a name="primary-expression"></a>
 *primary-expression:*
-
-*[identifier](identifier)*
-
-*[constant](constant)*
-
-*[string-literal](string-literal)*
-
-**(** *[expression](expression)* **)**
-
+> 
+> *[identifier](identifier)*
+> 
+> *[constant](constant)*
+> 
+> *[string-literal](string-literal)*
+> 
+> **(** *[expression](expression)* **)**
+> 
 ###### Semantics
 
 An identifier is a primary expression, provided it has been declared as designating an object (in which case it is an lvalue) or a function (in which case it is a function designator).
@@ -2433,7 +2433,7 @@ Consider the array object defined by the declaration
 
 Here `x` is a $3 \times 5$ array of `int`s; more precisely, `x` is an array of three member objects, each of which is an array of five `int`s. In the expression `x[i]`, which is equivalent to `(*(x+(i)))`, `x` is first converted to a pointer to the initial array of five `int`s. Then `i` is adjusted according to the type of `x`, which conceptually entails multiplying `i` by the size of the object to which the pointer points, namely an array of five `int` objects. The results are added and indirection is applied to yield an array of five `int`s. When used in the expression `x[i][j]`, that in turn is converted to a pointer to the first of the `int`s, so `x[i][j]` yields an `int`.
 
-**Forward references:** additive operators ([3.3.6](#336-additive-operators)), address and indirection operators ([3.3.3.2](#3332-address-and-indirection-operators)), array declarators ([3.5.4.2](#3542-array-declarators)).
+**Forward references:** additive operators ([3.3.6](#336-덧셈-연산자)), address and indirection operators ([3.3.3.2](#3332-주소-및-간접-참조-연산자)), array declarators ([3.5.4.2](#3542-배열-선언자)).
 
 ##### 3.3.2.2 Function calls
 
