@@ -3319,6 +3319,6 @@ The postfix `--` operator is analogous to the postfix `++` operator, except that
 
 [^31]: A function may change the values of its parameters, but these changes cannot affect the values of the arguments. On the other hand, it is possible to pass a pointer to an object, and the function may change the value of the object pointed to. A parameter declared to have array or function type is converted to a parameter with a pointer type as described in
 
-[^32] If `&E` is a valid pointer expression (where `&` is the "address-of" operator, which generates a pointer to its operand) the expression `(&E)->MOS` is the same as `E.MOS`.
+[^32]: If `&E` is a valid pointer expression (where `&` is the "address-of" operator, which generates a pointer to its operand) the expression `(&E)->MOS` is the same as `E.MOS`.
 
-[^33] The "byte orders" for scalar types are invisible to isolated programs that do not indulge in type punning (for example, by assigning to one member of a union and inspecting the storage by accessing another member that is an appropriately sized array of character type), but must be accounted for when conforming to externally-imposed storage layouts.
+[^33]: The "byte orders" for scalar types are invisible to isolated programs that do not indulge in type punning (for example, by assigning to one member of a union and inspecting the storage by accessing another member that is an appropriately sized array of character type), but must be accounted for when conforming to externally-imposed storage layouts.
