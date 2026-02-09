@@ -1738,11 +1738,11 @@ Array, function, and pointer types are collectively called *derived declarator t
 
 A type is characterized by its *top type*, which is either the first type named in describing a derived type (as noted above in the construction of derived types), or the type itself if the type consists of no derived types.
 
-A type has *qualified type* if its top type is specified with a type qualifier; otherwise it has *unqualified type*. The type qualifiers `const` and `volatile` respectively designate *const-qualified type* and *volatile-qualified type*.[^15] For each qualified type there is an unqualified type that is specified the same way as the qualified type, but without any type qualifiers in its top type. This type is known as the *unqualified version of the qualified type*. Similarly, there are appropriately *qualified versions of types* (such as a const-qualified version of a type), just as there are appropriately *non-qualified versions of types* (such as a non-const-qualified version of a type).
+A type has *qualified type* if its top type is specified with a type qualifier; otherwise it has *unqualified type*. The type qualifiers `const` and `volatile` respectively designate *`const`-qualified type* and *`volatile`-qualified type*.[^15] For each qualified type there is an unqualified type that is specified the same way as the qualified type, but without any type qualifiers in its top type. This type is known as the *unqualified version of the qualified type*. Similarly, there are appropriately *qualified versions of types* (such as a `const`-qualified version of a type), just as there are appropriately *non-qualified versions of types* (such as a non-`const`-qualified version of a type).
 
 ###### Examples
 
-The type designated as "`float *`" is called "pointer to `float`" and its top type is a pointer type, not a floating type. The const-qualified version of this type is designated as "`float * const`" whereas the type designated as "`const float *`" is not a qualified type --- it is called "pointer to` const float`" and is a pointer to a qualified type.
+The type designated as "`float *`" is called "pointer to `float`" and its top type is a pointer type, not a floating type. The `const`-qualified version of this type is designated as "`float * const`" whereas the type designated as "`const float *`" is not a qualified type --- it is called "pointer to `const float`" and is a pointer to a qualified type.
 
 Finally, the type designated as "`struct tag (*[5])(float)`" is called "array of pointer to function returning `struct` tag." Its top type is array type. The array has length five and the function has a single parameter of type `float`.
 
