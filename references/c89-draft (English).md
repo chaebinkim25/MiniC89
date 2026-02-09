@@ -3312,3 +3312,13 @@ The postfix `--` operator is analogous to the postfix `++` operator, except that
 [^27]: The syntax specifies the precedence of operators in the evaluation of an expression, which is the same as the order of the major subsections of this section, highest precedence first. Thus, for example, the expressions allowed as the operands of the binary + operator ([3.3.6](#336-additive-operators)) shall be those expressions defined in [3.3.1](#331-primary-expressions) through [3.3.6](#336-additive-operators) The exceptions are cast expressions ([3.3.4](#334-cast-operators)) as operands of unary operators ([3.3.3](#333-unary-operators)), and an operand contained between any of the following pairs of operators: grouping parentheses `()` ([3.3.1](#331-primary-expressions)), subscripting brackets `[]` ([3.3.2.1](#3321-array-subscripting)), function-call parentheses `()` ([3.3.2.2](#3322-function-calls)), and the conditional operator `?:` ([3.3.15](#3315-conditional-operator)). Within each major subsection, the operators have the same precedence. Left- or right-associativity is indicated in each subsection by the syntax for the expressions discussed therein.
 
 [^28]: The intent of this list is to specify those circumstances in which an object may or may not be aliased.
+
+[^29]: Most often, this is the result of converting an identifier that is a function designator.
+
+[^30]: That is, a function with external linkage and no information about its parameters that returns an `int`. If in fact it is not defined as having type "function returning `int`," the behavior is undefined.
+
+[^31]: A function may change the values of its parameters, but these changes cannot affect the values of the arguments. On the other hand, it is possible to pass a pointer to an object, and the function may change the value of the object pointed to. A parameter declared to have array or function type is converted to a parameter with a pointer type as described in
+
+[^32] If `&E` is a valid pointer expression (where `&` is the "address-of" operator, which generates a pointer to its operand) the expression `(&E)->MOS` is the same as `E.MOS`.
+
+[^33] The "byte orders" for scalar types are invisible to isolated programs that do not indulge in type punning (for example, by assigning to one member of a union and inspecting the storage by accessing another member that is an appropriately sized array of character type), but must be accounted for when conforming to externally-imposed storage layouts.
