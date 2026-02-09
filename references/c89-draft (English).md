@@ -1085,7 +1085,7 @@ If they are defined, the parameters to the main function shall obey the followin
 
 "Program execution"
 
-In a hosted environment, a program may use all the functions, macros, type definitions, and objects described in the library section (4.).
+In a hosted environment, a program may use all the functions, macros, type definitions, and objects described in the library section ([4.](#4-library)).
 
 "Program termination"
 
