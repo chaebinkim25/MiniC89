@@ -1714,15 +1714,15 @@ The `void` type comprises an empty set of values; it is an incomplete type that 
 
 Any number of *derived types* can be constructed from the basic, enumerated, and incomplete types, as follows:
 
-* An *array type* describes a contiguously allocated set of objects with a particular member object type, called the *element type*. Array types are characterized by their element type and by the number of members of the array. An array type is said to be derived from its element type, and if its element type is T, the array type is sometimes called "array of T." The construction of an array type from an element type is called "array type derivation."
+* An *array type* describes a contiguously allocated set of objects with a particular member object type, called the *element type*. Array types are characterized by their element type and by the number of members of the array. An array type is said to be derived from its element type, and if its element type is $T,$ the array type is sometimes called "array of $T.$" The construction of an array type from an element type is called "array type derivation."
 
 * A *structure type* describes a sequentially allocated set of member objects, each of which has an optionally specified name and possibly distinct type.
 
 * A *union type* describes an overlapping set of member objects, each of which has an optionally specified name and possibly distinct type.
 
-* A *function type* describes a function with specified return type. A function type is characterized by its return type and the number and types of its parameters. A function type is said to be derived from its return type, and if its return type is T, the function type is sometimes called "function returning T." The construction of a function type from a return type is called "function type derivation."
+* A *function type* describes a function with specified return type. A function type is characterized by its return type and the number and types of its parameters. A function type is said to be derived from its return type, and if its return type is $T,$ the function type is sometimes called "function returning $T.$" The construction of a function type from a return type is called "function type derivation."
 
-* A *pointer type* may be derived from a function type, an object type, or an incomplete type, called the *referenced type*. A pointer type describes an object whose value provides a reference to an entity of the referenced type. A pointer type derived from the referenced type T is sometimes called "pointer to T." The construction of a pointer type from a referenced type is called "pointer type derivation."
+* A *pointer type* may be derived from a function type, an object type, or an incomplete type, called the *referenced type*. A pointer type describes an object whose value provides a reference to an entity of the referenced type. A pointer type derived from the referenced type $T$ is sometimes called "pointer to $T.$" The construction of a pointer type from a referenced type is called "pointer type derivation."
 
 These methods of constructing derived types can be applied recursively.
 
@@ -1734,7 +1734,7 @@ A pointer to `void` shall have the same representation and alignment requirement
 
 An array type of unknown size is an incomplete type. It is completed, for an identifier of that type, by specifying the size in a later declaration (with internal or external linkage). A structure or union type of unknown content (as described in [3.5.2.3](#3523-tags)) is an incomplete type. It is completed, for all declarations of that type, by declaring the same structure or union tag with its defining content later in the same scope.
 
-Array, function, and pointer types are collectively called *derived declarator types*. A declarator type derivation from a type T is the construction of a derived declarator type from T by the application of an array, a function, or a pointer type derivation to T.
+Array, function, and pointer types are collectively called *derived declarator types*. A declarator type derivation from a type $T$ is the construction of a derived declarator type from $T$ by the application of an array, a function, or a pointer type derivation to $T.$
 
 A type is characterized by its *top type*, which is either the first type named in describing a derived type (as noted above in the construction of derived types), or the type itself if the type consists of no derived types.
 
